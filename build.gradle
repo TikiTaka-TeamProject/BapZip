@@ -35,6 +35,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Hibernate Spatial + JTS (PostGIS 지원)
+    implementation 'org.hibernate:hibernate-spatial:6.2.7.Final'
+    implementation 'org.locationtech.jts:jts-core:1.19.0'
 }
 
 tasks.named('test') {

@@ -1,4 +1,4 @@
 package com.sparta.bapzip.payment.presentation.dto.response;
 
-public class ReponseDto {
+public class ResponseDto {
 }
