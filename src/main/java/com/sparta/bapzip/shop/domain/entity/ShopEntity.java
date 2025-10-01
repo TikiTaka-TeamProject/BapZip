@@ -1,9 +1,9 @@
-package com.sparta.bapzip.user.domain.entity;
+package com.sparta.bapzip.shop.domain.entity;
 
 import jakarta.persistence.*;
 
 @Entity
-public class UserEntity {
+public class ShopEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
