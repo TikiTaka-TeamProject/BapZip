@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
@@ -14,6 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_service_areas")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServiceAreaEntity extends BaseEntity {
 
     @Id

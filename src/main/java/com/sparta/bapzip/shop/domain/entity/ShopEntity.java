@@ -5,7 +5,9 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 import java.util.UUID;
@@ -14,6 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_shops")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShopEntity extends BaseEntity {
 
     @Id
