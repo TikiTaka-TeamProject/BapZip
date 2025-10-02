@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_orders")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderEntity extends BaseEntity {
 
     @Id
@@ -36,9 +42,6 @@ public class OrderEntity extends BaseEntity {
 
     @Column(nullable = false)
     private int menuTotalPrice;
-
-    @Column(nullable = false)
-    private int deliveryFee;
 
     @Column(nullable = false)
     private int totalAmount;
