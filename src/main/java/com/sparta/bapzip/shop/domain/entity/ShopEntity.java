@@ -5,7 +5,7 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
@@ -16,9 +16,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_shops")
 @Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class ShopEntity extends BaseEntity {
 
     @Id
@@ -32,7 +31,8 @@ public class ShopEntity extends BaseEntity {
     private String address;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ShopStatus status = ShopStatus.PENDING;
 
     @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
     private Point location;
@@ -49,7 +49,16 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ServiceAreaEntity serviceArea;
 
-
+    public ShopEntity(String name, String address, Point location,
+                      UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
+        this.name = name;
+        this.address = address;
+        this.location = location;
+        this.owner = owner;
+        this.category = category;
+        this.serviceArea = serviceArea;
+        this.status = ShopStatus.PENDING;
+    }
 
 
 }
