@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class GenerateTextFromTextInputTest {
 
     @Autowired
-    private GenerateTextFromTextInput service;
+    private GeminiService service;
 
 
     @Test
