@@ -39,6 +39,8 @@ dependencies {
     // Hibernate Spatial + JTS (PostGIS 지원)
     implementation 'org.hibernate:hibernate-spatial:6.2.7.Final'
     implementation 'org.locationtech.jts:jts-core:1.19.0'
+
+    implementation("com.google.genai:google-genai:1.8.0")
 }
 
 tasks.named('test') {
