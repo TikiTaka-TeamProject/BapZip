@@ -7,15 +7,6 @@ assignees: ''
 
 ---
 
----
-name: Issue Template
-about: 이슈 템플릿
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## 📱 Description
 <!-- 진행할 작업을 설명해주세요 -->
 
