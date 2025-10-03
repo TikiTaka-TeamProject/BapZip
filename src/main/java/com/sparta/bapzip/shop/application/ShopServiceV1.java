@@ -6,8 +6,8 @@ import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
-import com.sparta.bapzip.shop.presentation.dto.request.RequestDto;
-import com.sparta.bapzip.shop.presentation.dto.response.ResponseDto;
+import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,29 +26,29 @@ public class ShopServiceV1 {
     private final ServiceAreaRepository serviceAreaRepository;
 
 
-    public ResponseDto createShop(RequestDto shopRequestDto) {
+    public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
         // null 체크
-        if (shopRequestDto.getOwnerId() == null)
+        if (createShopRequest.getOwnerId() == null)
             throw new IllegalArgumentException("Owner ID must not be null");
-        if (shopRequestDto.getCategoryId() == null)
+        if (createShopRequest.getCategoryId() == null)
             throw new IllegalArgumentException("Category ID must not be null");
-        if (shopRequestDto.getServiceAreaId() == null)
+        if (createShopRequest.getServiceAreaId() == null)
             throw new IllegalArgumentException("Service Area ID must not be null");
-        if (shopRequestDto.getLongitude() == null)
+        if (createShopRequest.getLongitude() == null)
             throw new IllegalArgumentException("x must not be null");
-        if (shopRequestDto.getLatitude() == null)
+        if (createShopRequest.getLatitude() == null)
             throw new IllegalArgumentException("y must not be null");
         
         // Owner 조회
-        UserEntity owner = userRepository.findById(shopRequestDto.getOwnerId())
+        UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
                 .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
 
         // Category 조회
-        CategoryEntity category = categoryRepository.findById(shopRequestDto.getCategoryId())
+        CategoryEntity category = categoryRepository.findById(createShopRequest.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
 
         // Service Area 조회
-        ServiceAreaEntity serviceArea = serviceAreaRepository.findById(shopRequestDto.getServiceAreaId())
+        ServiceAreaEntity serviceArea = serviceAreaRepository.findById(createShopRequest.getServiceAreaId())
                 .orElseThrow(() -> new IllegalArgumentException("Service Area not found"));
 
 
@@ -56,33 +56,32 @@ public class ShopServiceV1 {
         GeometryFactory geometryFactory = new GeometryFactory();
         Point location = geometryFactory.createPoint(
                 new Coordinate(
-                        shopRequestDto.getLongitude(), // longitude: x
-                        shopRequestDto.getLatitude()  // latitude: y
+                        createShopRequest.getLongitude(), // longitude: x
+                        createShopRequest.getLatitude()  // latitude: y
                 )
         );
 
         ShopEntity shop = new ShopEntity(
-                shopRequestDto.getName(),
-                shopRequestDto.getAddress(),
+                createShopRequest.getName(),
+                createShopRequest.getAddress(),
                 location,
                 owner,
                 category,
                 serviceArea
         );
 
-        shop.setCreatedBy(owner.getId());
-        shop.setUpdatedBy(owner.getId());
+        shop.markCreated(owner.getId());
+        shop.markUpdated(owner.getId());
 
         ShopEntity saved = shopRepository.save(shop);
 
-        return new ResponseDto(
-                saved.getId(),
-                saved.getName(),
-                saved.getAddress(),
-                saved.getStatus().name(),
-                saved.getLocation().getX(),
-                saved.getLocation().getY()
-        );
-
+        return CreateShopResponse.builder()
+                .shopId(saved.getId())
+                .categoryName(saved.getCategory().getName())
+                .name(saved.getName())
+                .serviceAreaName(saved.getServiceArea().getName())
+                .address(saved.getAddress())
+                .status(saved.getStatus())
+                .build();
     }
 }
