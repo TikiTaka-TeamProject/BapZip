@@ -33,7 +33,7 @@ public class ShopEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ShopStatus status = ShopStatus.PENDING;
+    private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
 //    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
     @Column(columnDefinition = "geometry(Point,4326)")
