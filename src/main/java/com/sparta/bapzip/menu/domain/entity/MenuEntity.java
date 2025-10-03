@@ -43,6 +43,7 @@ public class MenuEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "menu")
+    @Builder. Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
 

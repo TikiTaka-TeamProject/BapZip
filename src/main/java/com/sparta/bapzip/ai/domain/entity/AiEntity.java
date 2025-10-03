@@ -4,10 +4,8 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -15,7 +13,7 @@ import java.util.UUID;
 @Table(name = "p_ai_logs")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AiEntity extends BaseEntity {
 
@@ -37,4 +35,10 @@ public class AiEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private MenuEntity menu;
 
+    public AiEntity(String prompt, @Nullable String response, UserEntity user, MenuEntity menu) {
+        this.prompt = prompt;
+        this.response = response;
+        this.user = user;
+        this.menu = menu;
+    }
 }

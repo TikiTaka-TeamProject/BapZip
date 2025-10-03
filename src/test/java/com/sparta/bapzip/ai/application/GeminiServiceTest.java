@@ -1,15 +1,20 @@
 package com.sparta.bapzip.ai.application;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GenerateTextFromTextInputTest {
+class GeminiServiceTest {
 
     @Autowired
-    private GeminiService service;
+    private AiCallable service;
 
+
+    @BeforeEach
+    void setUp(){
+    }
 
     @Test
     void getCompletion() {
