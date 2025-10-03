@@ -11,7 +11,8 @@ import java.util.UUID;
 public class RequestDto {
     private String name;             // 가게 이름
     private String address;          // 가게 주소
-    private Point location;          // 가게 위치
+    private Double longitude;        // x
+    private Double latitude;         // y
     private ShopStatus status;
     private Long ownerId;            // 오너 유저 ID
     private UUID categoryId;         // 카테고리 ID

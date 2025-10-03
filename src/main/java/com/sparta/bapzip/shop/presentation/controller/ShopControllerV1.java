@@ -1,8 +1,8 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
 import com.sparta.bapzip.shop.application.ShopServiceV1;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.presentation.dto.request.RequestDto;
+import com.sparta.bapzip.shop.presentation.dto.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +17,8 @@ public class ShopControllerV1 {
     private final ShopServiceV1 shopServiceV1;
 
     @PostMapping
-    public ShopEntity createShop(@RequestBody RequestDto shopRequest) {
+//    @PreAuthorize("hasRole('OWNER')")
+    public ResponseDto createShop(@RequestBody RequestDto shopRequest) {
         return shopServiceV1.createShop(shopRequest);
     }
 }

@@ -34,7 +34,8 @@ public class ShopEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ShopStatus status = ShopStatus.PENDING;
 
-    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+//    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+    @Column(columnDefinition = "geometry(Point,4326)")
     private Point location;
 
     @JoinColumn(name = "user_id", nullable = false)
@@ -57,7 +58,6 @@ public class ShopEntity extends BaseEntity {
         this.owner = owner;
         this.category = category;
         this.serviceArea = serviceArea;
-        this.status = ShopStatus.PENDING;
     }
 
 
