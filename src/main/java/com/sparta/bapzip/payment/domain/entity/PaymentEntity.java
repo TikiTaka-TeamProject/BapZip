@@ -3,10 +3,7 @@ package com.sparta.bapzip.payment.domain.entity;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,8 +12,8 @@ import java.util.UUID;
 @Table(name = "p_payments")
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor()
 public class PaymentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,12 +23,12 @@ public class PaymentEntity extends BaseEntity {
     @OneToOne
     private OrderEntity order;
 
-    @Column(name = "payment_key", nullable = false, length = 255, updatable = false)
+    @Column(name = "payment_key", length = 255, updatable = false)
     private String paymentKey;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private Status status;
+    private PaymentStatusEnum status;
 
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
@@ -45,10 +42,29 @@ public class PaymentEntity extends BaseEntity {
     @Column(name = "cancel_reason", length = 250)
     private String cancelReason;
 
-    public enum Status {
-        IN_PROGRESS,
-        SUCCESS,
-        CANCELED,
-        FAILED
+    public PaymentEntity(
+                        OrderEntity order,
+                         String paymentKey,
+                         PaymentStatusEnum status,
+                         int totalAmount,
+                         LocalDateTime approvedAt, LocalDateTime canceledAt, String cancelReason) {
+
+        this.order = order;
+        this.paymentKey = paymentKey;
+        this.status = status;
+        this.totalAmount = totalAmount;
+        this.approvedAt = approvedAt;
+        this.canceledAt = canceledAt;
+        this.cancelReason = cancelReason;
+    }
+
+    public PaymentEntity(UUID orderId, String paymentKey, PaymentStatusEnum status, int amount, LocalDateTime now,  LocalDateTime canceledAt, String cancelReason) {
+
+        this.paymentKey = paymentKey;
+        this.status = status;
+        this.totalAmount = totalAmount;
+        this.approvedAt = approvedAt;
+        this.canceledAt = canceledAt;
+        this.cancelReason = cancelReason;
     }
 }

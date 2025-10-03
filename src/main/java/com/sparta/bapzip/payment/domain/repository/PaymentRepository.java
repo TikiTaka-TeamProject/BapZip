@@ -7,5 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Optional;
 
 public interface PaymentRepository {
-    Optional<PaymentEntity> findById(Long paymentId);
+    Optional<PaymentEntity> findByOrderId(Long orderId);
+    Optional<PaymentEntity> findByPaymentKey(String paymentKey);
+    PaymentEntity save(PaymentEntity payment);
 }
