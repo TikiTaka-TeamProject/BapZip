@@ -33,7 +33,9 @@ public class ShopEntity extends BaseEntity {
     private String address;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
     @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
     private Point location;
