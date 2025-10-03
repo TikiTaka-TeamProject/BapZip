@@ -2,11 +2,12 @@ package com.sparta.bapzip.shop.presentation.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class ResponseDto {
     private UUID id;
     private String name;
