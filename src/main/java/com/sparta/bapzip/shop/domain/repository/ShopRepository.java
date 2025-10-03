@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface ShopRepository{
     ShopEntity save(ShopEntity shop);
+    boolean existsByOwnerId(Long ownerId);
 }

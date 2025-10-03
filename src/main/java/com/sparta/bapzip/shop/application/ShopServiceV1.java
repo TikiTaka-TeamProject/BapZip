@@ -42,6 +42,11 @@ public class ShopServiceV1 {
         UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.OWNER_NOT_FOUND));
 
+        // 이미 Shop을 가진 Owner인지 체크
+        if (shopRepository.existsByOwnerId(owner.getId())) {
+            throw new GlobalException(ErrorCode.SHOP_ALREADY_EXISTS);
+        }
+
         // Category 조회
         CategoryEntity category = categoryRepository.findById(createShopRequest.getCategoryId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));

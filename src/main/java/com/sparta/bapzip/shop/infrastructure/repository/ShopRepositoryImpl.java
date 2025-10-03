@@ -14,10 +14,14 @@ public class ShopRepositoryImpl implements ShopRepository {
 
     private final ShopJpaRepository shopJpaRepository;
 
-
     @Override
     public ShopEntity save(ShopEntity shop) {
         return shopJpaRepository.save(shop);
+    }
+
+    @Override
+    public boolean existsByOwnerId(Long ownerId) {
+        return shopJpaRepository.existsByOwnerId(ownerId);
     }
 
 }
