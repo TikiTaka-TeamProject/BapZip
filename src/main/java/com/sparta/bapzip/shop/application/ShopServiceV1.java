@@ -2,6 +2,8 @@ package com.sparta.bapzip.shop.application;
 
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.category.domain.repository.CategoryRepository;
+import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -27,29 +29,26 @@ public class ShopServiceV1 {
 
 
     public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
-        // null 체크
-        if (createShopRequest.getOwnerId() == null)
-            throw new IllegalArgumentException("Owner ID must not be null");
-        if (createShopRequest.getCategoryId() == null)
-            throw new IllegalArgumentException("Category ID must not be null");
-        if (createShopRequest.getServiceAreaId() == null)
-            throw new IllegalArgumentException("Service Area ID must not be null");
-        if (createShopRequest.getLongitude() == null)
-            throw new IllegalArgumentException("x must not be null");
-        if (createShopRequest.getLatitude() == null)
-            throw new IllegalArgumentException("y must not be null");
+        // 파라미터 체크
+        if (createShopRequest.getOwnerId() == null
+                || createShopRequest.getCategoryId() == null
+                || createShopRequest.getServiceAreaId() == null
+                || createShopRequest.getLongitude() == null
+                || createShopRequest.getLatitude() == null) {
+            throw new GlobalException(ErrorCode.MISSING_REQUIRED_PARAMETER);
+        }
         
         // Owner 조회
         UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
+                .orElseThrow(() -> new GlobalException(ErrorCode.OWNER_NOT_FOUND));
 
         // Category 조회
         CategoryEntity category = categoryRepository.findById(createShopRequest.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // Service Area 조회
         ServiceAreaEntity serviceArea = serviceAreaRepository.findById(createShopRequest.getServiceAreaId())
-                .orElseThrow(() -> new IllegalArgumentException("Service Area not found"));
+                .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
 
 
         // 위치(Point) 생성
@@ -70,10 +69,17 @@ public class ShopServiceV1 {
                 serviceArea
         );
 
+        // 변경 기록
         shop.markCreated(owner.getId());
         shop.markUpdated(owner.getId());
 
-        ShopEntity saved = shopRepository.save(shop);
+        // 저장
+        ShopEntity saved;
+        try {
+            saved = shopRepository.save(shop);
+        } catch (Exception e) {
+            throw new GlobalException(ErrorCode.DATABASE_ERROR);
+        }
 
         return CreateShopResponse.builder()
                 .shopId(saved.getId())
