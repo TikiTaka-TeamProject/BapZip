@@ -5,9 +5,6 @@ import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @Repository
 public class ShopRepositoryImpl implements ShopRepository {
