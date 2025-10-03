@@ -3,7 +3,6 @@ package com.sparta.bapzip.shop.presentation.dto.request;
 
 import com.sparta.bapzip.shop.domain.entity.ShopStatus;
 import lombok.Getter;
-import org.locationtech.jts.geom.Point;
 
 import java.util.UUID;
 
