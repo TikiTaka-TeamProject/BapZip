@@ -14,7 +14,10 @@ public enum ErrorCode {
     MISSING_REQUIRED_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "가게 소유자를 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
-    SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "서비스 지역을 찾을 수 없습니다.");
+    SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "서비스 지역을 찾을 수 없습니다."),
+
+    // Shop: 생성
+    SHOP_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 소유자는 이미 가게를 보유하고 있습니다.");
 
     private final HttpStatus status;
     private final String message;
