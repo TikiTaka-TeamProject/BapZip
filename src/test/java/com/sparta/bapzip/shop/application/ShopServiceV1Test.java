@@ -4,6 +4,9 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
+import com.sparta.bapzip.user.domain.repository.UserRepository;
+import com.sparta.bapzip.category.domain.repository.CategoryRepository;
+import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,12 +20,24 @@ import static org.mockito.Mockito.when;
 class ShopServiceV1Test {
 
     private ShopRepository shopRepository;
+    private UserRepository userRepository;
+    private CategoryRepository categoryRepository;
+    private ServiceAreaRepository serviceAreaRepository;
     private ShopServiceV1 shopService;
 
     @BeforeEach
     void setUp() {
         shopRepository = Mockito.mock(ShopRepository.class);
-        shopService = new ShopServiceV1(shopRepository);
+        userRepository = Mockito.mock(UserRepository.class);
+        categoryRepository = Mockito.mock(CategoryRepository.class);
+        serviceAreaRepository = Mockito.mock(ServiceAreaRepository.class);
+
+        shopService = new ShopServiceV1(
+                shopRepository,
+                userRepository,
+                categoryRepository,
+                serviceAreaRepository
+        );
     }
 
     // Owner 권한 Test
@@ -35,7 +50,6 @@ class ShopServiceV1Test {
         UserEntity owner = UserEntity.builder()
                 .id(ownerId)
                 .build();
-
 
         ShopEntity shop = ShopEntity.builder()
                 .id(shopId)
@@ -67,5 +81,4 @@ class ShopServiceV1Test {
 
         assertThrows(GlobalException.class, () -> shopService.validateShopOwner(shopId, wrongOwnerId));
     }
-
 }
