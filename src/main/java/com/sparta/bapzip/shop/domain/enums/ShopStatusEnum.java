@@ -1,4 +1,4 @@
-package com.sparta.bapzip.shop.domain.entity;
+package com.sparta.bapzip.shop.domain.enums;
 
 public enum ShopStatusEnum {
     PENDING,    // 등록 후 승인 대기
