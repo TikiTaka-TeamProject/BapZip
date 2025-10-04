@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.UUID;
 @Table(name = "p_orders")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OrderEntity extends BaseEntity {
 
@@ -27,9 +24,6 @@ public class OrderEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String status;
-
-    @Column(nullable = false)
-    private int totalPrice;
 
     @Column(nullable = false)
     private String deliveryAddress;
@@ -51,6 +45,5 @@ public class OrderEntity extends BaseEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "order")
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
-
 
 }
