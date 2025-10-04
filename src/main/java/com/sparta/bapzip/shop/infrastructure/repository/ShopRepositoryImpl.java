@@ -15,6 +15,11 @@ public class ShopRepositoryImpl implements ShopRepository {
     private final ShopJpaRepository shopJpaRepository;
 
     @Override
+    public ShopEntity save(ShopEntity shop) {
+        return shopJpaRepository.save(shop);
+    }
+
+    @Override
     public Optional<ShopEntity> findById(UUID shopId) {
         return shopJpaRepository.findById(shopId);
     }

@@ -5,10 +5,7 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 import java.util.UUID;
@@ -18,8 +15,8 @@ import java.util.UUID;
 @Table(name = "p_shops")
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShopEntity extends BaseEntity {
 
     @Id
@@ -33,7 +30,8 @@ public class ShopEntity extends BaseEntity {
     private String address;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
     @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
     private Point location;
@@ -50,6 +48,11 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ServiceAreaEntity serviceArea;
 
+    public void updateName(String name) { this.name = name; }
+    public void updateAddress(String address) { this.address = address; }
+    public void updateLocation(Point location) { this.location = location; }
+    public void updateCategory(CategoryEntity category) { this.category = category; }
+    public void updateServiceArea(ServiceAreaEntity serviceArea) { this.serviceArea = serviceArea; }
 
 
 

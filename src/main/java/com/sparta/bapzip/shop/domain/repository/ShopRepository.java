@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ShopRepository {
+    ShopEntity save(ShopEntity shop);
     // 가게 ID로 조회
     Optional<ShopEntity> findById(UUID shopId);
 }
