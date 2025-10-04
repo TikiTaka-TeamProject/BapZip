@@ -24,8 +24,8 @@ public class ShopServiceV1 {
 
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
-    private final ServiceAreaRepository serviceAreaRepository;
+//    private final CategoryRepository categoryRepository;
+//    private final ServiceAreaRepository serviceAreaRepository;
 
 
     public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
@@ -48,12 +48,25 @@ public class ShopServiceV1 {
         }
 
         // Category 조회
-        CategoryEntity category = categoryRepository.findById(createShopRequest.getCategoryId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));
+        // TODO: Category 메서드 필요
+//        CategoryEntity category = categoryRepository.findById(createShopRequest.getCategoryId())
+//                .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // TODO: 임시 데이터
+        CategoryEntity category = CategoryEntity.builder()
+                .id(createShopRequest.getCategoryId())
+                .build();
 
         // Service Area 조회
-        ServiceAreaEntity serviceArea = serviceAreaRepository.findById(createShopRequest.getServiceAreaId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
+        // TODO: ServiceArea 메서드 필요
+//        ServiceAreaEntity serviceArea = serviceAreaRepository.findById(createShopRequest.getServiceAreaId())
+//                .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
+
+        // TODO: 임시 데이터
+        // Service Area 더미 엔티티 생성
+        ServiceAreaEntity serviceArea = ServiceAreaEntity.builder()
+                .id(createShopRequest.getServiceAreaId())
+                .build();
 
 
         // 위치(Point) 생성
@@ -74,17 +87,13 @@ public class ShopServiceV1 {
                 serviceArea
         );
 
+        // TODO: 생성, 수정 기록 메서드 필요
         // 변경 기록
         shop.markCreated(owner.getId());
         shop.markUpdated(owner.getId());
 
         // 저장
-        ShopEntity saved;
-        try {
-            saved = shopRepository.save(shop);
-        } catch (Exception e) {
-            throw new GlobalException(ErrorCode.DATABASE_ERROR);
-        }
+        ShopEntity saved = shopRepository.save(shop);
 
         return CreateShopResponse.builder()
                 .shopId(saved.getId())
