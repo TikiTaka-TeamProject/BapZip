@@ -1,6 +1,7 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
 import com.sparta.bapzip.shop.application.ShopServiceV1;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +29,13 @@ public class ShopControllerV1 {
      * @return ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
      */
     @GetMapping
-    public ResponseEntity<List<ShopDetailResponse>> getApprovedShops(){
-        List<ShopDetailResponse> shops = shopServiceV1.getApprovedShops()
+    public ResponseEntity<List<ShopDetailForUserResponse>> getApprovedShops(){
+        List<ShopDetailForUserResponse> shops = shopServiceV1.getApprovedShops()
                 .stream()
-                .map(shop -> ShopDetailResponse.builder()
+                .map(shop -> ShopDetailForUserResponse.builder()
                         .shopId(shop.getId())
                         .name(shop.getName())
                         .address(shop.getAddress())
-                        .status(shop.getStatus())
                         .ownerName(shop.getOwner().getName())
                         .categoryName(shop.getCategory().getName())
                         .serviceAreaName(shop.getServiceArea().getName())
