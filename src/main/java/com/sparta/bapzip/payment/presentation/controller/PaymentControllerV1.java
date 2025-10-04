@@ -11,24 +11,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/v1/payments")
 public class PaymentControllerV1 {
     private final PaymentServiceV1 paymentService;
-//    private final OrderServiceV1 orderServiceV1;
-    @PostMapping("/v1/payments/confirm")
+    @PostMapping("/confirm")
     public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody PaymentRequest requestDto) {
-        PaymentResponseDto response = paymentService.createPayment(requestDto);
-        if( response == null){
-            response.setStatus("FAIL");
-        } else {
-            response.setStatus("SUCCESS");
-            response.setOrderId(requestDto.getOrderId());
-            response.setTotalPrice(requestDto.getAmount());
-            response.setApprovedAt(LocalDateTime.now());
-        }
+        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.randomUUID(), requestDto);
+
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<PaymentResponseDto> createPayment(@PathVariable String orderId, @RequestBody String cancelReason) {
+
+        PaymentResponseDto response = paymentService.cancelPayment(UUID.fromString(orderId), cancelReason);
         return ResponseEntity.ok(response);
     }
 }

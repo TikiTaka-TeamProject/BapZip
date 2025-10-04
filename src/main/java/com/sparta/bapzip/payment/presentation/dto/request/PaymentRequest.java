@@ -30,6 +30,7 @@ public class PaymentRequest {
     private String paymentKey;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
+    private String cancelReason;
 
     @Override
     public String toString() {
