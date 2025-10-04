@@ -25,7 +25,6 @@ import java.util.UUID;
 public class ShopServiceV1 {
 
     private final ShopRepository shopRepository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ServiceAreaRepository serviceAreaRepository;
 
