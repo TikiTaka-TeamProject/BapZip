@@ -4,10 +4,7 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -15,7 +12,7 @@ import java.util.UUID;
 @Table(name = "p_orders_menus")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OrderMenuEntity extends BaseEntity {
 
@@ -30,7 +27,10 @@ public class OrderMenuEntity extends BaseEntity {
     private String menuName;
 
     @Column(nullable = false)
-    private int menuPrice;
+    private int price;
+
+    @Column(nullable = false)
+    private int subtotal;
 
     @JoinColumn(name = "order_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
