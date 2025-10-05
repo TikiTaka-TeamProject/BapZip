@@ -1,7 +1,7 @@
 package com.sparta.bapzip.shop.presentation.dto.request;
 
 
-import com.sparta.bapzip.shop.domain.entity.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import lombok.Getter;
 
 import java.util.UUID;

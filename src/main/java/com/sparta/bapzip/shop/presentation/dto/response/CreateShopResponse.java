@@ -1,6 +1,6 @@
 package com.sparta.bapzip.shop.presentation.dto.response;
 
-import com.sparta.bapzip.shop.domain.entity.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
