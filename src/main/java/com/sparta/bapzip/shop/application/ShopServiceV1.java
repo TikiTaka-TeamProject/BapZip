@@ -22,22 +22,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ShopServiceV1 {
 
+
     private final ShopRepository shopRepository;
+
+    // TODO: 타도메인간 통신 Service 개발 후 수정 필요
     private final UserRepository userRepository;
 //    private final CategoryRepository categoryRepository;
 //    private final ServiceAreaRepository serviceAreaRepository;
 
 
     public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
-        // 파라미터 체크
-        if (createShopRequest.getOwnerId() == null
-                || createShopRequest.getCategoryId() == null
-                || createShopRequest.getServiceAreaId() == null
-                || createShopRequest.getLongitude() == null
-                || createShopRequest.getLatitude() == null) {
-            throw new GlobalException(ErrorCode.MISSING_REQUIRED_PARAMETER);
-        }
-        
         // Owner 조회
         UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.OWNER_NOT_FOUND));
@@ -78,7 +72,7 @@ public class ShopServiceV1 {
                 )
         );
 
-        ShopEntity shop = new ShopEntity(
+        ShopEntity shop = ShopEntity.create(
                 createShopRequest.getName(),
                 createShopRequest.getAddress(),
                 location,
@@ -95,13 +89,6 @@ public class ShopServiceV1 {
         // 저장
         ShopEntity saved = shopRepository.save(shop);
 
-        return CreateShopResponse.builder()
-                .shopId(saved.getId())
-                .categoryName(saved.getCategory().getName())
-                .name(saved.getName())
-                .serviceAreaName(saved.getServiceArea().getName())
-                .address(saved.getAddress())
-                .status(saved.getStatus())
-                .build();
+        return CreateShopResponse.from(saved);
     }
 }

@@ -6,10 +6,7 @@ import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 import java.util.UUID;
@@ -52,6 +49,7 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ServiceAreaEntity serviceArea;
 
+    @Builder
     public ShopEntity(String name, String address, Point location,
                       UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
         this.name = name;
@@ -62,5 +60,11 @@ public class ShopEntity extends BaseEntity {
         this.serviceArea = serviceArea;
     }
 
-
+    public static ShopEntity create(String name, String address, Point location,
+                                    UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
+        ShopEntity shop = new ShopEntity(name, address, location, owner, category, serviceArea);
+        shop.markCreated(owner.getId());
+        shop.markUpdated(owner.getId());
+        return shop;
+    }
 }
