@@ -18,4 +18,15 @@ public class ShopRepositoryImpl implements ShopRepository {
     public Optional<ShopEntity> findById(UUID shopId) {
         return shopJpaRepository.findById(shopId);
     }
+
+    @Override
+    public ShopEntity save(ShopEntity shop) {
+        return shopJpaRepository.save(shop);
+    }
+
+    @Override
+    public boolean existsByOwnerId(Long ownerId) {
+        return shopJpaRepository.existsByOwnerId(ownerId);
+    }
+
 }
