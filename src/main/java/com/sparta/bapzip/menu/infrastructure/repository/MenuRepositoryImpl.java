@@ -5,6 +5,10 @@ import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Repository
 public class MenuRepositoryImpl implements MenuRepository {
@@ -14,5 +18,11 @@ public class MenuRepositoryImpl implements MenuRepository {
     @Override
     public MenuEntity save(MenuEntity menu) {
         return menuJpaRepository.save(menu);
+    }
+
+    // 메뉴 단일 조회
+    @Override
+    public Optional<MenuEntity> findById(UUID id) {
+        return menuJpaRepository.findById(id);
     }
 }
