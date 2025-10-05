@@ -19,6 +19,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_shops")
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShopEntity extends BaseEntity {
@@ -35,6 +36,7 @@ public class ShopEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
 //    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
