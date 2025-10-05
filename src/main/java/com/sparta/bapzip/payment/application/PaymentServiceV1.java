@@ -72,7 +72,7 @@ public class PaymentServiceV1 {
 //        String orderIdStr = UUID.randomUUID().toString();
         String orderName = "테스트 결제";
         int amount = 1000000;
-        UUID tempOrderId = UUID.fromString("87d2175e-7db6-4a35-8987-1000272d3d60");
+        UUID tempOrderId = UUID.fromString("fb64f420-6c70-49fa-806f-a5bc775b89db");
         payment = PaymentEntity.builder()
                     .order(
                             OrderEntity.builder()
@@ -133,7 +133,6 @@ public class PaymentServiceV1 {
                 paymentResponseDto.setApprovedAt(OffsetDateTime.parse(response.get("approvedAt").asText()).toLocalDateTime());
             }
             paymentResponseDto.setPaymentKey(paymentKey);
-            paymentResponseDto.setOrderId(paymentRequest.getOrderId());
             paymentResponseDto.setTotalPrice(paymentRequest.getAmount());
             paymentResponseDto.setStatus("SUCCESS");
 
