@@ -2,7 +2,9 @@ package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
+import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
+import com.sparta.bapzip.user.domain.entity.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import com.sparta.bapzip.user.presentation.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.presentation.dto.response.SignupResponseDto;
@@ -18,6 +20,12 @@ public class UserServiceV1 {
     private final PasswordEncoder passwordEncoder;
 
     public SignupResponseDto signup(SignupRequestDto requestDto) {
+        // 권한 확인
+        UserRoleEnum role = requestDto.getRole();
+        if (role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER)) {
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+        }
+
         // 이메일 중복 확인
         String email = requestDto.getEmail();
         if (userRepository.findByEmail(email).isPresent()) {
