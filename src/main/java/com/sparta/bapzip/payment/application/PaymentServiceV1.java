@@ -9,7 +9,8 @@ import com.sparta.bapzip.payment.domain.entity.PaymentEntity;
 import com.sparta.bapzip.payment.domain.entity.PaymentStatusEnum;
 import com.sparta.bapzip.payment.infrastructure.config.payment.TossPaymentsConfig;
 import com.sparta.bapzip.payment.domain.repository.PaymentRepository;
-import com.sparta.bapzip.payment.presentation.dto.request.PaymentRequest;
+import com.sparta.bapzip.payment.presentation.dto.request.PaymentCancelRequest;
+import com.sparta.bapzip.payment.presentation.dto.request.PaymentCreateRequest;
 import com.sparta.bapzip.payment.presentation.dto.response.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +40,12 @@ public class PaymentServiceV1 {
     /**
      * PaymentEntity 생성
      *
-     * @param paymentRequest 주문자의 카드 정보가 담긴 PaymentRequest
+     * @param paymentCreateRequest 주문자의 카드 정보가 담긴 PaymentCreateRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
      * @throws GlobalException ORDER_NOT_FOUND 에러 발생 시
      */
     @Transactional
-    public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentRequest paymentRequest) {
+    public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
         PaymentEntity payment = null;
 //       // OrderEntity 조회 구현 이후 주석 해제
@@ -64,9 +65,9 @@ public class PaymentServiceV1 {
 //            if( order.getOrderMenuList().size()>2){
 //                sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
 //            }
-//            paymentRequest.setOrderId(order.getId().toString());
-//            paymentRequest.setOrderName(sb.toString());
-//            paymentRequest.setAmount(order.getTotalAmount());
+//            paymentCreateRequest.setOrderId(order.getId().toString());
+//            paymentCreateRequest.setOrderName(sb.toString());
+//            paymentCreateRequest.setAmount(order.getTotalAmount());
 //        }
         // 임시 결제 정보
 //        String orderIdStr = UUID.randomUUID().toString();
@@ -85,11 +86,11 @@ public class PaymentServiceV1 {
                     .build();
         paymentRepository.save(payment);
         // PaymentRequest 생성
-        paymentRequest.setOrderId(orderId.toString());
-        paymentRequest.setOrderName(orderName);
-        paymentRequest.setAmount(amount);
+        paymentCreateRequest.setOrderId(orderId.toString());
+        paymentCreateRequest.setOrderName(orderName);
+        paymentCreateRequest.setAmount(amount);
 
-        PaymentResponseDto paymentResponse = createPayment(paymentRequest);
+        PaymentResponseDto paymentResponse = createPayment(paymentCreateRequest);
 
         if (paymentResponse != null && paymentResponse.getPaymentKey() != null) {
             payment.updatePaymentConfirmResult(
@@ -106,10 +107,10 @@ public class PaymentServiceV1 {
     /**
      * 결제 승인 요청 메소드
      *
-     * @param paymentRequest 카드 정보와 주문정보 가 담긴 PaymentRequest
+     * @param paymentCreateRequest 카드 정보와 주문정보 가 담긴 PaymentRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
      */
-    public PaymentResponseDto createPayment(PaymentRequest paymentRequest) {
+    public PaymentResponseDto createPayment(PaymentCreateRequest paymentCreateRequest) {
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
         WebClient client = WebClient.builder()
                 .baseUrl("https://api.tosspayments.com/v1/payments/key-in")
@@ -119,7 +120,7 @@ public class PaymentServiceV1 {
 
         JsonNode response = client.post()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(paymentRequest)
+                .bodyValue(paymentCreateRequest)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
                         resp -> resp.bodyToMono(String.class).map(RuntimeException::new))
@@ -133,7 +134,7 @@ public class PaymentServiceV1 {
                 paymentResponseDto.setApprovedAt(OffsetDateTime.parse(response.get("approvedAt").asText()).toLocalDateTime());
             }
             paymentResponseDto.setPaymentKey(paymentKey);
-            paymentResponseDto.setTotalPrice(paymentRequest.getAmount());
+            paymentResponseDto.setTotalPrice(paymentCreateRequest.getAmount());
             paymentResponseDto.setStatus("SUCCESS");
 
             if (response.get("status").asText().equals("DONE")) {
@@ -157,8 +158,8 @@ public class PaymentServiceV1 {
     @Transactional
     public PaymentResponseDto cancelPayment(UUID orderId, String cancelReason) {
         PaymentEntity paymentEntity = getPaymentByOrderId(orderId);
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setCancelReason(cancelReason);
+        PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest();
+        paymentCancelRequest.setCancelReason(cancelReason);
         if (paymentEntity.getStatus() != PaymentStatusEnum.SUCCESS) {
             throw new GlobalException(ErrorCode.PAYMENT_CANCELLATION_NOT_ALLOWED);
         }
@@ -170,7 +171,7 @@ public class PaymentServiceV1 {
 
         JsonNode response = client.post()
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(paymentRequest)
+                .bodyValue(paymentCancelRequest)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
                         resp -> resp.bodyToMono(String.class).map(RuntimeException::new))

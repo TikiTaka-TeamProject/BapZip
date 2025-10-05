@@ -1,21 +1,17 @@
 package com.sparta.bapzip.payment.presentation.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
-public class PaymentRequest {
+public class PaymentCreateRequest {
 
     private int amount;
     private String orderId;
@@ -30,7 +26,6 @@ public class PaymentRequest {
     private String paymentKey;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
-    private String cancelReason;
 
     @Override
     public String toString() {

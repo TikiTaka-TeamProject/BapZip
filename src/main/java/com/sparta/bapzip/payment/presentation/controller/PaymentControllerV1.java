@@ -1,7 +1,8 @@
 package com.sparta.bapzip.payment.presentation.controller;
 
 import com.sparta.bapzip.payment.application.PaymentServiceV1;
-import com.sparta.bapzip.payment.presentation.dto.request.PaymentRequest;
+import com.sparta.bapzip.payment.presentation.dto.request.PaymentCreateRequest;
+import com.sparta.bapzip.payment.presentation.dto.request.paymentCreateRequest;
 import com.sparta.bapzip.payment.presentation.dto.response.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import java.util.UUID;
 public class PaymentControllerV1 {
     private final PaymentServiceV1 paymentService;
     @PostMapping("/confirm")
-    public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody PaymentRequest requestDto) {
+    public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody PaymentCreateRequest requestDto) {
         PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.randomUUID(), requestDto);
 
         return ResponseEntity.ok(response);
