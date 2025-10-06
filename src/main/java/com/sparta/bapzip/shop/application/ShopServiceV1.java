@@ -1,11 +1,11 @@
 package com.sparta.bapzip.shop.application;
 
+import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
-import com.sparta.bapzip.category.domain.repository.CategoryRepository;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
+import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
-import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,14 +27,100 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShopServiceV1 {
 
-    private final ShopRepository shopRepository;
-    private final CategoryRepository categoryRepository;
-    private final ServiceAreaRepository serviceAreaRepository;
 
+    private final ShopRepository shopRepository;
+
+    // TODO: 타도메인간 통신 Service 개발 후 수정 필요
+    private final UserRepository userRepository;
+    private final CategoryServiceV1 categoryServiceV1;
+    private final ServiceAreaServiceV1 serviceAreaServiceV1;
+
+
+    public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
+        // Owner 조회
+        UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.OWNER_NOT_FOUND));
+
+        // 이미 Shop을 가진 Owner인지 체크
+        if (shopRepository.existsByOwnerId(owner.getId())) {
+            throw new GlobalException(ErrorCode.SHOP_ALREADY_EXISTS);
+        }
+
+        // Category 조회
+        // TODO: Category 임시 메서드
+        CategoryEntity category = categoryServiceV1.getCategoryById(createShopRequest.getCategoryId());
+
+        // TODO: 임시 데이터
+//        CategoryEntity category = CategoryEntity.builder()
+//                .id(createShopRequest.getCategoryId())
+//                .build();
+
+        // Service Area 조회
+        // TODO: ServiceArea 메서드 필요
+        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaById(createShopRequest.getServiceAreaId());
+
+        // TODO: 임시 데이터
+        // Service Area 더미 엔티티 생성
+//        ServiceAreaEntity serviceArea = ServiceAreaEntity.builder()
+//                .id(createShopRequest.getServiceAreaId())
+//                .build();
+
+
+        // 위치(Point) 생성
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Point location = geometryFactory.createPoint(
+                new Coordinate(
+                        createShopRequest.getLongitude(), // longitude: x
+                        createShopRequest.getLatitude()  // latitude: y
+                )
+        );
+
+        ShopEntity shop = ShopEntity.create(
+                createShopRequest.getName(),
+                createShopRequest.getAddress(),
+                location,
+                owner,
+                category,
+                serviceArea
+        );
+
+        // TODO: 생성, 수정 기록 메서드 필요
+        // 변경 기록
+        shop.markCreated(owner.getId());
+        shop.markUpdated(owner.getId());
+
+        // 저장
+        ShopEntity saved = shopRepository.save(shop);
+
+        return CreateShopResponse.from(saved);
+    }
+
+    /**
+     * 가게 ID를 기준으로 ShopEntity 조회
+     *
+     * @param shopId 조회할 가게의 UUID
+     * @return 조회된 ShopEntity
+     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
+     */
     public ShopEntity getShopById(UUID shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.SHOP_NOT_FOUND));
     }
+
+    /**
+     * 가게 ID 기준으로 상세 정보 조회
+     * ShopEntity를 조회 후 필요한 정보를 ShopDetailResponse로 변환
+     *
+     * @param shopId 조회할 가게의 UUID
+     * @return ShopDetailResponse 가게 상세 정보 DTO
+     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
+     */
+    public ShopDetailResponse getShopDetail(UUID shopId) {
+        ShopEntity shop = getShopById(shopId);
+
+        return ShopDetailResponse.from(shop);
+    }
+
 
     public void validateShopOwner(UUID shopId, Long ownerId) {
         ShopEntity shop = getShopById(shopId);
@@ -41,7 +130,7 @@ public class ShopServiceV1 {
             throw new GlobalException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
         }
     }
-    
+
     /**
      * Shop 정보 수정
      * @param shopId 수정할 shop UUID
@@ -51,11 +140,6 @@ public class ShopServiceV1 {
      */
     @Transactional
     public ShopDetailResponse updateShop(UUID shopId, Long ownerId, ShopUpdateRequest shopUpdateRequest) {
-        // 파라미터 체크
-        if (shopId == null || ownerId == null || shopUpdateRequest == null) {
-            throw new GlobalException(ErrorCode.MISSING_REQUIRED_PARAMETER);
-        }
-
         // shop 체크
         ShopEntity shop = getShopById(shopId);
 
@@ -65,9 +149,9 @@ public class ShopServiceV1 {
         // shop 정보 수정
         if (shopUpdateRequest.getName() != null) shop.updateName(shopUpdateRequest.getName());
         if (shopUpdateRequest.getAddress() != null) shop.updateAddress(shopUpdateRequest.getAddress());
-        // 좌표 수정 시 유효성 테크 후 Point 겍체 생성 ->
-        // TODO:메서드 따로 뺴내기
 
+        // TODO:메서드 따로 뺴내기
+        // 좌표 수정 시 유효성 테크 후 Point 겍체 생성 ->
         if (shopUpdateRequest.getLongitude() != null && shopUpdateRequest.getLatitude() != null) {
             double lon = shopUpdateRequest.getLongitude();
             double lat = shopUpdateRequest.getLatitude();
@@ -85,30 +169,16 @@ public class ShopServiceV1 {
 //                    .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
 //            shop.updateServiceArea(newServiceArea);
 
-            ServiceAreaEntity serviceArea = serviceAreaRepository.findById(UUID.fromString(shopUpdateRequest.getServiceAreaId()))
-                    .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
+            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaById(shopUpdateRequest.getServiceAreaId());
             shop.updateServiceArea(serviceArea);
         }
 
         // 카테고리 변경
         if (shopUpdateRequest.getCategoryId() != null) {
-            CategoryEntity category = categoryRepository.findById(UUID.fromString(shopUpdateRequest.getCategoryId()))
-                    .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));
+            CategoryEntity category = categoryServiceV1.getCategoryById(shopUpdateRequest.getCategoryId());
             shop.updateCategory(category);
         }
 
-
-        // 저장
-        ShopEntity updated = shopRepository.save(shop);
-
-        return ShopDetailResponse.builder()
-                .shopId(updated.getId())
-                .name(updated.getName())
-                .address(updated.getAddress())
-                .status(updated.getStatus())
-                .ownerName(updated.getOwner().getName())
-                .categoryName(updated.getCategory().getName())
-                .serviceAreaName(updated.getServiceArea().getName())
-                .build();
+        return ShopDetailResponse.from(shop);
     }
 }

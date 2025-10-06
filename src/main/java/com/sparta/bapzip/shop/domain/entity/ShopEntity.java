@@ -3,8 +3,13 @@ package com.sparta.bapzip.shop.domain.entity;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
@@ -33,7 +38,8 @@ public class ShopEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
-    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+//    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+    @Column(columnDefinition = "geometry(Point,4326)")
     private Point location;
 
     @JoinColumn(name = "user_id", nullable = false)
@@ -54,6 +60,22 @@ public class ShopEntity extends BaseEntity {
     public void updateCategory(CategoryEntity category) { this.category = category; }
     public void updateServiceArea(ServiceAreaEntity serviceArea) { this.serviceArea = serviceArea; }
 
+    @Builder
+    public ShopEntity(String name, String address, Point location,
+                      UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
+        this.name = name;
+        this.address = address;
+        this.location = location;
+        this.owner = owner;
+        this.category = category;
+        this.serviceArea = serviceArea;
+    }
 
-
+    public static ShopEntity create(String name, String address, Point location,
+                                    UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
+        ShopEntity shop = new ShopEntity(name, address, location, owner, category, serviceArea);
+        shop.markCreated(owner.getId());
+        shop.markUpdated(owner.getId());
+        return shop;
+    }
 }
