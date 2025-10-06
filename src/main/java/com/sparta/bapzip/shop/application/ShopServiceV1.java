@@ -122,6 +122,15 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
+    /**
+     * 상태별 가게 목록 조회
+     *
+     * 전달된 상태(shopStatusEnum)에 따라 가게 목록을 조회합니다.
+     * 상태가 null인 경우, 모든 가게를 조회합니다.
+     *
+     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum). null이면 전체 조회
+     * @return List<ShopEntity> 조회된 가게 엔티티 리스트
+     */
     public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
         if (shopStatusEnum == null) {
             return shopRepository.findAll();
