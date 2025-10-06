@@ -5,7 +5,7 @@ import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 
 import java.util.UUID;
 
-public record MenuResponse(
+public record MenuDetailResponse(
         UUID id,
         String name,
         String content,
@@ -13,8 +13,8 @@ public record MenuResponse(
         MenuStatus status,
         UUID shopId
 ) {
-    public static MenuResponse from(MenuEntity menu){
-        return new MenuResponse(
+    public static MenuDetailResponse from(MenuEntity menu){
+        return new MenuDetailResponse(
                 menu.getId(),
                 menu.getName(),
                 menu.getContent(),

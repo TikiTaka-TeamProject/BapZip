@@ -1,7 +1,7 @@
 package com.sparta.bapzip.menu.presentation.controller;
 
 import com.sparta.bapzip.menu.application.MenuServiceV1;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +24,8 @@ public class MenuControllerV1 {
      * 메뉴 상세 조회
      */
     @GetMapping("/{menuId}")
-    public ResponseEntity<MenuResponse> getMenuById(@PathVariable UUID menuId){
-        MenuResponse menuResponse = menuService.getMenuById(menuId);
-        return ResponseEntity.ok().body(menuResponse);
+    public ResponseEntity<MenuDetailResponse> getMenuById(@PathVariable UUID menuId){
+        MenuDetailResponse menuDetailResponse = menuService.getMenuDetail(menuId);
+        return ResponseEntity.ok().body(menuDetailResponse);
     }
 }
