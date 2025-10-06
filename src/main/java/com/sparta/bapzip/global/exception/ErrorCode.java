@@ -8,6 +8,12 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+
+    // MENU todo: 상태코드 별 분리 필요
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
+    INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
+
+
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
     // Shop: 공통
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
