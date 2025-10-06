@@ -2,6 +2,7 @@ package com.sparta.bapzip.menu.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
+import com.sparta.bapzip.menu.presentation.dto.request.CreateMenuRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
@@ -46,5 +47,14 @@ public class MenuEntity {
     @Builder.Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
+    public static MenuEntity createMenu(CreateMenuRequest request, ShopEntity shop) {
+        return MenuEntity.builder()
+                .name(request.name())
+                .content(request.content())
+                .price(request.price())
+                .shop(shop)
+                .status(MenuStatus.AVAILABLE)
+                .build();
+    }
 
 }

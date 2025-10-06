@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,9 +31,10 @@ public class MenuServiceV1 {
     public CreateMenuResponse createMenu(CreateMenuRequest request) {
         // 유효한 가게 검증 로직 shopService 호출
         ShopEntity shop = shopServiceV1.getShopById(request.shopId());
-        MenuEntity menu = request.toEntity(shop);
 
+        MenuEntity menu = MenuEntity.createMenu(request, shop);
         MenuEntity savedMenu = menuRepository.save(menu);
+
         return CreateMenuResponse.from(savedMenu);
     }
 

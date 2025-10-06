@@ -1,7 +1,5 @@
 package com.sparta.bapzip.menu.presentation.dto.request;
 
-import com.sparta.bapzip.menu.domain.entity.MenuEntity;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.validation.constraints.*;
 
 import java.util.UUID;
@@ -21,13 +19,4 @@ public record CreateMenuRequest(
 
         @NotNull(message = "가게 정보가 없습니다.")
         UUID shopId
-) {
-    public MenuEntity toEntity(ShopEntity shop) {
-        return MenuEntity.builder()
-                .name(this.name)
-                .content(this.content)
-                .price(this.price)
-                .shop(shop)
-                .build();
-    }
-}
+) {}
