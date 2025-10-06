@@ -1,4 +1,4 @@
-package com.sparta.bapzip.user.domain.entity;
+package com.sparta.bapzip.user.domain.enums;
 
 public enum UserRoleEnum {
     CUSTOMER(Authority.CUSTOMER),  // 사용자 권한

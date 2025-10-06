@@ -1,6 +1,6 @@
 package com.sparta.bapzip.user.presentation.dto.request;
 
-import com.sparta.bapzip.user.domain.entity.UserRoleEnum;
+import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
