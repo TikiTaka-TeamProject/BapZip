@@ -56,19 +56,10 @@ public class ShopControllerV1 {
      * @return ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
      */
     @GetMapping
-    public ResponseEntity<List<ShopDetailForUserResponse>> getApprovedShops(){
-        List<ShopDetailForUserResponse> shops = shopServiceV1.getApprovedShops()
+    public List<ShopDetailForUserResponse> getApprovedShops(){
+        return shopServiceV1.getApprovedShops()
                 .stream()
-                .map(shop -> ShopDetailForUserResponse.builder()
-                        .shopId(shop.getId())
-                        .name(shop.getName())
-                        .address(shop.getAddress())
-                        .ownerName(shop.getOwner().getName())
-                        .categoryName(shop.getCategory().getName())
-                        .serviceAreaName(shop.getServiceArea().getName())
-                        .build())
+                .map(ShopDetailForUserResponse::from) // DTO 변환 메서드 사용 가능
                 .toList();
-
-        return ResponseEntity.ok(shops);
     }
 }

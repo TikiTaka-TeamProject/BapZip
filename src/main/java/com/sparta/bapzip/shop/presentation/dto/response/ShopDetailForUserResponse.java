@@ -1,5 +1,6 @@
 package com.sparta.bapzip.shop.presentation.dto.response;
 
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.*;
 
 import java.util.UUID;
@@ -15,4 +16,15 @@ public class ShopDetailForUserResponse {
     private String ownerName;
     private String categoryName;
     private String serviceAreaName;
+
+    public static ShopDetailForUserResponse from(ShopEntity shop) {
+        return ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .serviceAreaName(shop.getServiceArea().getName())
+                .build();
+    }
 }
