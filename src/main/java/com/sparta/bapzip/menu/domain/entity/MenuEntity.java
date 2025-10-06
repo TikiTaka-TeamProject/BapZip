@@ -34,7 +34,7 @@ public class MenuEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MenuStatus status;
+    private MenuStatus status = MenuStatus.AVAILABLE;
 
     @JoinColumn(name = "shop_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
