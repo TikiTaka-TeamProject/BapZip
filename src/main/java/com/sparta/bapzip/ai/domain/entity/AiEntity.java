@@ -1,7 +1,6 @@
 package com.sparta.bapzip.ai.domain.entity;
 
 import com.sparta.bapzip.global.common.BaseEntity;
-import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,14 +30,17 @@ public class AiEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
-    @JoinColumn(name = "menu_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private MenuEntity menu;
 
-    public AiEntity(String prompt, @Nullable String response, UserEntity user, MenuEntity menu) {
+    private UUID menuId;
+
+    public AiEntity(String prompt, @Nullable String response, UserEntity user, UUID menuId) {
         this.prompt = prompt;
         this.response = response;
         this.user = user;
-        this.menu = menu;
+        this.menuId = menuId;
+    }
+
+    public void setCreateBy(Long userId){
+        this.setCreateBy(userId);
     }
 }
