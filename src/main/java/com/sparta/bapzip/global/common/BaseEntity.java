@@ -24,7 +24,7 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     @CreatedBy
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false)
     private Long createdBy;
 
     @LastModifiedDate
@@ -39,4 +39,17 @@ public abstract class BaseEntity {
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    // TODO: 용은 작업 -> Audit 구현체로 변경 예정
+    public void markCreated(Long userId) {
+        this.createdBy = userId;
+        this.updatedBy = userId;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void markUpdated(Long userId) {
+        this.updatedBy = userId;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
