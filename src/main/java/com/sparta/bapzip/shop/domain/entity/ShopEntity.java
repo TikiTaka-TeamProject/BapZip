@@ -6,6 +6,10 @@ import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
@@ -15,6 +19,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_shops")
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShopEntity extends BaseEntity {
@@ -31,6 +36,7 @@ public class ShopEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
 //    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)

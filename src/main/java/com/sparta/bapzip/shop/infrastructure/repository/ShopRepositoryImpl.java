@@ -5,6 +5,9 @@ import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Repository
 public class ShopRepositoryImpl implements ShopRepository {
@@ -21,4 +24,8 @@ public class ShopRepositoryImpl implements ShopRepository {
         return shopJpaRepository.existsByOwnerId(ownerId);
     }
 
+    @Override
+    public Optional<ShopEntity> findById(UUID shopId) {
+        return shopJpaRepository.findById(shopId);
+    }
 }
