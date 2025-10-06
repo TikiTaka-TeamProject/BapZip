@@ -13,4 +13,5 @@ public interface ShopRepository {
     // 가게 ID로 조회
     Optional<ShopEntity> findById(UUID shopId);
     List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
+    List<ShopEntity> findAll();
 }

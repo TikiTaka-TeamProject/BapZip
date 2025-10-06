@@ -44,24 +44,22 @@ public class ShopControllerV1 {
         return shopServiceV1.getShopDetail(shopId);
     }
 
+    /**
+     * 상태별 가게 목록 조회 API
+     * GET /v1/shops/status
+     *
+     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum), 생략 가능
+     *                       - null일 경우 모든 상태의 가게를 조회
+     * @return List<ShopDetailResponse> 해당 상태(또는 전체)의 가게 상세 정보 리스트
+     */
     @GetMapping("/status")
 //    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
-    public ResponseEntity<List<ShopDetailResponse>> getShopsByStatus(
-            @RequestParam("status")ShopStatusEnum shopStatusEnum
+    public List<ShopDetailResponse> getShopsByStatus(
+            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
             ) {
-        List<ShopDetailResponse> shops = shopServiceV1.getShopsByStatus(shopStatusEnum)
+        return shopServiceV1.getShopsByStatus(shopStatusEnum)
                 .stream()
-                .map(shop -> ShopDetailResponse.builder()
-                        .shopId(shop.getId())
-                        .name(shop.getName())
-                        .address(shop.getAddress())
-                        .status(shop.getStatus())
-                        .ownerName(shop.getOwner().getName())
-                        .categoryName(shop.getCategory().getName())
-                        .serviceAreaName(shop.getServiceArea().getName())
-                        .build())
+                .map(ShopDetailResponse::from)
                 .toList();
-
-        return ResponseEntity.ok(shops);
     }
 }

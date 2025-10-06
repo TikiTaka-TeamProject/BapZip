@@ -123,6 +123,9 @@ public class ShopServiceV1 {
     }
 
     public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
+        if (shopStatusEnum == null) {
+            return shopRepository.findAll();
+        }
         return shopRepository.findByStatus(shopStatusEnum);
     }
 }

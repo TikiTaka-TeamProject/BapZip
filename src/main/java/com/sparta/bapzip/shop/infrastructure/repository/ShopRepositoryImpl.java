@@ -32,10 +32,13 @@ public class ShopRepositoryImpl implements ShopRepository {
         return shopJpaRepository.findById(shopId);
     }
 
-    private final ShopJpaRepository shopJpaRepository;
-
     @Override
     public List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum) {
         return shopJpaRepository.findByStatus(shopStatusEnum);
+    }
+
+    @Override
+    public List<ShopEntity> findAll() {
+        return shopJpaRepository.findAll();
     }
 }
