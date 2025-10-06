@@ -21,7 +21,7 @@ public class AiLogResponseDto {
     public AiLogResponseDto(AiEntity aiEntity){
         this.id = aiEntity.getId();
         this.userId = aiEntity.getUser().getId();
-        this.menuId = aiEntity.getMenu().getId();
+        this.menuId = aiEntity.getMenuId();
         this.prompt = aiEntity.getPrompt();
         this.response = aiEntity.getResponse();
         this.createdAt = aiEntity.getCreatedAt();

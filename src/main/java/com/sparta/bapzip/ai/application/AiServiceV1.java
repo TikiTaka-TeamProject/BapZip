@@ -1,7 +1,10 @@
 package com.sparta.bapzip.ai.application;
 
+import com.sparta.bapzip.ai.application.dto.AiLogResponseDto;
 import com.sparta.bapzip.ai.domain.entity.AiEntity;
+import com.sparta.bapzip.ai.domain.exception.AiLogNotFound;
 import com.sparta.bapzip.ai.domain.repository.AiLogRepository;
+import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
@@ -38,6 +41,18 @@ public class AiServiceV1 {
                 .build();
         aiLogRepository.save(aiEntity);
         return response;
+    }
+
+    /**
+     * <p>Ai log 단건 조회</p>
+     * @param aiLogId 식별자
+     * @return AiLogResponseDto {@link AiLogResponseDto}
+     */
+    public AiLogResponseDto getAiLog(UUID aiLogId){
+        AiEntity aiEntity = aiLogRepository.findById(aiLogId).orElseThrow(
+                ()-> new AiLogNotFound(ErrorCode.AI_LOG_NOT_FOUND)
+        );
+        return new AiLogResponseDto(aiEntity);
     }
 
 }
