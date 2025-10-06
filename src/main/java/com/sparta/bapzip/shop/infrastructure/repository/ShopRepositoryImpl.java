@@ -1,10 +1,13 @@
 package com.sparta.bapzip.shop.infrastructure.repository;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
-import com.sparta.bapzip.shop.domain.entity.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import java.util.List;
 
@@ -13,6 +16,21 @@ import java.util.List;
 public class ShopRepositoryImpl implements ShopRepository {
 
     private final ShopJpaRepository shopJpaRepository;
+
+    @Override
+    public ShopEntity save(ShopEntity shop) {
+        return shopJpaRepository.save(shop);
+    }
+
+    @Override
+    public boolean existsByOwnerId(Long ownerId) {
+        return shopJpaRepository.existsByOwnerId(ownerId);
+    }
+
+    @Override
+    public Optional<ShopEntity> findById(UUID shopId) {
+        return shopJpaRepository.findById(shopId);
+    }
 
     @Override
     public List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum) {
