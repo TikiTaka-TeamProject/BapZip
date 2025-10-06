@@ -9,7 +9,12 @@ import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -54,5 +59,28 @@ public class AiServiceV1 {
         );
         return new AiLogResponseDto(aiEntity);
     }
+
+    // TODO: security 연동이후 UserEntity 객체를 바로 받아오도록 수정필요
+    /**
+     * <p>Ai log 다건 조회</p>
+     * @param userId 질문내용
+     * @param page 조회할 페이지 번호 (defaultValue = "0")
+     * @param size 조회할 페이지 크기 (defaultValue = "10")
+     * @param sortBy 정렬 기준 필드
+     * @param isAsc 정렬 방향    (defaultValue = ASC)
+     * @return Page<AiLogResponseDto> Ai-log 리스트
+     */
+    @Transactional(readOnly = true)
+    public Page<AiLogResponseDto> getAiLogs(Long userId, int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, new String[]{sortBy});
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        UserEntity user = userRepository.findById(userId).get();
+
+        Page<AiEntity> aiLogList = aiLogRepository.findAllByUser(user,pageable);
+        return aiLogList.map(AiLogResponseDto::new);
+    }
+
 
 }
