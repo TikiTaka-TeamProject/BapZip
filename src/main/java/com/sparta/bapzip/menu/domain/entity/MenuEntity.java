@@ -34,6 +34,7 @@ public class MenuEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private MenuStatus status = MenuStatus.AVAILABLE;
 
     @JoinColumn(name = "shop_id", nullable = false)
