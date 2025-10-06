@@ -66,7 +66,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers("/v1/signup", "/v1/login").permitAll()
+                        .requestMatchers("/v1/users/signup", "/v1/users/login").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
