@@ -19,14 +19,16 @@ import org.locationtech.jts.geom.Point;
 import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ShopServiceV1 {
-
 
     private final ShopRepository shopRepository;
 
@@ -121,7 +123,6 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
-
     public void validateShopOwner(UUID shopId, Long ownerId) {
         ShopEntity shop = getShopById(shopId);
 
@@ -180,5 +181,14 @@ public class ShopServiceV1 {
         }
 
         return ShopDetailResponse.from(shop);
+    /**
+     * 승인 상태(APPROVED)인 가게 리스트 조회
+     *
+     * ShopRepository를 통해 상태가 APPROVED인 ShopEntity 리스트를 조회합니다.
+     *
+     * @return List<ShopEntity> 승인된 가게 리스트
+     */
+    public List<ShopEntity> getApprovedShops() {
+        return shopRepository.findByStatus(ShopStatusEnum.APPROVED);
     }
 }

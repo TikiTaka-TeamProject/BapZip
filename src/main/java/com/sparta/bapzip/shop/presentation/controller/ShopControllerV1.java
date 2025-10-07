@@ -6,6 +6,16 @@ import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +52,6 @@ public class ShopControllerV1 {
         return shopServiceV1.getShopDetail(shopId);
     }
 
-
     @PatchMapping("/{shopId}")
     public ResponseEntity<ShopDetailResponse> updateShop(
             @PathVariable("shopId") UUID shopId,
@@ -53,5 +62,21 @@ public class ShopControllerV1 {
 //        Long ownerId = userDetails.getId();
         ShopDetailResponse shopDetailResponse = shopServiceV1.updateShop(shopId, ownerId, shopUpdateRequest);
         return ResponseEntity.ok(shopDetailResponse);
+    /**
+     * 승인된 가게 리스트 조회
+     *
+     * GET /v1/shops
+     *
+     * ShopServiceV1를 통해 승인 상태(APPROVED)인 가게들을 조회하고,
+     * ShopDetailResponse DTO로 변환하여 반환
+     *
+     * @return ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
+     */
+    @GetMapping
+    public List<ShopDetailForUserResponse> getApprovedShops(){
+        return shopServiceV1.getApprovedShops()
+                .stream()
+                .map(ShopDetailForUserResponse::from) // DTO 변환 메서드 사용 가능
+                .toList();
     }
 }
