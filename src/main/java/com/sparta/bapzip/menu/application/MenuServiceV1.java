@@ -4,8 +4,8 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
-import com.sparta.bapzip.menu.presentation.dto.request.CreateMenuRequest;
-import com.sparta.bapzip.menu.presentation.dto.response.CreateMenuResponse;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -28,14 +28,14 @@ public class MenuServiceV1 {
 
     // 메뉴 생성
     @Transactional
-    public CreateMenuResponse createMenu(CreateMenuRequest request) {
+    public MenuCreateResponse createMenu(MenuCreateRequest request) {
         // 유효한 가게 검증 로직 shopService 호출
         ShopEntity shop = shopServiceV1.getShopById(request.shopId());
 
         MenuEntity menu = MenuEntity.createMenu(request, shop);
         MenuEntity savedMenu = menuRepository.save(menu);
 
-        return CreateMenuResponse.from(savedMenu);
+        return MenuCreateResponse.from(savedMenu);
     }
 
 

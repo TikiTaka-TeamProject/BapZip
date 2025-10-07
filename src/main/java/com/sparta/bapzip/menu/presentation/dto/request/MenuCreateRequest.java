@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.util.UUID;
 
-public record CreateMenuRequest(
+public record MenuCreateRequest(
 
         @NotBlank(message = "메뉴 이름을 입력해 주세요.")
         String name,
