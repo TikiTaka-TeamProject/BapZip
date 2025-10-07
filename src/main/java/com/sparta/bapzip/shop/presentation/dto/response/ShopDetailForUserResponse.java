@@ -1,7 +1,6 @@
 package com.sparta.bapzip.shop.presentation.dto.response;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
-import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,21 +9,19 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ShopDetailResponse {
+public class ShopDetailForUserResponse {
     private UUID shopId;
     private String name;
     private String address;
-    private ShopStatusEnum status;
     private String ownerName;
     private String categoryName;
     private String serviceAreaName;
 
-    public static ShopDetailResponse from(ShopEntity shop) {
-        return ShopDetailResponse.builder()
+    public static ShopDetailForUserResponse from(ShopEntity shop) {
+        return ShopDetailForUserResponse.builder()
                 .shopId(shop.getId())
                 .name(shop.getName())
                 .address(shop.getAddress())
-                .status(shop.getStatus())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
                 .serviceAreaName(shop.getServiceArea().getName())
