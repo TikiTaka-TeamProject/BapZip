@@ -25,7 +25,6 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     @CreatedBy
-//    @Column(updatable = false, nullable = false)
     @Column(updatable = false)
     private Long createdBy;
 

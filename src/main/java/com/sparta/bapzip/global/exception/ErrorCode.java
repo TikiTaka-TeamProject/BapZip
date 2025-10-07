@@ -11,6 +11,15 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다."), PAYMENT_CANCELLATION_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."), ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다.");
 
 
+    // USER 관련 에러
+    DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
+    UNAUTHORIZED_USER_EXCEPTION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
+
+    // MENU todo: 상태코드 별 분리 필요
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
+    INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
+
+
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
     // Shop: 공통
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
@@ -20,7 +29,11 @@ public enum ErrorCode {
     SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "서비스 지역을 찾을 수 없습니다."),
 
     // Shop: 생성
-    SHOP_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 소유자는 이미 가게를 보유하고 있습니다.");
+    SHOP_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 소유자는 이미 가게를 보유하고 있습니다."),
+
+    // Shop: 매니저 shop status 변경 관련
+    SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다.");
+
 
     private final HttpStatus status;
     private final String message;
