@@ -19,6 +19,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+payment:
+  toss:
+    client:
+      key: ${PAYMENT_CLIENT_KEY}
+    secret:
+      key: ${PAYMENT_SECRET_KEY}
+    success-url: http://localhost:${server.port}/payments/success
+    fail-url: http://localhost:${server.port}/payments/fail
 
 jwt:
   secret:
