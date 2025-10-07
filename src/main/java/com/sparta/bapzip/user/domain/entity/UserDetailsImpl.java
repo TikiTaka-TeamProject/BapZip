@@ -1,5 +1,6 @@
 package com.sparta.bapzip.user.domain.entity;
 
+import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
