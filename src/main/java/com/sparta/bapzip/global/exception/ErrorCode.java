@@ -12,8 +12,9 @@ public enum ErrorCode {
 
 
     // USER 관련 에러
-    DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
     UNAUTHORIZED_USER_EXCEPTION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
+    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+    DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
 
     // MENU todo: 상태코드 별 분리 필요
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
@@ -33,7 +34,6 @@ public enum ErrorCode {
 
     // Shop: 매니저 shop status 변경 관련
     SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다.");
-
 
     private final HttpStatus status;
     private final String message;
