@@ -1,16 +1,17 @@
 package com.sparta.bapzip.payment.presentation.dto.request;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.*;
 
-@RequiredArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentCancelRequest {
 
-    private String orderId;
+    private UUID orderId;
     private String paymentKey;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;

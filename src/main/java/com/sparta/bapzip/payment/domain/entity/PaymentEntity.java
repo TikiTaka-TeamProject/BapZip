@@ -2,7 +2,6 @@ package com.sparta.bapzip.payment.domain.entity;
 
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
-import com.sparta.bapzip.payment.presentation.dto.request.PaymentRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -32,10 +31,10 @@ public class PaymentEntity extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
-    @Column(name = "approved_at", updatable = false)
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    @Column(name = "canceled_at", updatable = false)
+    @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
     @Column(name = "cancel_reason")
@@ -49,5 +48,19 @@ public class PaymentEntity extends BaseEntity {
     public void updatePaymentCancelResult(PaymentStatusEnum status, String cancelReason, LocalDateTime canceledAt) {
         this.status = PaymentStatusEnum.CANCELED;
         this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentEntity{" +
+                "id=" + id +
+                ", paymentKey='" + paymentKey + '\'' +
+                ", status=" + status +
+                ", totalAmount=" + totalAmount +
+                ", approvedAt=" + approvedAt +
+                ", canceledAt=" + canceledAt +
+                ", cancelReason='" + cancelReason + '\'' +
+                '}';
     }
 }

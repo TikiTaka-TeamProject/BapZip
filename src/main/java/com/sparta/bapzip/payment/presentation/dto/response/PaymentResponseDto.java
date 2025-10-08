@@ -17,4 +17,16 @@ public class PaymentResponseDto {
     private int totalPrice;        // 결제 금액
     private LocalDateTime approvedAt; // API 결제 요청 응답 시각
     private LocalDateTime canceledAt; // API 취소 요청 응답 시각
+
+    @Override
+    public String toString() {
+        return "PaymentResponseDto{" +
+                "paymentKey='" + paymentKey + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", status='" + status + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", approvedAt=" + approvedAt +
+                ", canceledAt=" + canceledAt +
+                '}';
+    }
 }

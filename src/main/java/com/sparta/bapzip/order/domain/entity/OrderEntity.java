@@ -3,6 +3,7 @@ package com.sparta.bapzip.order.domain.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -21,6 +22,10 @@ public class OrderEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UserEntity user;
 
     @Column(nullable = false)
     private String status;
