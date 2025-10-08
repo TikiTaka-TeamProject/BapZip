@@ -1,30 +1,30 @@
 package com.sparta.bapzip.shop.application;
 
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.repository.ShopRepository;
+import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
-import com.sparta.bapzip.shop.domain.repository.ShopRepository;
+import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
-import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
-import com.sparta.bapzip.user.domain.entity.UserEntity;
-import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import java.util.UUID;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -181,6 +181,8 @@ public class ShopServiceV1 {
         }
 
         return ShopDetailResponse.from(shop);
+    }
+
     /**
      * 승인 상태(APPROVED)인 가게 리스트 조회
      *
@@ -190,5 +192,21 @@ public class ShopServiceV1 {
      */
     public List<ShopEntity> getApprovedShops() {
         return shopRepository.findByStatus(ShopStatusEnum.APPROVED);
+    }
+
+    /**
+     * 상태별 가게 목록 조회
+     *
+     * 전달된 상태(shopStatusEnum)에 따라 가게 목록을 조회합니다.
+     * 상태가 null인 경우, 모든 가게를 조회합니다.
+     *
+     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum). null이면 전체 조회
+     * @return List<ShopEntity> 조회된 가게 엔티티 리스트
+     */
+    public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
+        if (shopStatusEnum == null) {
+            return shopRepository.findAll();
+        }
+        return shopRepository.findByStatus(shopStatusEnum);
     }
 }
