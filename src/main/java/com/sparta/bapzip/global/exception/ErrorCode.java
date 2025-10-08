@@ -27,6 +27,9 @@ public enum ErrorCode {
     // Shop: 공통
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
     MISSING_REQUIRED_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
+    MENU_NOT_IN_SHOP(HttpStatus.BAD_REQUEST, "다른 가게의 메뉴가 포함되어 있습니다."),
+    MENU_NOT_FOUNT_IN_ORDER(HttpStatus.BAD_REQUEST, "존재하지 않는 메뉴가 포함되어 있습니다."),
+    SOLD_OUT_MENU(HttpStatus.BAD_REQUEST, "선택하신 메뉴 중 품절된 메뉴가 포함되어 있습니다."),
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "가게 소유자를 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
     SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "서비스 지역을 찾을 수 없습니다."),
