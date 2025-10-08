@@ -5,8 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+//@SpringBootApplication
+//@EnableJpaAuditing
+
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@EnableJpaAuditing
 public class BapzipApplication {
 
     public static void main(String[] args) {

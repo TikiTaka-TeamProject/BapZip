@@ -39,6 +39,14 @@ dependencies {
     // Hibernate Spatial + JTS (PostGIS 지원)
     implementation 'org.hibernate:hibernate-spatial:6.2.7.Final'
     implementation 'org.locationtech.jts:jts-core:1.19.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'io.projectreactor:reactor-core'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 tasks.named('test') {
