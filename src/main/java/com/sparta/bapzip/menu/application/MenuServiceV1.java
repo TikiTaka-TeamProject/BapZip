@@ -5,6 +5,7 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
@@ -42,6 +43,26 @@ public class MenuServiceV1 {
     // 메뉴 상세 조회
     public MenuDetailResponse getMenuDetail(UUID menuId) {
         MenuEntity menu = getMenuById(menuId);
+        return MenuDetailResponse.from(menu);
+    }
+
+    // 메뉴 정보 수정
+    // todo: (+) 의도한 공백 값 처리 로직 추가
+    @Transactional
+    public MenuDetailResponse updateMenu(UUID menuId, MenuUpdateRequest request) {
+
+        MenuEntity menu = getMenuById(menuId);
+
+        if (request.name() != null && !request.name().isBlank()) {
+            menu.updateName(request.name());
+        }
+        if (request.content() != null && !request.content().isBlank()) {
+            menu.updateContent(request.content());
+        }
+        if (request.price() != null) {
+            menu.updatePrice(request.price());
+        }
+
         return MenuDetailResponse.from(menu);
     }
 
