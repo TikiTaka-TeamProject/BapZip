@@ -46,7 +46,7 @@ public class PaymentEntity extends BaseEntity {
         this.approvedAt = approvedAt;
     }
     public void updatePaymentCancelResult(PaymentStatusEnum status, String cancelReason, LocalDateTime canceledAt) {
-        this.status = PaymentStatusEnum.CANCELED;
+        this.status = status;
         this.cancelReason = cancelReason;
         this.canceledAt = canceledAt;
     }

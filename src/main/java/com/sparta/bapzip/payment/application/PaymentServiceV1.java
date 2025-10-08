@@ -1,5 +1,6 @@
 package com.sparta.bapzip.payment.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bapzip.global.exception.ErrorCode;
@@ -10,15 +11,13 @@ import com.sparta.bapzip.payment.domain.entity.PaymentEntity;
 import com.sparta.bapzip.payment.domain.entity.PaymentStatusEnum;
 import com.sparta.bapzip.payment.infrastructure.config.payment.TossPaymentsConfig;
 import com.sparta.bapzip.payment.domain.repository.PaymentRepository;
-import com.sparta.bapzip.payment.presentation.dto.request.PaymentCancelRequest;
-import com.sparta.bapzip.payment.presentation.dto.request.PaymentCreateRequest;
+import com.sparta.bapzip.payment.presentation.dto.request.*;
 import com.sparta.bapzip.payment.presentation.dto.response.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +60,8 @@ public class PaymentServiceV1 {
                     .build();
             payment.markCreated(order.getUser().getId());
             paymentRepository.save(payment);
+            // TO-DO: order 상태 결제 대기 상태로 변경 추후 orderService 쪽으로 이동
+            // ----
             StringBuilder sb = new StringBuilder();
             if(order.getOrderMenuList() != null){
                 sb.append("테스트 결제");
@@ -74,6 +75,7 @@ public class PaymentServiceV1 {
             paymentCreateRequest.setOrderId(order.getId().toString());
             paymentCreateRequest.setOrderName(sb.toString());
             paymentCreateRequest.setAmount(order.getTotalAmount());
+            //----
         }
         PaymentResponseDto response = createPayment(paymentCreateRequest);
 
@@ -121,13 +123,20 @@ public class PaymentServiceV1 {
      * 결제 취소 요청 및 상태 업데이트
      * @param userId 주문을 취소처리하는 유저 식별자
      * @param orderId 주문 식별자
-     * @param cancelReason 취소 사유
+     * @param cancelReasonJson 취소 사유 => orderService에서 String 형태로 받아오도록 추후 수정
      * @return 결제 취소 응답 DTO
      */
     @Transactional
-    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReason) {
+    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReasonJson) {
         PaymentEntity payment = getPaymentByOrderId(orderId);
-
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = null;
+        try {
+            node = mapper.readTree(cancelReasonJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        String cancelReason = node.path("cancelReason").asText();
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
             throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
@@ -163,6 +172,7 @@ public class PaymentServiceV1 {
 
         // Toss 응답 → DTO 변환
         PaymentResponseDto dto = mapPaymentResponse(response, paymentCancelRequest);
+
         if (PaymentStatusEnum.CANCELED.name().equals(dto.getStatus())) {
             LocalDateTime canceledAt = dto.getCanceledAt();
             payment.updatePaymentCancelResult(PaymentStatusEnum.CANCELED, cancelReason, canceledAt);
