@@ -2,6 +2,7 @@ package com.sparta.bapzip.menu.presentation.controller;
 
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class MenuControllerV1 {
     @PostMapping
     public ResponseEntity<MenuCreateResponse> createMenu(@RequestBody @Valid MenuCreateRequest request){
         MenuCreateResponse menuCreateResponse = menuService.createMenu(request);
-        return ResponseEntity.ok().body(menuCreateResponse);
+        return ResponseEntity.ok(menuCreateResponse);
     }
 
     /**
@@ -35,6 +36,16 @@ public class MenuControllerV1 {
     @GetMapping("/{menuId}")
     public ResponseEntity<MenuDetailResponse> getMenuById(@PathVariable UUID menuId){
         MenuDetailResponse menuDetailResponse = menuService.getMenuDetail(menuId);
-        return ResponseEntity.ok().body(menuDetailResponse);
+        return ResponseEntity.ok(menuDetailResponse);
+    }
+
+    /**
+     * 메뉴 정보 수정
+     */
+    @PatchMapping("/{menuId}")
+    public ResponseEntity<MenuDetailResponse> updateMenu(@PathVariable UUID menuId,
+                                                         @RequestBody @Valid MenuUpdateRequest request){
+        MenuDetailResponse menuDetailResponse = menuService.updateMenu(menuId, request);
+        return ResponseEntity.ok(menuDetailResponse);
     }
 }
