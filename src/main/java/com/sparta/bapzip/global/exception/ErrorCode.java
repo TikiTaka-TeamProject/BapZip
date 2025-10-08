@@ -23,8 +23,7 @@ public enum ErrorCode {
     INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
 
 
-    // Shop 관련 API에서 발생할 수 있는 커스텀 에러
-    // Shop: 공통
+    // ====================== Shop ======================
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
     MISSING_REQUIRED_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "가게 소유자를 찾을 수 없습니다."),
@@ -37,7 +36,12 @@ public enum ErrorCode {
     SHOP_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 소유자는 이미 가게를 보유하고 있습니다."),
 
     // Shop: 수정, 삭제
-    UNAUTHORIZED_SHOP_ACCESS(HttpStatus.FORBIDDEN, "해당 가게에 접근할 권한이 없습니다.");
+    UNAUTHORIZED_SHOP_ACCESS(HttpStatus.FORBIDDEN, "해당 가게에 접근할 권한이 없습니다."),
+    SHOP_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게를 삭제할 권한이 없습니다."),
+    SHOP_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
+    SHOP_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "가게 삭제 처리 중 오류가 발생했습니다."),
+    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다.");
+
 
     private final HttpStatus status;
     private final String message;
