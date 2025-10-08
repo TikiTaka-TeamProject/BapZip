@@ -2,6 +2,7 @@ package com.sparta.bapzip.menu.presentation.controller;
 
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
@@ -47,5 +48,15 @@ public class MenuControllerV1 {
                                                          @RequestBody @Valid MenuUpdateRequest request){
         MenuDetailResponse menuDetailResponse = menuService.updateMenu(menuId, request);
         return ResponseEntity.ok(menuDetailResponse);
+    }
+
+    /**
+     * 메뉴 상태 수정
+     */
+    @PatchMapping("/{menuId}/status")
+    public ResponseEntity<MenuDetailResponse> updateMenuStatus(@PathVariable UUID menuId,
+                                                               @RequestBody @Valid MenuStatusUpdateRequest request){
+        MenuDetailResponse MenuDetailResponse = menuService.updateMenuStatus(menuId, request);
+        return ResponseEntity.ok(MenuDetailResponse);
     }
 }

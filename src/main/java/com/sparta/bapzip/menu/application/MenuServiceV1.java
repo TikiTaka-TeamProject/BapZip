@@ -5,6 +5,7 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
@@ -63,6 +64,14 @@ public class MenuServiceV1 {
             menu.updatePrice(request.price());
         }
 
+        return MenuDetailResponse.from(menu);
+    }
+
+    // 메뉴 상태 수정 - AVAILABLE, SOLD_OUT
+    @Transactional
+    public MenuDetailResponse updateMenuStatus(UUID menuId, MenuStatusUpdateRequest request){
+        MenuEntity menu = getMenuById(menuId);
+        menu.updateStatus(request.status());
         return MenuDetailResponse.from(menu);
     }
 
