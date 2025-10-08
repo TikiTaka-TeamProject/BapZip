@@ -4,6 +4,7 @@ import com.sparta.bapzip.ai.application.AiServiceV1;
 import com.sparta.bapzip.ai.application.dto.AiLogResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +26,7 @@ public class AiControllerV1 {
 
     // TODO: security 연동이후 userId -> userDetails에서 user 객체를 바로 보낼수있도록 수정필요
     @GetMapping()
-    public Page<AiLogResponseDto> getAiLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam("sortBy") String sortBy,
-            @RequestParam("isAsc") boolean isAsc,
-            @RequestParam("userId") Long userId){
-        return aiServiceV1.getAiLogs(userId,
-                page-1, size, sortBy, isAsc);
+    public Page<AiLogResponseDto> getAiLogs(Pageable pageable, @RequestParam("userId") Long userId){
+        return aiServiceV1.getAiLogs(userId, pageable);
     }
 }

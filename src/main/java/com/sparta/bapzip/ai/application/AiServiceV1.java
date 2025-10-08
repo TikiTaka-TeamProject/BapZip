@@ -10,9 +10,7 @@ import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,13 +35,8 @@ public class AiServiceV1 {
      */
     public String getResponse(String prompt, Long userId, UUID menuId){
         String response = aiCallable.getResponse(prompt);
-        UserEntity userEntity = userRepository.findById(userId).get();
-        AiEntity aiEntity = AiEntity.builder()
-                .prompt(prompt)
-                .response(response)
-                .user(userEntity)
-                .menuId(menuId)
-                .build();
+        UserEntity user = userRepository.findById(userId).get();
+        AiEntity aiEntity = AiEntity.create(prompt, response, user, menuId);
         aiLogRepository.save(aiEntity);
         return response;
     }
@@ -57,29 +50,21 @@ public class AiServiceV1 {
         AiEntity aiEntity = aiLogRepository.findById(aiLogId).orElseThrow(
                 ()-> new AiLogNotFound(ErrorCode.AI_LOG_NOT_FOUND)
         );
-        return new AiLogResponseDto(aiEntity);
+        return AiLogResponseDto.from(aiEntity);
     }
 
     // TODO: security 연동이후 UserEntity 객체를 바로 받아오도록 수정필요
     /**
      * <p>Ai log 다건 조회</p>
      * @param userId 질문내용
-     * @param page 조회할 페이지 번호 (defaultValue = "0")
-     * @param size 조회할 페이지 크기 (defaultValue = "10")
-     * @param sortBy 정렬 기준 필드
-     * @param isAsc 정렬 방향    (defaultValue = ASC)
+     * @param pageable Pageable
      * @return Page<AiLogResponseDto> Ai-log 리스트
      */
     @Transactional(readOnly = true)
-    public Page<AiLogResponseDto> getAiLogs(Long userId, int page, int size, String sortBy, boolean isAsc) {
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, new String[]{sortBy});
-        Pageable pageable = PageRequest.of(page, size, sort);
-
+    public Page<AiLogResponseDto> getAiLogs(Long userId, Pageable pageable) {
         UserEntity user = userRepository.findById(userId).get();
-
         Page<AiEntity> aiLogList = aiLogRepository.findAllByUser(user,pageable);
-        return aiLogList.map(AiLogResponseDto::new);
+        return aiLogList.map(AiLogResponseDto::from);
     }
 
 

@@ -40,7 +40,13 @@ public class AiEntity extends BaseEntity {
         this.menuId = menuId;
     }
 
-    public void setCreateBy(Long userId){
-        this.setCreateBy(userId);
+    public static AiEntity create(String prompt, String response, UserEntity user, UUID menuId){
+        return AiEntity.builder()
+                .prompt(prompt)
+                .response(response)
+                .user(user)
+                .menuId(menuId)
+                .build();
     }
+
 }
