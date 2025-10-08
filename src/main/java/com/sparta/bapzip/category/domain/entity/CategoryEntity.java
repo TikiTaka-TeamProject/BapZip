@@ -35,5 +35,9 @@ public class CategoryEntity extends BaseEntity {
     @JsonIgnore
     private List<ShopEntity> shopEntityList = new ArrayList<>();
 
+    public void updateCategory(String name, String content) {
+        this.name = name;
+        this.content = content;
+    }
 
 }

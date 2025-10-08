@@ -36,4 +36,9 @@ public class ShopRepositoryImpl implements ShopRepository {
     public List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum) {
         return shopJpaRepository.findByStatus(shopStatusEnum);
     }
+
+    @Override
+    public List<ShopEntity> findAllByCategoryIdAndIsDeletedFalse(UUID categoryId) {
+        return shopJpaRepository.findAllByCategoryIdAndIsDeletedFalse(categoryId);
+    }
 }
