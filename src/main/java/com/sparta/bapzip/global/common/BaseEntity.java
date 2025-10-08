@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @CreatedDate
-    @Column(updatable = false, nullable = false)
+//    @Column(updatable = false, nullable = false)
+    @Column(updatable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAt;
 

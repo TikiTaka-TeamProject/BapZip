@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import jakarta.persistence.*;
-import lombok.*;
 
+import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

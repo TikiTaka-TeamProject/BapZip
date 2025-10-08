@@ -2,15 +2,14 @@ package com.sparta.bapzip.shop.presentation.dto.response;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class CreateShopResponse {
     private UUID shopId;            // 샵 고유 ID
     private String categoryName;    // 샵 카테고리
