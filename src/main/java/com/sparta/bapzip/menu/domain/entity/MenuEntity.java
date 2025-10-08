@@ -49,6 +49,16 @@ public class MenuEntity {
 
     // 비즈니스 로직
 
+    public static MenuEntity createMenu(MenuCreateRequest request, ShopEntity shop) {
+        return MenuEntity.builder()
+                .name(request.name())
+                .content(request.content())
+                .price(request.price())
+                .shop(shop)
+                .status(MenuStatus.AVAILABLE)
+                .build();
+    }
+
     /**
      * 메뉴가 품절인지 확인
      */
