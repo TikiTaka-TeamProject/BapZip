@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-class KakaoMapServiceV1Test {
+class KakaoLocalServiceV1Test {
 
     @Autowired
     KakaoLocalServiceV1 serviceV1;
