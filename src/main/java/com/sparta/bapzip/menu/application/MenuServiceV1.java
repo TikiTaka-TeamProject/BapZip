@@ -5,7 +5,6 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
-import com.sparta.bapzip.menu.presentation.dto.request.MenuSearchRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
