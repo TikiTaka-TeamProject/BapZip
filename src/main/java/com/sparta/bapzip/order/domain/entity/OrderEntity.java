@@ -9,6 +9,7 @@ import com.sparta.bapzip.order.domain.exception.MenuNotInShopException;
 import com.sparta.bapzip.order.domain.exception.SoldOutMenuException;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +48,10 @@ public class OrderEntity extends BaseEntity {
 
     private String specialRequests;
 
+    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UserEntity user;
+
     @JsonIgnore
     @OneToMany(mappedBy = "order")
     @Builder. Default
@@ -59,6 +64,7 @@ public class OrderEntity extends BaseEntity {
      */
     public static OrderEntity create(
             CreateOrderRequest request,
+            UserEntity user,
             UUID shopId,
             Map<UUID, MenuEntity> menuMap
     ) {
@@ -69,6 +75,7 @@ public class OrderEntity extends BaseEntity {
 
         return OrderEntity.builder()
                 .status(OrderStatus.PENDING)
+                .user(user)
                 .deliveryAddress(request.getDeliveryAddress())
                 .detailAddress(request.getDetailAddress())
                 .paymentType(request.getPaymentType())

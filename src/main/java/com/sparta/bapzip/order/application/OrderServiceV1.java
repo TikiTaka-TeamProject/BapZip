@@ -11,6 +11,7 @@ import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,11 @@ public class OrderServiceV1 {
      * @return 생성된 주문 응답(ResponseEntity)
      */
     @Transactional
-    public OrderCreationResult createOrder(@Valid CreateOrderRequest request) {
+    public OrderCreationResult createOrder(@Valid CreateOrderRequest request, UserEntity user) {
         ShopEntity shop = shopService.getShopById(request.getShopId());
         Map<UUID, MenuEntity> menuMap = getMenuMap(request.getMenuInfoList());
 
-        OrderEntity order = OrderEntity.create(request, shop.getId(), menuMap);
+        OrderEntity order = OrderEntity.create(request, user, shop.getId(), menuMap);
         OrderEntity savedOrder = orderRepository.save(order);
 
         List<OrderMenuEntity> orderMenuList = createOrderMenusFromRequest(
@@ -57,7 +58,7 @@ public class OrderServiceV1 {
 
         orderMenuService.saveAll(orderMenuList);
 
-        return OrderCreationResult.from(savedOrder, orderMenuList, shop, 1L);
+        return OrderCreationResult.from(savedOrder, orderMenuList, shop, user.getId());
     }
 
     // private 헬퍼 메서드
