@@ -1,4 +1,4 @@
-package com.sparta.bapzip.kakaomap.application.dto;
+package com.sparta.bapzip.kakaolocal.application.dto;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
-public class KaKaoMapResponseDto {
-
+public class KakaoLocalResponseDto {
 
     private final String addressName;
     private final String addressType;
@@ -18,9 +17,8 @@ public class KaKaoMapResponseDto {
     private final String hCode;
     private final String bCode;
 
-
-    public static KaKaoMapResponseDto from(JsonObject document, JsonObject address){
-        return new KaKaoMapResponseDto(
+    public static KakaoLocalResponseDto from(JsonObject document, JsonObject address){
+        return new KakaoLocalResponseDto(
                 document.get("address_name").getAsString(),
                 document.get("address_type").getAsString(),
                 document.get("x").getAsString(),

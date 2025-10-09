@@ -1,8 +1,8 @@
-package com.sparta.bapzip.kakaomap.application;
+package com.sparta.bapzip.kakaolocal.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.kakaomap.application.dto.KaKaoMapResponseDto;
-import com.sparta.bapzip.kakaomap.domain.exception.KakaoMapResponseNotFound;
+import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
+import com.sparta.bapzip.kakaolocal.domain.exception.KakaoLocalResponseNotFound;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class KakaoMapServiceV1Test {
 
     @Autowired
-    KakaoMapServiceV1 serviceV1;
+    KakaoLocalServiceV1 serviceV1;
 
     @Test
     void getResponse() {
 
         String query = "돌곶이로 41길 24";
-        KaKaoMapResponseDto responseDto = serviceV1.getResponse(query);
+        KakaoLocalResponseDto responseDto = serviceV1.getResponse(query);
         System.out.println("addressName = "+ responseDto.getAddressName());
         System.out.println("addressType = "+ responseDto.getAddressType());
         System.out.println("longitude = "+ responseDto.getLongitude());
@@ -42,7 +42,7 @@ class KakaoMapServiceV1Test {
     @Test
     void test2(){
         String query = "123";
-        KakaoMapResponseNotFound exception = assertThrows(KakaoMapResponseNotFound.class,()->serviceV1.getResponse(query));
+        KakaoLocalResponseNotFound exception = assertThrows(KakaoLocalResponseNotFound.class,()->serviceV1.getResponse(query));
         assertEquals(ErrorCode.KAKAO_MAP_DOCUMENTS_NOT_FOUND,exception.getErrorCode());
     }
 
@@ -50,7 +50,7 @@ class KakaoMapServiceV1Test {
     @Test
     void test3(){
         String query = "돌곶이로";
-        KakaoMapResponseNotFound exception = assertThrows(KakaoMapResponseNotFound.class,()->serviceV1.getResponse(query));
+        KakaoLocalResponseNotFound exception = assertThrows(KakaoLocalResponseNotFound.class,()->serviceV1.getResponse(query));
         assertEquals(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND,exception.getErrorCode());
     }
 

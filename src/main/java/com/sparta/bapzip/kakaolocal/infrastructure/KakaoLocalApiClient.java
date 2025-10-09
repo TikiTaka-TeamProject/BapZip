@@ -1,9 +1,9 @@
-package com.sparta.bapzip.kakaomap.infrastructure;
+package com.sparta.bapzip.kakaolocal.infrastructure;
 
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.sparta.bapzip.kakaomap.application.KakaoMapCallable;
+import com.sparta.bapzip.kakaolocal.application.KakaoLocalCallable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 
 @Service
-public class KakaoMapApiClient implements KakaoMapCallable {
+public class KakaoLocalApiClient implements KakaoLocalCallable {
 
     private final String API_URL = "https://dapi.kakao.com/v2/local/search/address.json?query=";
 
