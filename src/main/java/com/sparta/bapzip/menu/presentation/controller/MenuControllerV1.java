@@ -52,10 +52,11 @@ public class MenuControllerV1 {
             @Valid @ModelAttribute MenuSearchRequest request,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc
     ) {
         // 페이징 검증 service 에서 처리
-        Page<MenuSearchResponse> menuPage = menuService.searchMenus(request, page, size, sort);
+        Page<MenuSearchResponse> menuPage = menuService.searchMenus(request.keyword(), page, size, sortBy, isAsc);
         return ResponseEntity.ok(menuPage);
     }
 

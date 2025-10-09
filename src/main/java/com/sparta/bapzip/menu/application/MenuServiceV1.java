@@ -83,25 +83,25 @@ public class MenuServiceV1 {
 
 
     /**
-     * 메뉴 이름 기반 조회 (search)
-     * @param request keyword 검색할 메뉴 이름 -> 확장성을 위해 keyword라 명시
-     * @param page,size,sort 페이징 및 정렬
-     * @return 페이징 메뉴 DTO
-     * validatedSize: page 10,30,50 size
+     * 메뉴 이름 기반 조회 (검색)
+     *
+     * @param keyword  검색어
+     * @param page     페이지 번호 (0부터 시작)
+     * @param size     한 페이지에 가져올 메뉴 개수 (유효 size: 10, 30, 50; 이외 값 입력시 10으로 고정)
+     * @param sortBy   정렬할 필드명 (ex) "createdAt", "price")
+     * @param isAsc    정렬 방향 (default true: 오름차순, false: 내림차순)
+     * @return         페이징된 메뉴 DTO Page<MenuSearchResponse>
      */
-    public Page<MenuSearchResponse> searchMenus(MenuSearchRequest request, int page, int size, String sort) {
+    public Page<MenuSearchResponse> searchMenus(String keyword, int page, int size, String sortBy, boolean isAsc) {
 
         // size 10, 30, 50 유효, 아닐 시 10 고정
         int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
 
         // sort (정렬) param
-        String[] sortParams = sort.split(",");
-        String sortBy = sortParams[0];
-        Sort.Direction direction = "asc".equalsIgnoreCase(sortParams[1]) ? Sort.Direction.ASC : Sort.Direction.DESC;
-
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, validatedSize, Sort.by(direction, sortBy));
 
-        Page<MenuEntity> menuPage = menuRepository.findByNameContaining(request.keyword(), pageable);
+        Page<MenuEntity> menuPage = menuRepository.findByNameContaining(keyword, pageable);
         return menuPage.map(MenuSearchResponse::from);
     }
 
