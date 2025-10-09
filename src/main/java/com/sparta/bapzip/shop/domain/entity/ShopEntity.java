@@ -36,7 +36,6 @@ public class ShopEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     private ShopStatusEnum status = ShopStatusEnum.PENDING;
 
 //    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
@@ -54,6 +53,12 @@ public class ShopEntity extends BaseEntity {
     @JoinColumn(name = "service_area_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private ServiceAreaEntity serviceArea;
+
+    public void updateName(String name) { this.name = name; }
+    public void updateAddress(String address) { this.address = address; }
+    public void updateLocation(Point location) { this.location = location; }
+    public void updateCategory(CategoryEntity category) { this.category = category; }
+    public void updateServiceArea(ServiceAreaEntity serviceArea) { this.serviceArea = serviceArea; }
 
     @Builder
     public ShopEntity(String name, String address, Point location,

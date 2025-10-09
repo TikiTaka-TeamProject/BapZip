@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +14,8 @@ import java.util.UUID;
 @Table(name = "p_categories")
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryEntity extends BaseEntity {
 
     @Id
@@ -33,9 +30,11 @@ public class CategoryEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "category")
     @JsonIgnore
+    @Builder. Default
     private List<ShopEntity> shopEntityList = new ArrayList<>();
 
-    public void updateCategory(String name, String content) {
+    @Builder
+    public  CategoryEntity(String name, String content) {
         this.name = name;
         this.content = content;
     }

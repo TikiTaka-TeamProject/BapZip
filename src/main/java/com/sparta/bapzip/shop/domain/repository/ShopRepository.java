@@ -4,8 +4,6 @@ import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 
 import java.util.List;
-
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,4 +16,5 @@ public interface ShopRepository {
 
     // 카테고리 ID로 조회
     List<ShopEntity> findAllByCategoryIdAndIsDeletedFalse(UUID categoryId);
+    List<ShopEntity> findAll();
 }

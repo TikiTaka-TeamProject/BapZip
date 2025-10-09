@@ -3,7 +3,7 @@ package com.sparta.bapzip.payment.presentation.dto.request;
 import java.time.LocalDateTime;
 import lombok.*;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
