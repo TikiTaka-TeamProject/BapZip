@@ -57,4 +57,21 @@ public class MenuEntity {
                 .build();
     }
 
+    /**
+     * update Filed
+     */
+    public void updateName(String name) {
+        this.name = name;
+    }
+    public void updateContent(String content) {
+        this.content = content;
+    }
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+    public void updateStatus(MenuStatus status) {
+        this.status = status;
+    }
+
+
 }
