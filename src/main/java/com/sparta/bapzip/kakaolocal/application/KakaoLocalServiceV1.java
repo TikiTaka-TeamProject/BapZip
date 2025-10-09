@@ -15,6 +15,7 @@ public class KakaoLocalServiceV1 {
 
     /**
      * <p> 카카오맵 주소입력시 반환 data </p>
+     * @param query 검색할 주소
      * @addressName : 전체 지번 주소 또는 전체 도로명 주소, 입력에 따라 결정됨
      * @addressType : address_name의 값의 타입(Type) REGION(지명), ROAD(도로명), REGION_ADDR(지번 주소), ROAD_ADDR(도로명 주소)
      * @longitude : X 좌표값, 경위도인 경우 경도
