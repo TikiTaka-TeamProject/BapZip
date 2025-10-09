@@ -32,4 +32,9 @@ public class UserControllerV1 {
 
         return userServiceV1.getUserList(page - 1, size, sortBy, isAsc, userDetails.getUser());
     }
+
+    @GetMapping("/{userId}")
+    public UserResponseDto getUser(@PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userServiceV1.getUser(userId, userDetails.getUser());
+    }
 }

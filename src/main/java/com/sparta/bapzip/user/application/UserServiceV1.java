@@ -4,6 +4,7 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
+import com.sparta.bapzip.user.application.excpetion.UserNotFoundException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
@@ -58,5 +59,28 @@ public class UserServiceV1 {
 
         Page<UserEntity> userList = userRepository.findAll(pageable);
         return userList.map(UserResponseDto::of);
+    }
+
+    public UserResponseDto getUser(Long userId, UserEntity user) {
+        // 요청 유저 id와 토큰 유저의 id가 같을 경우 유저 정보 반환
+        if (userId.equals(user.getId())) {
+            return UserResponseDto.of(user);
+        }
+
+        // 요청 유저 id와 토큰 유저의 id가 다를 경우
+        // 토큰 유저의 role이 MASTER와 MANAGER인지 판별 후 유저 정보 반환
+        UserRoleEnum role = user.getRole();
+        if (role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER)) {
+            return UserResponseDto.of(findUser(userId));
+        }
+
+        // 토큰 유저의 role이 MASTER와 MANAGER가 아닐 경우 exception 반환
+        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+    }
+
+    private UserEntity findUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
+        );
     }
 }
