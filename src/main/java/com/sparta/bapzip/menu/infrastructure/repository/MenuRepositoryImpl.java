@@ -15,6 +15,7 @@ public class MenuRepositoryImpl implements MenuRepository {
 
     private final MenuJpaRepository menuJpaRepository;
 
+    // 메뉴 생성
     @Override
     public MenuEntity save(MenuEntity menu) {
         return menuJpaRepository.save(menu);

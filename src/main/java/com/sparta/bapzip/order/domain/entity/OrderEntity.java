@@ -49,6 +49,7 @@ public class OrderEntity extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "order")
+    @Builder. Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
 }

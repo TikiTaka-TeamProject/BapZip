@@ -1,6 +1,11 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
 import com.sparta.bapzip.shop.application.ShopServiceV1;
+import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +52,19 @@ public class ShopControllerV1 {
         return shopServiceV1.getShopDetail(shopId);
     }
 
-    /**
+    @PatchMapping("/{shopId}")
+    public ResponseEntity<ShopDetailResponse> updateShop(
+            @PathVariable("shopId") UUID shopId,
+            @RequestParam("ownerId") Long ownerId,
+            @RequestBody ShopUpdateRequest shopUpdateRequest
+//            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+//        Long ownerId = userDetails.getId();
+        ShopDetailResponse shopDetailResponse = shopServiceV1.updateShop(shopId, ownerId, shopUpdateRequest);
+        return ResponseEntity.ok(shopDetailResponse);
+    }
+
+     /**
      * 승인된 가게 리스트 조회
      *
      * GET /v1/shops
@@ -60,6 +79,25 @@ public class ShopControllerV1 {
         return shopServiceV1.getApprovedShops()
                 .stream()
                 .map(ShopDetailForUserResponse::from) // DTO 변환 메서드 사용 가능
+                .toList();
+    }
+
+    /**
+     * 상태별 가게 목록 조회 API
+     * GET /v1/shops/status
+     *
+     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum), 생략 가능
+     *                       - null일 경우 모든 상태의 가게를 조회
+     * @return List<ShopDetailResponse> 해당 상태(또는 전체)의 가게 상세 정보 리스트
+     */
+    @GetMapping("/status")
+//    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
+    public List<ShopDetailResponse> getShopsByStatus(
+            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
+            ) {
+        return shopServiceV1.getShopsByStatus(shopStatusEnum)
+                .stream()
+                .map(ShopDetailResponse::from)
                 .toList();
     }
 }

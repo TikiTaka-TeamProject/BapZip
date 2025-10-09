@@ -2,6 +2,7 @@ package com.sparta.bapzip.menu.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
@@ -34,7 +35,8 @@ public class MenuEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MenuStatus status;
+    @Builder.Default
+    private MenuStatus status = MenuStatus.AVAILABLE;
 
     @JoinColumn(name = "shop_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +46,32 @@ public class MenuEntity {
     @OneToMany(mappedBy = "menu")
     @Builder.Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
+
+    public static MenuEntity createMenu(MenuCreateRequest request, ShopEntity shop) {
+        return MenuEntity.builder()
+                .name(request.name())
+                .content(request.content())
+                .price(request.price())
+                .shop(shop)
+                .status(MenuStatus.AVAILABLE)
+                .build();
+    }
+
+    /**
+     * update Filed
+     */
+    public void updateName(String name) {
+        this.name = name;
+    }
+    public void updateContent(String content) {
+        this.content = content;
+    }
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+    public void updateStatus(MenuStatus status) {
+        this.status = status;
+    }
 
 
 }

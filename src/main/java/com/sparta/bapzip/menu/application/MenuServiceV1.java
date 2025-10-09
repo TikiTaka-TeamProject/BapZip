@@ -4,7 +4,13 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.shop.application.ShopServiceV1;
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +24,54 @@ import java.util.UUID;
 public class MenuServiceV1 {
 
     private final MenuRepository menuRepository;
+    private final ShopServiceV1 shopServiceV1;
 
-    // todo: shop과 연결 필요 - 관련 도메인 코드는 따로 백업
+    // todo: 메서드 USER ROLE 검증 필요 -> 메뉴 생성, 삭제...
+
+    // 메뉴 생성
+    @Transactional
+    public MenuCreateResponse createMenu(MenuCreateRequest request) {
+        // 유효한 가게 검증 로직 shopService 호출
+        ShopEntity shop = shopServiceV1.getShopById(request.shopId());
+
+        MenuEntity menu = MenuEntity.createMenu(request, shop);
+        MenuEntity savedMenu = menuRepository.save(menu);
+
+        return MenuCreateResponse.from(savedMenu);
+    }
+
 
     // 메뉴 상세 조회
     public MenuDetailResponse getMenuDetail(UUID menuId) {
         MenuEntity menu = getMenuById(menuId);
+        return MenuDetailResponse.from(menu);
+    }
+
+    // 메뉴 정보 수정
+    // todo: (+) 의도한 공백 값 처리 로직 추가
+    @Transactional
+    public MenuDetailResponse updateMenu(UUID menuId, MenuUpdateRequest request) {
+
+        MenuEntity menu = getMenuById(menuId);
+
+        if (request.name() != null && !request.name().isBlank()) {
+            menu.updateName(request.name());
+        }
+        if (request.content() != null && !request.content().isBlank()) {
+            menu.updateContent(request.content());
+        }
+        if (request.price() != null) {
+            menu.updatePrice(request.price());
+        }
+
+        return MenuDetailResponse.from(menu);
+    }
+
+    // 메뉴 상태 수정 - AVAILABLE, SOLD_OUT
+    @Transactional
+    public MenuDetailResponse updateMenuStatus(UUID menuId, MenuStatusUpdateRequest request){
+        MenuEntity menu = getMenuById(menuId);
+        menu.updateStatus(request.status());
         return MenuDetailResponse.from(menu);
     }
 
