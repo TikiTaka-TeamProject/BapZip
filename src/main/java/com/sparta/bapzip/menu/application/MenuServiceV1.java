@@ -9,6 +9,7 @@ import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +77,18 @@ public class MenuServiceV1 {
     }
 
 
-    // --------------------- Entity 조회 메서드 -------------------------- //
+    // 메뉴 전체 조회
+    public List<MenuSearchResponse> getAllMenus() {
+        List<MenuEntity> menus = menuRepository.findAll();
+        return menus.stream()
+                .map(MenuSearchResponse::from)
+                .toList(); // DTO -> List 반환
+    }
+
+
+    /**
+     * 엔티티 조회 헬퍼
+     */
 
     // 메뉴 엔티티 조회
     public MenuEntity getMenuById(UUID menuId) {

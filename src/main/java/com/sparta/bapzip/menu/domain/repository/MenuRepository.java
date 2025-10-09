@@ -12,6 +12,8 @@ public interface MenuRepository {
 
     Optional<MenuEntity> findById(UUID id);
 
+    List<MenuEntity> findAll();
+
     List<MenuEntity> findAllByIdIn(List<UUID> ids);
 
 }

@@ -6,11 +6,13 @@ import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -39,6 +41,16 @@ public class MenuControllerV1 {
         MenuDetailResponse menuDetailResponse = menuService.getMenuDetail(menuId);
         return ResponseEntity.ok(menuDetailResponse);
     }
+
+    /**
+     * 메뉴 전체 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<MenuSearchResponse>> getAllMenus(){
+        List<MenuSearchResponse> menuList = menuService.getAllMenus();
+        return ResponseEntity.ok(menuList);
+    }
+
 
     /**
      * 메뉴 정보 수정
