@@ -21,7 +21,13 @@ public enum ErrorCode {
     // MENU todo: 상태코드 별 분리 필요
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
     INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
+
+
+    //404 Not Found
     AI_LOG_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 Ai-Log입니다."),
+    KAKAO_MAP_DOCUMENTS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 documents가 없습니다."),
+    KAKAO_MAP_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 address가 없습니다."),
+
 
 
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러

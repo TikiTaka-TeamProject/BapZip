@@ -1,7 +1,9 @@
 package com.sparta.bapzip.kakaomap.application;
 
 import com.google.gson.JsonObject;
+import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.kakaomap.application.dto.KaKaoMapResponseDto;
+import com.sparta.bapzip.kakaomap.domain.exception.KakaoMapResponseNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,19 @@ public class KakaoMapServiceV1 {
      * @return KaKaoMapResponseDto
      */
     public KaKaoMapResponseDto getResponse(String query){
+        // query 가 비어있는경우
+        if (query == null || query.trim().isEmpty()){
+            throw new NullPointerException("query 값이 비어있습니다.");
+        }
         JsonObject documents = kakaoMapCallable.getDocuments(query);
+        //응답 documents가 없을경우
+        if (documents == null){
+            throw new KakaoMapResponseNotFound(ErrorCode.KAKAO_MAP_DOCUMENTS_NOT_FOUND);
+        }
+        //응답 address가 없을경우
+        if (documents.get("address").isJsonNull()){
+            throw new KakaoMapResponseNotFound(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND);
+        }
         JsonObject address = documents.get("address").getAsJsonObject();
         return KaKaoMapResponseDto.from(documents, address);
     }
