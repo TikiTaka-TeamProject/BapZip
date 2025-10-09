@@ -88,7 +88,7 @@ public class MenuServiceV1 {
      * @param page     페이지 번호 (0부터 시작)
      * @param size     한 페이지에 가져올 메뉴 개수 (유효 size: 10, 30, 50; 이외 값 입력시 10으로 고정)
      * @param sortBy   정렬할 필드명 (ex) "createdAt", "price")
-     * @param isAsc    정렬 방향 (default true: 오름차순, false: 내림차순)
+     * @param isAsc    정렬 방향 (true: 오름차순, false: 내림차순(default))
      * @return         페이징된 메뉴 DTO Page<MenuSearchResponse>
      */
     public Page<MenuSearchResponse> searchMenus(String keyword, int page, int size, String sortBy, boolean isAsc) {
