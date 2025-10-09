@@ -47,6 +47,8 @@ public class MenuEntity {
     @Builder.Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
+    // 비즈니스 로직
+
     public static MenuEntity createMenu(MenuCreateRequest request, ShopEntity shop) {
         return MenuEntity.builder()
                 .name(request.name())
@@ -55,6 +57,13 @@ public class MenuEntity {
                 .shop(shop)
                 .status(MenuStatus.AVAILABLE)
                 .build();
+    }
+
+    /**
+     * 메뉴가 품절인지 확인
+     */
+    public boolean isSoldOut() {
+        return this.status == MenuStatus.SOLD_OUT;
     }
 
 }
