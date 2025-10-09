@@ -39,4 +39,8 @@ public class OrderMenuEntity extends BaseEntity {
     @JoinColumn(name = "menu_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private MenuEntity menu;
+
+
+
+
 }
