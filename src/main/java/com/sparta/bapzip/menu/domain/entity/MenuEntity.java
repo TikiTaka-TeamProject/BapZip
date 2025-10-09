@@ -1,6 +1,7 @@
 package com.sparta.bapzip.menu.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MenuEntity {
+public class MenuEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
