@@ -4,7 +4,7 @@ package com.sparta.bapzip.user.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
-import com.sparta.bapzip.user.presentation.dto.request.LoginRequestDto;
+import com.sparta.bapzip.user.application.dto.request.LoginRequestDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

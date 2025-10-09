@@ -2,7 +2,7 @@ package com.sparta.bapzip.user.domain.entity;
 
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
-import com.sparta.bapzip.user.presentation.dto.request.SignupRequestDto;
+import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
