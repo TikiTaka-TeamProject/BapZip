@@ -5,6 +5,7 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuSearchRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
@@ -13,6 +14,10 @@ import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +82,31 @@ public class MenuServiceV1 {
     }
 
 
+    /**
+     * 메뉴 이름 기반 조회 (search)
+     * @param request keyword 검색할 메뉴 이름 -> 확장성을 위해 keyword라 명시
+     * @param page,size,sort 페이징 및 정렬
+     * @return 페이징 메뉴 DTO
+     * validatedSize: page 10,30,50 size
+     */
+    public Page<MenuSearchResponse> searchMenus(MenuSearchRequest request, int page, int size, String sort) {
+
+        // size 10, 30, 50 유효, 아닐 시 10 고정
+        int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
+
+        // sort (정렬) param
+        String[] sortParams = sort.split(",");
+        String sortBy = sortParams[0];
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortParams[1]) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, validatedSize, Sort.by(direction, sortBy));
+
+        Page<MenuEntity> menuPage = menuRepository.findByNameContaining(request.keyword(), pageable);
+        return menuPage.map(MenuSearchResponse::from);
+    }
+
+
+
     // 메뉴 전체 조회
     public List<MenuSearchResponse> getAllMenus() {
         List<MenuEntity> menus = menuRepository.findAll();
@@ -84,7 +114,6 @@ public class MenuServiceV1 {
                 .map(MenuSearchResponse::from)
                 .toList(); // DTO -> List 반환
     }
-
 
     /**
      * 엔티티 조회 헬퍼
