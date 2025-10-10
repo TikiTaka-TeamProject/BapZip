@@ -4,8 +4,10 @@ import com.sparta.bapzip.user.application.UserServiceV1;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
 import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
+import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
