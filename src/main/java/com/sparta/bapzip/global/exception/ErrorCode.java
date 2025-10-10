@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     // Payment:결제 정보 조회 관련
+    PAYMENT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "결제 요청에 실패했습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다."),
-    PAYMENT_CANCELLATION_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
-
+    PAYMENT_KEY_MISSING(HttpStatus.BAD_REQUEST, "결제 키가 누락되었습니다."),
 
     // USER 관련 에러
     DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),

@@ -34,9 +34,12 @@ public class CategoryEntity extends BaseEntity {
     private List<ShopEntity> shopEntityList = new ArrayList<>();
 
     @Builder
-    public  CategoryEntity(String name, String content) {
+    public CategoryEntity(String name, String content) {
         this.name = name;
         this.content = content;
     }
-
+    public void update(String name, String content) {
+        this.name = name;
+        this.content = content;
+    }
 }
