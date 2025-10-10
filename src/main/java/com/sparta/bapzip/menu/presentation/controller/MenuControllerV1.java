@@ -1,5 +1,6 @@
 package com.sparta.bapzip.menu.presentation.controller;
 
+import com.sparta.bapzip.global.common.dto.PageResponse;
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuSearchRequest;
@@ -48,7 +49,7 @@ public class MenuControllerV1 {
      * 메뉴 검색 조회
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<MenuSearchResponse>> searchMenus(
+    public ResponseEntity<PageResponse<MenuSearchResponse>> searchMenus(
             @Valid @ModelAttribute MenuSearchRequest request,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -57,7 +58,7 @@ public class MenuControllerV1 {
     ) {
         // 페이징 검증 service 에서 처리
         Page<MenuSearchResponse> menuPage = menuService.searchMenus(request.keyword(), page, size, sortBy, isAsc);
-        return ResponseEntity.ok(menuPage);
+        return ResponseEntity.ok(PageResponse.fromPage(menuPage, sortBy, isAsc));
     }
 
     /**
