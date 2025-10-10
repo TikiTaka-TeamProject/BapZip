@@ -47,15 +47,15 @@ public class PaymentServiceV1 {
      */
     @Transactional
     public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
-        PaymentEntity payment;
-
-        OrderEntity order = orderRepository.findById(orderId).orElse(null);
-        if(order == null){
-            throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
-        } else {
-            payment = PaymentEntity.builder()
-                    .order(order)
-                    .totalAmount(order.getTotalAmount())
+        UUID tempOrderId = UUID.fromString("fb64f420-6c70-49fa-806f-a5bc775b89db");
+        payment = PaymentEntity.builder()
+                    .order(
+                            OrderEntity.builder()
+                                    .id(tempOrderId)
+                                    .totalPrice(amount)
+                                    .build()
+                    )
+                    .totalAmount(amount)
                     .status(PaymentStatusEnum.IN_PROGRESS)
                     .build();
             payment.markCreated(order.getUser().getId());

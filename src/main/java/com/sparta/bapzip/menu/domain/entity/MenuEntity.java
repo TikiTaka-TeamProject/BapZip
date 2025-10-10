@@ -1,6 +1,7 @@
 package com.sparta.bapzip.menu.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MenuEntity {
+public class MenuEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,6 +48,8 @@ public class MenuEntity {
     @Builder.Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
+    // 비즈니스 로직
+
     public static MenuEntity createMenu(MenuCreateRequest request, ShopEntity shop) {
         return MenuEntity.builder()
                 .name(request.name())
@@ -57,6 +60,13 @@ public class MenuEntity {
                 .build();
     }
 
+    /**
+     * 메뉴가 품절인지 확인
+     */
+    public boolean isSoldOut() {
+        return this.status == MenuStatus.SOLD_OUT;
+    }
+  
     /**
      * update Filed
      */
@@ -72,6 +82,5 @@ public class MenuEntity {
     public void updateStatus(MenuStatus status) {
         this.status = status;
     }
-
-
+  
 }

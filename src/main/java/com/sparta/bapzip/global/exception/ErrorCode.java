@@ -13,6 +13,9 @@ public enum ErrorCode {
     PAYMENT_CANCEL_FAILED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
     PAYMENT_KEY_MISSING(HttpStatus.BAD_REQUEST, "결제 키가 누락되었습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
     // CATEGORY 관련 에러
     DUPLICATE_CATEGORY_EXCEPTION(HttpStatus.CONFLICT, "중복 된 카테고리입니다."),
     INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리 ID입니다."),
@@ -20,13 +23,24 @@ public enum ErrorCode {
     // USER 관련 에러
     DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
     UNAUTHORIZED_USER_EXCEPTION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
+    PASSWORD_NOT_MATCH_EXCEPTION(HttpStatus.UNAUTHORIZED, "패스워드가 일치하지 않습니다."),
     USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
 
     // MENU todo: 상태코드 별 분리 필요
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
     INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
-    AI_LOG_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 Ai-Log입니다."),
 
+
+    //404 Not Found
+    AI_LOG_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 Ai-Log입니다."),
+    KAKAO_MAP_DOCUMENTS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 documents가 없습니다."),
+    KAKAO_MAP_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 address가 없습니다."),
+
+
+    // ORDER
+    MENU_NOT_IN_SHOP(HttpStatus.BAD_REQUEST, "다른 가게의 메뉴가 포함되어 있습니다."),
+    MENU_NOT_FOUNT_IN_ORDER(HttpStatus.BAD_REQUEST, "존재하지 않는 메뉴가 포함되어 있습니다."),
+    SOLD_OUT_MENU(HttpStatus.BAD_REQUEST, "선택하신 메뉴 중 품절된 메뉴가 포함되어 있습니다."),
 
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
     // Shop: 공통

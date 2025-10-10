@@ -2,11 +2,10 @@ package com.sparta.bapzip.payment.presentation.dto.request;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import lombok.*;
 import jakarta.validation.constraints.NotNull;
 
-//@RequiredArgsConstructor
+import lombok.*;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,15 +19,4 @@ public class PaymentCancelRequest {
     private LocalDateTime approvedAt;
     @NotNull(message = "취소 사유는 필수입니다.")
     private String cancelReason;
-
-    @Override
-    public String toString() {
-        return "PaymsentCancelRequest{" +
-                "orderId='" + orderId + '\'' +
-                ", paymentKey='" + paymentKey + '\'' +
-                ", requestedAt=" + requestedAt +
-                ", approvedAt=" + approvedAt +
-                ", cancelReason='" + cancelReason + '\'' +
-                '}';
-    }
 }

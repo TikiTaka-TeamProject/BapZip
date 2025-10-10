@@ -1,4 +1,4 @@
-package com.sparta.bapzip.user.presentation.dto.response;
+package com.sparta.bapzip.user.application.dto.response;
 
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
