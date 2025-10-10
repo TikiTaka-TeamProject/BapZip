@@ -1,7 +1,9 @@
 package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
+import com.sparta.bapzip.user.application.dto.response.UserDeleteResponseDto;
 import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
 import com.sparta.bapzip.user.application.dto.response.UserUpdateResponseDto;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
@@ -76,17 +78,9 @@ public class UserServiceV1 {
         throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
     }
 
-    private UserEntity findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
-        );
-    }
-
     public UserUpdateResponseDto updateUser(UserUpdateRequestDto userUpdateRequestDto, UserEntity user) {
         // 비밀번호가 일치 하는지 확인
-        if (!passwordEncoder.matches(userUpdateRequestDto.getPassword(), user.getPassword())) {
-            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION);
-        }
+        matchPassword(userUpdateRequestDto.getPassword(), user.getPassword());
 
         // 비밀번호가 일치하면 유저 이름과 변경할 패스워드 업데이트
         user.update(userUpdateRequestDto, passwordEncoder);
@@ -94,5 +88,24 @@ public class UserServiceV1 {
         UserEntity saveUser = userRepository.save(user);
 
         return UserUpdateResponseDto.of(saveUser);
+    }
+
+    public UserDeleteResponseDto deleteUser(UserDeleteRequestDto userDeleteRequestDto, UserEntity user) {
+        matchPassword(userDeleteRequestDto.getPassword(), user.getPassword());
+        user.markDeleted(user.getId());
+        UserEntity saveUser = userRepository.save(user);
+        return UserDeleteResponseDto.of(saveUser);
+    }
+
+    private UserEntity findUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
+        );
+    }
+
+    private void matchPassword(String rowPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rowPassword, encodedPassword)) {
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION);
+        }
     }
 }
