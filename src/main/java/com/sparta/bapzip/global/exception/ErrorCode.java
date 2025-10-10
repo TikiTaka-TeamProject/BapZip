@@ -24,6 +24,17 @@ public enum ErrorCode {
     INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
 
 
+    //404 Not Found
+    AI_LOG_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 Ai-Log입니다."),
+    KAKAO_MAP_DOCUMENTS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 documents가 없습니다."),
+    KAKAO_MAP_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "query에 대한 응답 address가 없습니다."),
+
+
+    // ORDER
+    MENU_NOT_IN_SHOP(HttpStatus.BAD_REQUEST, "다른 가게의 메뉴가 포함되어 있습니다."),
+    MENU_NOT_FOUNT_IN_ORDER(HttpStatus.BAD_REQUEST, "존재하지 않는 메뉴가 포함되어 있습니다."),
+    SOLD_OUT_MENU(HttpStatus.BAD_REQUEST, "선택하신 메뉴 중 품절된 메뉴가 포함되어 있습니다."),
+
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
     // Shop: 공통
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
