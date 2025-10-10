@@ -27,10 +27,9 @@ public class UserControllerV1 {
     public Page<UserResponseDto> getUserList(@RequestParam("page") int page,
                                              @RequestParam("size") int size,
                                              @RequestParam("sortBy") String sortBy,
-                                             @RequestParam("isAsc") boolean isAsc,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                             @RequestParam("isAsc") boolean isAsc) {
 
-        return userServiceV1.getUserList(page - 1, size, sortBy, isAsc, userDetails.getUser());
+        return userServiceV1.getUserList(page - 1, size, sortBy, isAsc);
     }
 
     @GetMapping("/{userId}")
