@@ -1,14 +1,20 @@
 package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
+import com.sparta.bapzip.user.application.excpetion.UserNotFoundException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
-import com.sparta.bapzip.user.presentation.dto.request.SignupRequestDto;
-import com.sparta.bapzip.user.presentation.dto.response.SignupResponseDto;
+import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
+import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +41,41 @@ public class UserServiceV1 {
         UserEntity user = UserEntity.create(requestDto, passwordEncoder.encode(requestDto.getPassword()));
         UserEntity saveUser = userRepository.save(user);
         return SignupResponseDto.of(saveUser);
+    }
+
+    public Page<UserResponseDto> getUserList(int page, int size, String sortBy, boolean isAsc) {
+        if(size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<UserEntity> userList = userRepository.findAll(pageable);
+        return userList.map(UserResponseDto::of);
+    }
+
+    public UserResponseDto getUser(Long userId, UserEntity user) {
+        // 요청 유저 id와 토큰 유저의 id가 같을 경우 유저 정보 반환
+        if (userId.equals(user.getId())) {
+            return UserResponseDto.of(user);
+        }
+
+        // 요청 유저 id와 토큰 유저의 id가 다를 경우
+        // 토큰 유저의 role이 MASTER와 MANAGER인지 판별 후 유저 정보 반환
+        UserRoleEnum role = user.getRole();
+        if (role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER)) {
+            return UserResponseDto.of(findUser(userId));
+        }
+
+        // 토큰 유저의 role이 MASTER와 MANAGER가 아닐 경우 exception 반환
+        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+    }
+
+    private UserEntity findUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
+        );
     }
 }
