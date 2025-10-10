@@ -48,8 +48,8 @@ public class CategoryControllerV1 {
     }
     @PatchMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
-    public ResponseEntity<CategoryDetailResponse> updateCategory(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody CategoryRequestDto request) {
-        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.updateCategory(request.getId(), request.getName(), request.getContent(), userDetails.getUser().getId());
+    public ResponseEntity<CategoryDetailResponse> updateCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId,@RequestBody CategoryRequestDto request) {
+        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.updateCategory(categoryId, request.getName(), request.getContent(), userDetails.getUser().getId());
         return ResponseEntity.ok(categoryDetailResponse);
     }
 

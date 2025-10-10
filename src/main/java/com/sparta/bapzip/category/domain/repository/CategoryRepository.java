@@ -12,4 +12,8 @@ public interface CategoryRepository {
     public List<CategoryEntity> findAllByIsDeletedFalse();
 
     Optional<CategoryEntity> findById(UUID categoryId);
+
+    Optional<CategoryEntity> findByContent(String content);
+
+    Optional<CategoryEntity> findByName(String name);
 }

@@ -7,6 +7,7 @@ import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.category.presentation.dto.response.CategoryDetailResponse;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
+import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,15 +39,25 @@ public class CategoryServiceV1 {
     // 카테고리 ID 기준 가게 리스트 조회
     @Transactional(readOnly = true)
     public List<ShopDetailForUserResponse> getShopsByCategory (UUID categoryId){
+        Optional<CategoryEntity> category = categoryRepository.findById(categoryId);
+        if(!category.isPresent()){
+            throw new GlobalException(ErrorCode.CATEGORY_NOT_FOUND);
+        } else if (category.get().getIsDeleted()) {
+            throw new GlobalException(ErrorCode.INVALID_CATEGORY_ID);
+        }
         return shopRepository.findAllByCategoryIdAndIsDeletedFalse(categoryId)
                 .stream()
                 .map(ShopDetailForUserResponse::from)
                 .toList();
+
     }
 
     // 카테고리 생성
     @Transactional
     public CategoryDetailResponse createCategory (String name, String content, Long userId){
+        if (categoryRepository.findByName(name).isPresent() || categoryRepository.findByContent(content).isPresent()) {
+            throw new DuplicateUserException(ErrorCode.DUPLICATE_CATEGORY_EXCEPTION);
+        }
         CategoryEntity category = new CategoryEntity(name, content);
         category.markCreated(userId);
         categoryRepository.save(category);
@@ -67,6 +78,9 @@ public class CategoryServiceV1 {
     public CategoryDetailResponse deleteCategory(UUID categoryId, Long userId) {
         CategoryEntity category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND));
+        if (category.getIsDeleted()) {
+            throw new GlobalException(ErrorCode.INVALID_CATEGORY_ID);
+        }
         category.markDeleted(userId);
         categoryRepository.save(category);
         return CategoryDetailResponse.toDto(category);
