@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class OrderCreationResult {
+public class OrderCreationDto {
 
     private final UUID orderId;
     private final UUID shopId;
@@ -27,7 +27,7 @@ public class OrderCreationResult {
     private final String paymentType;
     private final LocalDateTime createdAt;
 
-    public static OrderCreationResult from(
+    public static OrderCreationDto from(
             OrderEntity orderEntity,
             List<OrderMenuEntity> orderMenuEntities,
             ShopEntity shopEntity,
@@ -37,7 +37,7 @@ public class OrderCreationResult {
                 .map(OrderMenuInfo::from)
                 .toList();
 
-        return OrderCreationResult.builder()
+        return OrderCreationDto.builder()
                 .orderId(orderEntity.getId())
                 .shopId(shopEntity.getId())
                 .userId(userId)
