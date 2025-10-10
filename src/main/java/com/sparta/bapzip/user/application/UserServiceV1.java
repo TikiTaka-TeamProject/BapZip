@@ -1,8 +1,11 @@
 package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
 import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
+import com.sparta.bapzip.user.application.dto.response.UserUpdateResponseDto;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
+import com.sparta.bapzip.user.application.excpetion.PasswordNotMatchException;
 import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
 import com.sparta.bapzip.user.application.excpetion.UserNotFoundException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
@@ -77,5 +80,19 @@ public class UserServiceV1 {
         return userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
         );
+    }
+
+    public UserUpdateResponseDto updateUser(UserUpdateRequestDto userUpdateRequestDto, UserEntity user) {
+        // 비밀번호가 일치 하는지 확인
+        if (!passwordEncoder.matches(userUpdateRequestDto.getPassword(), user.getPassword())) {
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION);
+        }
+
+        // 비밀번호가 일치하면 유저 이름과 변경할 패스워드 업데이트
+        user.update(userUpdateRequestDto, passwordEncoder);
+        user.markUpdated(user.getId());
+        UserEntity saveUser = userRepository.save(user);
+
+        return UserUpdateResponseDto.of(saveUser);
     }
 }
