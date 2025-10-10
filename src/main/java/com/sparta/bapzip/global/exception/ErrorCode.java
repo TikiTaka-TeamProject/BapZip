@@ -48,7 +48,8 @@ public enum ErrorCode {
     SHOP_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 소유자는 이미 가게를 보유하고 있습니다."),
 
     // Shop: 수정, 삭제
-    UNAUTHORIZED_SHOP_ACCESS(HttpStatus.FORBIDDEN, "해당 가게에 접근할 권한이 없습니다.");
+    UNAUTHORIZED_SHOP_ACCESS(HttpStatus.FORBIDDEN, "해당 가게에 접근할 권한이 없습니다."),
+    FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다.");
 
     private final HttpStatus status;
     private final String message;
