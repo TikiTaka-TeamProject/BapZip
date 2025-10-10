@@ -78,7 +78,7 @@ public class PaymentServiceV1 {
                     .order(
                             OrderEntity.builder()
                                     .id(tempOrderId)
-                                    .totalAmount(amount)
+                                    .totalPrice(amount)
                                     .build()
                     )
                     .totalAmount(amount)

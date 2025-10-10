@@ -3,6 +3,7 @@ package com.sparta.bapzip.order.application;
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.order.application.dto.OrderCreationResult;
+import com.sparta.bapzip.order.application.dto.OrderDto;
 import com.sparta.bapzip.order.application.exception.MenusNotFoundInOrderException;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.order.domain.repository.OrderRepository;
@@ -11,8 +12,11 @@ import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
+import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +44,11 @@ public class OrderServiceV1 {
      * @return 생성된 주문 응답(ResponseEntity)
      */
     @Transactional
-    public OrderCreationResult createOrder(@Valid CreateOrderRequest request) {
+    public OrderCreationResult createOrder(@Valid CreateOrderRequest request, UserEntity user) {
         ShopEntity shop = shopService.getShopById(request.getShopId());
         Map<UUID, MenuEntity> menuMap = getMenuMap(request.getMenuInfoList());
 
-        OrderEntity order = OrderEntity.create(request, shop.getId(), menuMap);
+        OrderEntity order = OrderEntity.create(request, user, shop, menuMap);
         OrderEntity savedOrder = orderRepository.save(order);
 
         List<OrderMenuEntity> orderMenuList = createOrderMenusFromRequest(
@@ -57,7 +61,12 @@ public class OrderServiceV1 {
 
         orderMenuService.saveAll(orderMenuList);
 
-        return OrderCreationResult.from(savedOrder, orderMenuList, shop, 1L);
+        return OrderCreationResult.from(savedOrder, orderMenuList, shop, user.getId());
+    }
+
+    public Page<OrderDto> getOrdersByUser(UserEntity user, Pageable pageable) {
+        return orderRepository.findOrderByUser(user, pageable)
+                .map(OrderDto::from);
     }
 
     // private 헬퍼 메서드
