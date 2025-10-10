@@ -2,6 +2,7 @@ package com.sparta.bapzip.order.presentation.controller;
 
 import com.sparta.bapzip.order.application.OrderServiceV1;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
+import com.sparta.bapzip.order.presentation.dto.response.OrderDetailResponse;
 import com.sparta.bapzip.order.presentation.dto.response.OrderResponse;
 import com.sparta.bapzip.order.presentation.dto.response.CreateOrderResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/v1/orders")
 @RequiredArgsConstructor
@@ -21,6 +24,9 @@ public class OrderControllerV1 {
 
     private final OrderServiceV1 orderServiceV1;
 
+    /**
+     * 특정 유저 주문 전체 조회
+     */
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getAllOrders(@AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) {
         return ResponseEntity.ok(
@@ -29,6 +35,21 @@ public class OrderControllerV1 {
         );
     }
 
+    /**
+     * 특정 유저의 주문 상세내역 조회
+     */
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable UUID orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(OrderDetailResponse.from(
+                        orderServiceV1.getOrderById(orderId, userDetails.getUser())
+                ));
+    }
+
+    /**
+     * 주문 등록
+     */
     @PostMapping
     public ResponseEntity<CreateOrderResponse> createOrder(
             @Valid @RequestBody CreateOrderRequest createOrderRequest,
@@ -40,4 +61,5 @@ public class OrderControllerV1 {
                         orderServiceV1.createOrder(createOrderRequest, userDetails.getUser())
                 ));
     }
+
 }
