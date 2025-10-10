@@ -22,8 +22,6 @@ public class PaymentControllerV1 {
     private final PaymentServiceV1 paymentService;
     @PostMapping("/confirm")
     public ResponseEntity<PaymentResponseDto> createPayment(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PaymentCreateRequest requestDto) {
-//        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.randomUUID(), requestDto);
-        System.out.println("!!!!!!");
         PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.fromString("6a7b8230-b26b-45db-bcd0-84fb189ff53b"), requestDto);
 
         return ResponseEntity.ok(response);
@@ -31,8 +29,7 @@ public class PaymentControllerV1 {
     // 로그인 기능 연결 이후 보완 필요
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<PaymentResponseDto> cancelPayment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String orderId, @RequestBody String cancelReasonJson) {
-        System.out.println("user id = " + userDetails.getUser().getId());
-        PaymentResponseDto response = paymentService.cancelPayment(userDetails.getUser().getId(), UUID.fromString(orderId), cancelReasonJson);
+       PaymentResponseDto response = paymentService.cancelPayment(userDetails.getUser().getId(), UUID.fromString(orderId), cancelReasonJson);
         return ResponseEntity.ok(response);
     }
 }

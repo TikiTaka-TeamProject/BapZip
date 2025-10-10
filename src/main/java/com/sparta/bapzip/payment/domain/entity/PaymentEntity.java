@@ -50,17 +50,4 @@ public class PaymentEntity extends BaseEntity {
         this.cancelReason = cancelReason;
         this.canceledAt = canceledAt;
     }
-
-    @Override
-    public String toString() {
-        return "PaymentEntity{" +
-                "id=" + id +
-                ", paymentKey='" + paymentKey + '\'' +
-                ", status=" + status +
-                ", totalAmount=" + totalAmount +
-                ", approvedAt=" + approvedAt +
-                ", canceledAt=" + canceledAt +
-                ", cancelReason='" + cancelReason + '\'' +
-                '}';
-    }
 }
