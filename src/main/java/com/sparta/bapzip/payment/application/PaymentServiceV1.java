@@ -48,21 +48,17 @@ public class PaymentServiceV1 {
     @Transactional
     public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
-        PaymentEntity payment = null;
         OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
-        UUID tempOrderId = UUID.fromString("fb64f420-6c70-49fa-806f-a5bc775b89db");
-        payment = PaymentEntity.builder()
+        PaymentEntity payment = PaymentEntity.builder()
                     .order(order)
                     .totalAmount(order.getTotalPrice())
                     .status(PaymentStatusEnum.IN_PROGRESS)
                     .build();
-            payment.markCreated(order.getUser().getId());
+        payment.markCreated(order.getUser().getId());
             paymentRepository.save(payment);
-            // TO-DO: order 상태 결제 대기 상태로 변경 추후 orderService 쪽으로 이동
-            // ----
             StringBuilder sb = new StringBuilder();
-            if(order.getOrderMenuList() != null){
-                sb.append("테스트 결제");
+            if(order.getOrderMenuList() == null){
+                throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
             } else {
                 sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
 
@@ -73,7 +69,6 @@ public class PaymentServiceV1 {
             paymentCreateRequest.setOrderId(order.getId().toString());
             paymentCreateRequest.setOrderName(sb.toString());
             paymentCreateRequest.setAmount(order.getTotalPrice());
-
         PaymentResponseDto response = createPayment(paymentCreateRequest);
 
         if (response != null && response.getPaymentKey() != null) {
