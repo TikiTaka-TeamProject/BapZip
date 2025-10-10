@@ -16,6 +16,8 @@ public interface MenuRepository {
 
     List<MenuEntity> findAll();
 
+    List<MenuEntity> findAllByShopId(UUID shopId);
+
     Page<MenuEntity> findByNameContaining(String keyword, Pageable pageable);
 
     List<MenuEntity> findAllByIdIn(List<UUID> ids);
