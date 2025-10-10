@@ -9,6 +9,7 @@ import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +53,35 @@ public class MenuServiceV1 {
         MenuEntity menu = getMenuById(menuId);
         return MenuDetailResponse.from(menu);
     }
+
+
+    /**
+     * 가게 별 메뉴 조회
+     * @param shopId 조회할 가게 ID
+     * @return 가게 정보와 메뉴 목록 포함 DTO
+     */
+    public MenuListByShopResponse getMenusByShop(UUID shopId) {
+
+        // 유효한 가게 검증 로직 shopService 호출 (가게 정보 조회)
+        ShopEntity shop = shopServiceV1.getShopById(shopId);
+
+        // 해당 가게 모든 메뉴 조회
+        List<MenuEntity> menus = menuRepository.findAllByShopId(shopId);
+
+        // 메뉴 리스트 -> MenuItemDto 리스트로 변환
+        List<MenuListByShopResponse.MenuItemDto> menuItems = menus.stream()
+                .map(menu -> new MenuListByShopResponse.MenuItemDto(
+                        menu.getId(),
+                        menu.getName(),
+                        menu.getContent(),
+                        menu.getPrice(),
+                        menu.getStatus()
+                ))
+                .toList();
+
+        return new MenuListByShopResponse(shop.getId(), shop.getName(), menuItems);
+    }
+
 
     // 메뉴 정보 수정
     // todo: (+) 의도한 공백 값 처리 로직 추가

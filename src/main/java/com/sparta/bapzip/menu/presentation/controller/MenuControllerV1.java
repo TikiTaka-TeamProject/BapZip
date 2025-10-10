@@ -8,6 +8,7 @@ import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,16 @@ public class MenuControllerV1 {
         // 페이징 검증 service 에서 처리
         Page<MenuSearchResponse> menuPage = menuService.searchMenus(request.keyword(), page, size, sortBy, isAsc);
         return ResponseEntity.ok(PageResponse.fromPage(menuPage, sortBy, isAsc));
+    }
+
+    /**
+     * 가게 별 메뉴 조회
+     * todo: url 매핑
+     */
+    @GetMapping("/{shopId}")
+    public ResponseEntity<MenuListByShopResponse> getMenusByShop(@PathVariable UUID shopId){
+        MenuListByShopResponse menuListByShop = menuService.getMenusByShop(shopId);
+        return ResponseEntity.ok(menuListByShop);
     }
 
     /**
