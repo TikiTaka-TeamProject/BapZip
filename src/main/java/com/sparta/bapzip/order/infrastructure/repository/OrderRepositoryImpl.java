@@ -8,11 +8,18 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+
 @Repository
+@RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
 
     private final OrderJpaRepository orderJpaRepository;
+
+    @Override
+    public OrderEntity save(OrderEntity order) {
+        return orderJpaRepository.save(order);
+    }
+
     @Override
     public Optional<OrderEntity> findById(UUID orderId) {
         return orderJpaRepository.findById(orderId);
