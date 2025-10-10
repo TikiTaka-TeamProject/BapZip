@@ -1,14 +1,11 @@
 package com.sparta.bapzip.user.presentation.controller;
 
 import com.sparta.bapzip.user.application.UserServiceV1;
-import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
-import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
-import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
+import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +24,9 @@ public class UserControllerV1 {
     public Page<UserResponseDto> getUserList(@RequestParam("page") int page,
                                              @RequestParam("size") int size,
                                              @RequestParam("sortBy") String sortBy,
-                                             @RequestParam("isAsc") boolean isAsc,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                             @RequestParam("isAsc") boolean isAsc) {
 
-        return userServiceV1.getUserList(page - 1, size, sortBy, isAsc, userDetails.getUser());
+        return userServiceV1.getUserList(page - 1, size, sortBy, isAsc);
     }
 
     @GetMapping("/{userId}")

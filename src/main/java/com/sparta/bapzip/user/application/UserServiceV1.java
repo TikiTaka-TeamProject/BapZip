@@ -43,12 +43,7 @@ public class UserServiceV1 {
         return SignupResponseDto.of(saveUser);
     }
 
-    public Page<UserResponseDto> getUserList(int page, int size, String sortBy, boolean isAsc, UserEntity user) {
-        UserRoleEnum role = user.getRole();
-        if (!(role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER))) {
-            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
-        }
-
+    public Page<UserResponseDto> getUserList(int page, int size, String sortBy, boolean isAsc) {
         if(size != 10 && size != 30 && size != 50) {
             size = 10;
         }
