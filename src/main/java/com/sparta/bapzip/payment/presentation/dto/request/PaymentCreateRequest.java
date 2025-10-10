@@ -34,14 +34,4 @@ public class PaymentCreateRequest {
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
 
-    @Override
-    public String toString() {
-        return "PaymentRequest{" +
-                "amount=" + amount +
-                ", orderId='" + orderId + '\'' +
-                ", orderName='" + orderName + '\'' +
-                ", requestedAt=" + requestedAt +
-                ", approvedAt=" + approvedAt +
-                '}';
-    }
 }

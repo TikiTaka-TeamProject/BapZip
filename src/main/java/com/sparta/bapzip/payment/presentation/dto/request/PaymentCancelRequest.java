@@ -19,15 +19,4 @@ public class PaymentCancelRequest {
     private LocalDateTime approvedAt;
     @NotNull(message = "취소 사유는 필수입니다.")
     private String cancelReason;
-
-    @Override
-    public String toString() {
-        return "PaymsentCancelRequest{" +
-                "orderId='" + orderId + '\'' +
-                ", paymentKey='" + paymentKey + '\'' +
-                ", requestedAt=" + requestedAt +
-                ", approvedAt=" + approvedAt +
-                ", cancelReason='" + cancelReason + '\'' +
-                '}';
-    }
 }
