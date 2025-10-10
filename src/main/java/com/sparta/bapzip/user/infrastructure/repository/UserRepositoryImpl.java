@@ -34,4 +34,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<UserEntity> findAll(Pageable pageable) {
         return userJpaRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<UserEntity> findByEmailAndIsDeletedFalse(String email) {
+        return userJpaRepository.findByEmailAndIsDeletedFalse(email);
+    }
 }

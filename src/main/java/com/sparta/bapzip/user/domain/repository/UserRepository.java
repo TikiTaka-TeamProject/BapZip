@@ -15,4 +15,6 @@ public interface UserRepository {
     UserEntity save(UserEntity user);
 
     Page<UserEntity> findAll(Pageable pageable);
+
+    Optional<UserEntity> findByEmailAndIsDeletedFalse(String email);
 }

@@ -2,8 +2,10 @@ package com.sparta.bapzip.user.presentation.controller;
 
 import com.sparta.bapzip.user.application.UserServiceV1;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
+import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
 import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
+import com.sparta.bapzip.user.application.dto.response.UserDeleteResponseDto;
 import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
 import com.sparta.bapzip.user.application.dto.response.UserUpdateResponseDto;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
@@ -42,5 +44,10 @@ public class UserControllerV1 {
     @PatchMapping
     public UserUpdateResponseDto updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userServiceV1.updateUser(userUpdateRequestDto, userDetails.getUser());
+    }
+
+    @DeleteMapping
+    public UserDeleteResponseDto deleteUser(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userServiceV1.deleteUser(userDeleteRequestDto, userDetails.getUser());
     }
 }
