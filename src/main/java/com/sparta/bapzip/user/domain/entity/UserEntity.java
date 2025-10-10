@@ -1,10 +1,12 @@
 package com.sparta.bapzip.user.domain.entity;
 
 import com.sparta.bapzip.global.common.BaseEntity;
+import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "p_users")
@@ -38,5 +40,10 @@ public class UserEntity extends BaseEntity {
                 .password(encodingPassword)
                 .role(requestDto.getRole())
                 .build();
+    }
+
+    public void update(UserUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {
+        this.name = requestDto.getName() == null ? this.name : requestDto.getName();
+        this.password = requestDto.getNewPassword() == null ? this.password : passwordEncoder.encode(requestDto.getNewPassword());
     }
 }
