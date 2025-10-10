@@ -32,6 +32,10 @@ public class OrderEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UserEntity user;
+
     @Column(nullable = false)
     private UUID shopId;
 
