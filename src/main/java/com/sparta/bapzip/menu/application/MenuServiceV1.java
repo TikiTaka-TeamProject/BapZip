@@ -116,7 +116,7 @@ public class MenuServiceV1 {
      * 메뉴 이름 기반 조회 (검색)
      *
      * @param keyword  검색어
-     * @param page     페이지 번호 (0부터 시작)
+     * @param page     페이지 번호 (1부터 시작)
      * @param size     한 페이지에 가져올 메뉴 개수 (유효 size: 10, 30, 50; 이외 값 입력시 10으로 고정)
      * @param sortBy   정렬할 필드명 (ex) "createdAt", "price")
      * @param isAsc    정렬 방향 (true: 오름차순, false: 내림차순(default))
@@ -129,7 +129,7 @@ public class MenuServiceV1 {
 
         // sort (정렬) param
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, validatedSize, Sort.by(direction, sortBy));
+        Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, sortBy));
 
         Page<MenuEntity> menuPage = menuRepository.findByNameContaining(keyword, pageable);
         return menuPage.map(MenuSearchResponse::from);

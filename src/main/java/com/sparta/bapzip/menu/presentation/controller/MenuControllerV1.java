@@ -1,6 +1,6 @@
 package com.sparta.bapzip.menu.presentation.controller;
 
-import com.sparta.bapzip.global.common.dto.PageResponse;
+import com.sparta.bapzip.global.common.dto.PageResponseDto;
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuSearchRequest;
@@ -50,23 +50,23 @@ public class MenuControllerV1 {
      * 메뉴 검색 조회
      */
     @GetMapping("/search")
-    public ResponseEntity<PageResponse<MenuSearchResponse>> searchMenus(
+    public ResponseEntity<PageResponseDto<MenuSearchResponse>> searchMenus(
             @Valid @ModelAttribute MenuSearchRequest request,
-            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc
     ) {
         // 페이징 검증 service 에서 처리
         Page<MenuSearchResponse> menuPage = menuService.searchMenus(request.keyword(), page, size, sortBy, isAsc);
-        return ResponseEntity.ok(PageResponse.fromPage(menuPage, sortBy, isAsc));
+        return ResponseEntity.ok(PageResponseDto.fromPage(menuPage, sortBy, isAsc));
     }
 
     /**
      * 가게 별 메뉴 조회
      * todo: url 매핑
      */
-    @GetMapping("/{shopId}")
+    @GetMapping("/shops/{shopId}")
     public ResponseEntity<MenuListByShopResponse> getMenusByShop(@PathVariable UUID shopId){
         MenuListByShopResponse menuListByShop = menuService.getMenusByShop(shopId);
         return ResponseEntity.ok(menuListByShop);
