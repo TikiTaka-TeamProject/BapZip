@@ -4,6 +4,7 @@ import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.order.application.dto.OrderCreationDto;
 import com.sparta.bapzip.order.application.dto.OrderDetailDto;
+import com.sparta.bapzip.order.application.dto.ShopOrderDto;
 import com.sparta.bapzip.order.application.exception.ForbiddenOrderAccessException;
 import com.sparta.bapzip.order.application.dto.OrderDto;
 import com.sparta.bapzip.order.application.exception.MenusNotFoundInOrderException;
@@ -96,8 +97,18 @@ public class OrderServiceV1 {
      * @return
      */
     public Page<OrderDto> getOrdersByUser(UserEntity user, Pageable pageable) {
+
         return orderRepository.findOrderByUser(user, pageable)
                 .map(OrderDto::from);
+    }
+
+    public Page<ShopOrderDto> getOrderByShopId(UUID shopId, UserEntity user, Pageable pageable) {
+        ShopEntity shop = shopService.getShopById(shopId);
+        shopService.validateShopOwner(shop.getId(), user.getId());
+
+        return orderRepository.findOrderByShopId(shopId, pageable)
+                .map(ShopOrderDto::from);
+
     }
 
     // private 헬퍼 메서드

@@ -5,6 +5,7 @@ import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.order.presentation.dto.response.OrderDetailResponse;
 import com.sparta.bapzip.order.presentation.dto.response.OrderResponse;
 import com.sparta.bapzip.order.presentation.dto.response.CreateOrderResponse;
+import com.sparta.bapzip.order.presentation.dto.response.ShopOrderResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,10 @@ public class OrderControllerV1 {
      * 특정 유저 주문 전체 조회
      */
     @GetMapping
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(@AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) {
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            Pageable pageable)
+    {
         return ResponseEntity.ok(
                 orderServiceV1.getOrdersByUser(userDetails.getUser(), pageable)
                         .map(OrderResponse::from)
@@ -38,13 +42,31 @@ public class OrderControllerV1 {
     /**
      * 특정 유저의 주문 상세내역 조회
      */
-    @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrderById(@PathVariable UUID orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(OrderDetailResponse.from(
-                        orderServiceV1.getOrderById(orderId, userDetails.getUser())
-                ));
+    @GetMapping(params = "orderId")
+    public ResponseEntity<?> getOrderById(
+            @RequestParam UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails)
+    {
+        return ResponseEntity.ok(
+                (OrderDetailResponse
+                        .from(orderServiceV1.getOrderById(orderId, userDetails.getUser()))
+                )
+        );
+    }
+
+    /**
+     * 특정 가게의 주문 전체 조회
+     */
+    @GetMapping(params = "shopId")
+    public ResponseEntity<Page<?>> getOrderByShopId(
+            @RequestParam UUID shopId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            Pageable pageable)
+    {
+        return ResponseEntity.ok(
+                orderServiceV1.getOrderByShopId(shopId, userDetails.getUser(), pageable)
+                        .map(ShopOrderResponse::from)
+        );
     }
 
     /**
