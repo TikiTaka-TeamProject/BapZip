@@ -2,15 +2,19 @@ package com.sparta.bapzip.menu.presentation.controller;
 
 import com.sparta.bapzip.menu.application.MenuServiceV1;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.presentation.dto.request.MenuSearchRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuUpdateRequest;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -38,6 +42,31 @@ public class MenuControllerV1 {
     public ResponseEntity<MenuDetailResponse> getMenuById(@PathVariable UUID menuId){
         MenuDetailResponse menuDetailResponse = menuService.getMenuDetail(menuId);
         return ResponseEntity.ok(menuDetailResponse);
+    }
+
+    /**
+     * 메뉴 검색 조회
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Page<MenuSearchResponse>> searchMenus(
+            @Valid @ModelAttribute MenuSearchRequest request,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc
+    ) {
+        // 페이징 검증 service 에서 처리
+        Page<MenuSearchResponse> menuPage = menuService.searchMenus(request.keyword(), page, size, sortBy, isAsc);
+        return ResponseEntity.ok(menuPage);
+    }
+
+    /**
+     * 메뉴 전체 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<MenuSearchResponse>> getAllMenus(){
+        List<MenuSearchResponse> menuList = menuService.getAllMenus();
+        return ResponseEntity.ok(menuList);
     }
 
     /**

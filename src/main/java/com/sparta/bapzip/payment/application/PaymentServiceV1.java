@@ -47,15 +47,42 @@ public class PaymentServiceV1 {
      */
     @Transactional
     public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
-        PaymentEntity payment;
-
-        OrderEntity order = orderRepository.findById(orderId).orElse(null);
-        if(order == null){
-            throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
-        } else {
-            payment = PaymentEntity.builder()
-                    .order(order)
-                    .totalAmount(order.getTotalAmount())
+        // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
+        PaymentEntity payment = null;
+//       // OrderEntity 조회 구현 이후 주석 해제
+//        OrderEntity order =orderRepository.findById(orderId).orElse(null);
+//        if(order == null){
+//              throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
+//        } else {
+//            payment = PaymentEntity.builder()
+//                    .order(order)
+//                    .totalAmount(order.getTotalAmount())
+//                    .status(PaymentStatusEnum.IN_PROGRESS)
+//                    .build();
+//            paymentRepository.save(payment);
+//            StringBuilder sb = new StringBuilder();
+//            sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenuName());
+//
+//            if( order.getOrderMenuList().size()>2){
+//                sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
+//            }
+//            paymentCreateRequest.setOrderId(order.getId().toString());
+//            paymentCreateRequest.setOrderName(sb.toString());
+//            paymentCreateRequest.setAmount(order.getTotalAmount());
+//        }
+        // 임시 결제 정보
+//        String orderIdStr = UUID.randomUUID().toString();
+        String orderName = "테스트 결제";
+        int amount = 1000000;
+        UUID tempOrderId = UUID.fromString("fb64f420-6c70-49fa-806f-a5bc775b89db");
+        payment = PaymentEntity.builder()
+                    .order(
+                            OrderEntity.builder()
+                                    .id(tempOrderId)
+                                    .totalPrice(amount)
+                                    .build()
+                    )
+                    .totalAmount(amount)
                     .status(PaymentStatusEnum.IN_PROGRESS)
                     .build();
             payment.markCreated(order.getUser().getId());
