@@ -1,6 +1,7 @@
 package com.sparta.bapzip.order.presentation.dto.response;
 
 import com.sparta.bapzip.order.application.dto.OrderDto;
+import com.sparta.bapzip.order.application.dto.OrderMenuInfo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,22 @@ import java.util.UUID;
 @Builder
 @RequiredArgsConstructor
 public class OrderResponse {
+
     private final UUID orderId;
     private final UUID storeId;
     private final String shopName;
     private final int totalPrice;
     private final LocalDateTime orderDate;
-    private final List<OrderResponse.MenuInfo> menuInfoList;
+    private final List<MenuInfo> menuInfoList;
 
-    public static OrderResponse from(OrderDto orderDto) {
+    public static OrderResponse from(OrderDto dto) {
         return OrderResponse.builder()
-                .orderId(orderDto.getOrderId())
-                .storeId(orderDto.getStoreId())
-                .shopName(orderDto.getShopName())
-                .totalPrice(orderDto.getTotalPrice())
-                .orderDate(orderDto.getOrderDate())
-                .menuInfoList(orderDto.getMenuInfoList().stream()
+                .orderId(dto.getOrderId())
+                .storeId(dto.getStoreId())
+                .shopName(dto.getShopName())
+                .totalPrice(dto.getTotalPrice())
+                .orderDate(dto.getOrderDate())
+                .menuInfoList(dto.getMenuInfoList().stream()
                         .map(MenuInfo::from)
                         .toList())
                 .build();
@@ -36,16 +38,16 @@ public class OrderResponse {
     @Getter
     @Builder
     @RequiredArgsConstructor
-    private static class MenuInfo {
-        private final String name;
+    public static class MenuInfo {
+        private final String menuName;
         private final int quantity;
         private final int price;
 
-        public static MenuInfo from(OrderDto.MenuInfo menuInfo) {
+        public static MenuInfo from(OrderMenuInfo info) {
             return MenuInfo.builder()
-                    .name(menuInfo.getName())
-                    .quantity(menuInfo.getQuantity())
-                    .price(menuInfo.getPrice())
+                    .menuName(info.getMenuName())
+                    .quantity(info.getQuantity())
+                    .price(info.getPrice())
                     .build();
         }
     }
