@@ -1,32 +1,25 @@
 package com.sparta.bapzip.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
  * success 응답
  */
-@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL) // null 데이터 응답에서 제외
-public class ApiResponse<T> {
+public record ApiResponse<T>(
+        boolean success,
+        int code,
+        T data
+) {
 
-    private final boolean success;
-    private final int code;
-    private final T data;
-
-    // 생성자
-    private ApiResponse(HttpStatus status, T data) {
-        this.success = true;
-        this.code = status.value();
-        this.data = data;
+    public ApiResponse(HttpStatus status, T data) {
+        this(true, status.value(), data);
     }
 
-    private ApiResponse(HttpStatus status) {
-        this.success = true;
-        this.code = status.value();
-        this.data = null;
+    public ApiResponse(HttpStatus status) {
+        this(true, status.value(), null);
     }
 
     /**
