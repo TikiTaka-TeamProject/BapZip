@@ -40,7 +40,7 @@ public class CategoryServiceV1 {
     @Transactional(readOnly = true)
     public List<ShopDetailForUserResponse> getShopsByCategory (UUID categoryId){
         Optional<CategoryEntity> category = categoryRepository.findById(categoryId);
-        if(!category.isPresent()){
+        if(category.isEmpty()){
             throw new GlobalException(ErrorCode.CATEGORY_NOT_FOUND);
         } else if (category.get().getIsDeleted()) {
             throw new GlobalException(ErrorCode.INVALID_CATEGORY_ID);
@@ -84,5 +84,12 @@ public class CategoryServiceV1 {
         category.markDeleted(userId);
         categoryRepository.save(category);
         return CategoryDetailResponse.toDto(category);
+    }
+
+    public List<CategoryDetailResponse> getAllCategories() {
+        return categoryRepository.findAllForAdmin()
+                .stream()
+                .map(CategoryDetailResponse::toDtoForAdmin)
+                .toList();
     }
 }

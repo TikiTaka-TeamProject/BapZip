@@ -36,4 +36,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public Optional<CategoryEntity> findByName(String name) {
         return categoryJpaRepository.findByName(name);
     }
+
+    @Override
+    public List<CategoryEntity> findAllForAdmin() {
+        return categoryJpaRepository.findAll();
+    }
 }

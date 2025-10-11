@@ -16,4 +16,6 @@ public interface CategoryRepository {
     Optional<CategoryEntity> findByContent(String content);
 
     Optional<CategoryEntity> findByName(String name);
+    public List<CategoryEntity> findAllForAdmin();
+
 }

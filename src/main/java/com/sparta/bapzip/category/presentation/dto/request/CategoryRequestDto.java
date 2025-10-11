@@ -9,6 +9,8 @@ import lombok.*;
 import java.util.UUID;
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryRequestDto {
@@ -18,13 +20,4 @@ public class CategoryRequestDto {
     private String name;
 
     private String content;
-
-    @Override
-    public String toString() {
-        return "CategoryRequestDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
 }

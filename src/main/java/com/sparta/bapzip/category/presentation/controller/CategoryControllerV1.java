@@ -32,6 +32,12 @@ public class CategoryControllerV1 {
         return ResponseEntity.ok(categories);
     }
 
+    //  MASTER, MANAGER만 접근 가능
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER')")
+    public ResponseEntity<List<CategoryDetailResponse>> getAllCategoriesForAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(categoryServiceV1.getAllCategories());
+    }
     // 카테고리 ID 기준 가게 리스트 조회
     @GetMapping("/{categoryId}/shops")
     public ResponseEntity<List<ShopDetailForUserResponse>> getShopsByCategory(@PathVariable UUID categoryId) {
@@ -57,7 +63,7 @@ public class CategoryControllerV1 {
     @DeleteMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
     public ResponseEntity<CategoryDetailResponse> deleteCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId) {
-        categoryServiceV1.deleteCategory(categoryId, userDetails.getUser().getId());
-        return ResponseEntity.noContent().build();
+        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.deleteCategory(categoryId, userDetails.getUser().getId());
+        return ResponseEntity.ok(categoryDetailResponse);
     }
 }

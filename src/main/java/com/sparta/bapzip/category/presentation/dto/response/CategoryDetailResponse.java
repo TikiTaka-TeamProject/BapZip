@@ -7,6 +7,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDetailResponse {
@@ -18,22 +19,19 @@ public class CategoryDetailResponse {
     private String content;
 
     private boolean isDeleted;
-
-    @Override
-    public String toString() {
-        return "CategoryDetailResponse{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", content='" + content + '\'' +
-                ", isDeleted='" + isDeleted + '\'' +
-                '}';
-    } 
-    public static CategoryDetailResponse toDto(CategoryEntity category) {
+    public static CategoryDetailResponse toDtoForAdmin(CategoryEntity category) {
         return CategoryDetailResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .content(category.getContent())
                 .isDeleted(category.getIsDeleted())
+                .build();
+    }
+    public static CategoryDetailResponse toDto(CategoryEntity category) {
+        return CategoryDetailResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .content(category.getContent())
                 .build();
     }
 
