@@ -2,10 +2,9 @@ package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
+import com.sparta.bapzip.user.application.dto.request.UserRoleChangeRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
-import com.sparta.bapzip.user.application.dto.response.UserDeleteResponseDto;
-import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
-import com.sparta.bapzip.user.application.dto.response.UserUpdateResponseDto;
+import com.sparta.bapzip.user.application.dto.response.*;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import com.sparta.bapzip.user.application.excpetion.PasswordNotMatchException;
 import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
@@ -14,7 +13,6 @@ import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
-import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,6 +93,20 @@ public class UserServiceV1 {
         user.markDeleted(user.getId());
         UserEntity saveUser = userRepository.save(user);
         return UserDeleteResponseDto.of(saveUser);
+    }
+
+    public UserRoleChangeResponseDto changeUserRole(Long userId, UserRoleChangeRequestDto userRoleChangeRequestDto, UserEntity user) {
+        UserRoleEnum role = userRoleChangeRequestDto.getRole();
+        // MASTER도 role을 MASTER로 변경 불가
+        if (role.equals(UserRoleEnum.MASTER)) {
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+        }
+
+        UserEntity targetUser = findUser(userId);
+        targetUser.changeRole(role);
+        targetUser.markUpdated(user.getId());
+
+        return UserRoleChangeResponseDto.of(targetUser);
     }
 
     private UserEntity findUser(Long userId) {
