@@ -5,6 +5,8 @@ import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,8 +43,9 @@ public class ShopRepositoryImpl implements ShopRepository {
     public List<ShopEntity> findAll() {
         return shopJpaRepository.findAll();
     }
+
     @Override
-    public List<ShopEntity> findAllByCategoryIdAndIsDeletedFalse(UUID categoryId) {
-        return shopJpaRepository.findAllByCategoryIdAndIsDeletedFalse(categoryId);
+    public Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable) {
+        return shopJpaRepository.findByCategoryIdAndIsDeletedFalse(categoryId, pageable);
     }
 }

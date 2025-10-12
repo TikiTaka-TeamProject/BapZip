@@ -2,6 +2,8 @@ package com.sparta.bapzip.shop.domain.repository;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,6 @@ public interface ShopRepository {
     List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
 
     // 카테고리 ID로 조회
-    List<ShopEntity> findAllByCategoryIdAndIsDeletedFalse(UUID categoryId);
+    Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
     List<ShopEntity> findAll();
 }
