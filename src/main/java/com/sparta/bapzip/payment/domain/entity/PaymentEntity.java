@@ -31,10 +31,10 @@ public class PaymentEntity extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
-    @Column(name = "approved_at", updatable = false)
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    @Column(name = "canceled_at", updatable = false)
+    @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
     @Column(name = "cancel_reason")
@@ -46,7 +46,8 @@ public class PaymentEntity extends BaseEntity {
         this.approvedAt = approvedAt;
     }
     public void updatePaymentCancelResult(PaymentStatusEnum status, String cancelReason, LocalDateTime canceledAt) {
-        this.status = PaymentStatusEnum.CANCELED;
+        this.status = status;
         this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
     }
 }

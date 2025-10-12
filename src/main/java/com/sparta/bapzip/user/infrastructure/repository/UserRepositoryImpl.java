@@ -3,6 +3,8 @@ package com.sparta.bapzip.user.infrastructure.repository;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -26,5 +28,15 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public UserEntity save(UserEntity user) {
         return userJpaRepository.save(user);
+    }
+
+    @Override
+    public Page<UserEntity> findAll(Pageable pageable) {
+        return userJpaRepository.findAll(pageable);
+    }
+
+    @Override
+    public Optional<UserEntity> findByEmailAndIsDeletedFalse(String email) {
+        return userJpaRepository.findByEmailAndIsDeletedFalse(email);
     }
 }

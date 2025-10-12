@@ -30,6 +30,7 @@ public class CategoryEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "category")
     @JsonIgnore
+    @Builder. Default
     private List<ShopEntity> shopEntityList = new ArrayList<>();
 
     @Builder

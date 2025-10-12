@@ -43,6 +43,7 @@ public class ServiceAreaEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "serviceArea")
     @JsonIgnore
+    @Builder. Default
     private List<ShopEntity> shopList = new ArrayList<>();
 
 }
