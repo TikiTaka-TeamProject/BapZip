@@ -1,50 +1,49 @@
 package com.sparta.bapzip.order.presentation.dto.response;
 
-import com.sparta.bapzip.order.application.dto.OrderCreationDto;
+import com.sparta.bapzip.order.application.dto.OrderDetailDto;
 import com.sparta.bapzip.order.application.dto.OrderMenuInfo;
 import com.sparta.bapzip.order.domain.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder
-public class CreateOrderResponse {
-
+public class OrderDetailResponse {
     private final UUID orderId;
     private final UUID shopId;
-    private final Long userId;
     private final String shopName;
-    private final OrderStatus status;
+    private final Long customerId;
+    private final String customerName;
+    private final OrderStatus orderStatus;
     private final List<MenuInfo> menuInfoList;
-    private final int totalAmount;
+    private final int totalPrice;
     private final String deliveryAddress;
-    private final String detailAddress;
     private final String paymentType;
-    private final LocalDateTime createdAt;
+    private final String specialRequests;
+    private final LocalDateTime orderDate;
 
-    public static CreateOrderResponse from(OrderCreationDto dto) {
-
+    public static OrderDetailResponse from(OrderDetailDto dto) {
         List<MenuInfo> mappedMenuInfoList = dto.getMenuInfoList().stream()
                 .map(MenuInfo::from)
                 .toList();
 
-        return CreateOrderResponse.builder()
+        return OrderDetailResponse.builder()
                 .orderId(dto.getOrderId())
                 .shopId(dto.getShopId())
-                .userId(dto.getUserId())
                 .shopName(dto.getShopName())
-                .status(dto.getStatus())
+                .customerId(dto.getCustomerId())
+                .customerName(dto.getCustomerName())
+                .orderStatus(dto.getOrderStatus())
                 .menuInfoList(mappedMenuInfoList)
-                .totalAmount(dto.getTotalAmount())
+                .totalPrice(dto.getTotalPrice())
                 .deliveryAddress(dto.getDeliveryAddress())
-                .detailAddress(dto.getDetailAddress())
                 .paymentType(dto.getPaymentType())
-                .createdAt(dto.getCreatedAt())
+                .specialRequests(dto.getSpecialRequests())
+                .orderDate(dto.getOrderDate())
                 .build();
     }
 
