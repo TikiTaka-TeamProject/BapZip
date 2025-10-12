@@ -40,7 +40,7 @@ public enum ErrorCode {
     MENU_NOT_IN_SHOP(HttpStatus.BAD_REQUEST, "다른 가게의 메뉴가 포함되어 있습니다."),
     MENU_NOT_FOUNT_IN_ORDER(HttpStatus.BAD_REQUEST, "존재하지 않는 메뉴가 포함되어 있습니다."),
     SOLD_OUT_MENU(HttpStatus.BAD_REQUEST, "선택하신 메뉴 중 품절된 메뉴가 포함되어 있습니다."),
-    FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다.");
+    FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다."),
   
     // ====================== Shop ======================
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
@@ -61,7 +61,7 @@ public enum ErrorCode {
     SHOP_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게를 삭제할 권한이 없습니다."),
     SHOP_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
     SHOP_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "가게 삭제 처리 중 오류가 발생했습니다."),
-    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다."),
+    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다.");
 
     
 
