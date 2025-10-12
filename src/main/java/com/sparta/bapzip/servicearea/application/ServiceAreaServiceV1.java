@@ -26,4 +26,8 @@ public class ServiceAreaServiceV1 {
         return AreaReturnDto.from(serviceAreaRepository.save(ServiceAreaEntity.create(requestDto)));
     }
 
+    public Boolean isExistenceArea(UUID serviceAreaId, Double x, Double y){
+        return serviceAreaRepository.isExistenceArea(serviceAreaId,x,y);
+    }
+
 }

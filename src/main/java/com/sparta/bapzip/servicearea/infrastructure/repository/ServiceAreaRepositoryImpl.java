@@ -5,6 +5,7 @@ import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.awt.*;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,5 +23,10 @@ public class ServiceAreaRepositoryImpl implements ServiceAreaRepository {
     @Override
     public ServiceAreaEntity save(ServiceAreaEntity serviceAreaEntity) {
         return serviceAreaJpaRepository.save(serviceAreaEntity);
+    }
+
+    @Override
+    public Boolean isExistenceArea(UUID id, Double x, Double y) {
+        return serviceAreaJpaRepository.isExistenceArea(id, x, y);
     }
 }
