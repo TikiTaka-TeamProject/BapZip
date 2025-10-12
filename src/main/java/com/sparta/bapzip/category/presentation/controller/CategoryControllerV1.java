@@ -8,6 +8,7 @@ import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,9 +23,7 @@ import java.util.UUID;
 @RequestMapping("/v1/categories")
 public class CategoryControllerV1 {
     private final CategoryServiceV1 categoryServiceV1;
-    private final ShopServiceV1 shopServiceV1;
 
-    // Todo: 카테고리별 가게 조회 API 비 로그인 상태에서도 조회할 수 있도록 수정
     // 삭제되지 않은 카테고리 리스트 조회
     @GetMapping
     public ResponseEntity<List<CategoryDetailResponse>> getActiveCategories() {
@@ -40,9 +39,14 @@ public class CategoryControllerV1 {
     }
     // 카테고리 ID 기준 가게 리스트 조회
     @GetMapping("/{categoryId}/shops")
-    public ResponseEntity<List<ShopDetailForUserResponse>> getShopsByCategory(@PathVariable UUID categoryId) {
-        List<ShopDetailForUserResponse> shops = categoryServiceV1.getShopsByCategory(categoryId);
-        return ResponseEntity.ok(shops);
+    public Page<ShopDetailForUserResponse> getShopsByCategory(
+            @PathVariable UUID categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "false") boolean isAsc
+    ) {
+        return categoryServiceV1.getShopsByCategory(categoryId, page, size, sortBy, isAsc);
     }
 
     // 카테고리 생성

@@ -5,10 +5,15 @@ import com.sparta.bapzip.category.domain.repository.CategoryRepository;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.category.presentation.dto.response.CategoryDetailResponse;
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +43,15 @@ public class CategoryServiceV1 {
 
     // 카테고리 ID 기준 가게 리스트 조회
     @Transactional(readOnly = true)
-    public List<ShopDetailForUserResponse> getShopsByCategory (UUID categoryId){
-        Optional<CategoryEntity> category = categoryRepository.findById(categoryId);
-        if(category.isEmpty()){
-            throw new GlobalException(ErrorCode.CATEGORY_NOT_FOUND);
-        } else if (category.get().getIsDeleted()) {
-            throw new GlobalException(ErrorCode.INVALID_CATEGORY_ID);
-        }
-        return shopRepository.findAllByCategoryIdAndIsDeletedFalse(categoryId)
-                .stream()
-                .map(ShopDetailForUserResponse::from)
-                .toList();
+    public Page<ShopDetailForUserResponse> getShopsByCategory(UUID categoryId, int page, int size, String sortBy, boolean isAsc) {
+        int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
+        String validatedSortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy;
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, validatedSortBy));
+       Page<ShopEntity> shopPage = shopRepository.findByCategoryIdAndIsDeletedFalse(categoryId, pageable);
 
+        // Entity → DTO 변환
+        return shopPage.map(ShopDetailForUserResponse::from);
     }
 
     // 카테고리 생성
