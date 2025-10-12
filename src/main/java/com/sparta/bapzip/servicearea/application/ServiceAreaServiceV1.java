@@ -1,9 +1,9 @@
 package com.sparta.bapzip.servicearea.application;
 
-import com.sparta.bapzip.category.domain.entity.CategoryEntity;
-import com.sparta.bapzip.category.infrastructure.repository.CategoryJpaRepository;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
+import com.sparta.bapzip.servicearea.application.dto.AreaReturnDto;
+import com.sparta.bapzip.servicearea.application.dto.AreaSaveDto;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,4 +21,9 @@ public class ServiceAreaServiceV1 {
         return serviceAreaRepository.getServiceAreaById(serviceAreaId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
     }
+
+    public AreaReturnDto createServiceArea(AreaSaveDto requestDto){
+        return AreaReturnDto.from(serviceAreaRepository.save(ServiceAreaEntity.create(requestDto)));
+    }
+
 }

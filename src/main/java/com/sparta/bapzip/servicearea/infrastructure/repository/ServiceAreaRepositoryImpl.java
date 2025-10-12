@@ -18,4 +18,9 @@ public class ServiceAreaRepositoryImpl implements ServiceAreaRepository {
     public Optional<ServiceAreaEntity> getServiceAreaById(UUID serviceAreaId) {
         return serviceAreaJpaRepository.findById(serviceAreaId);
     }
+
+    @Override
+    public ServiceAreaEntity save(ServiceAreaEntity serviceAreaEntity) {
+        return serviceAreaJpaRepository.save(serviceAreaEntity);
+    }
 }
