@@ -26,15 +26,27 @@ public record ApiResponse<T>(
      * static
      */
 
-    // 데이터 포함 200 ok
+    // 200 OK
     public static <T> ResponseEntity<ApiResponse<T>> ok(T data) {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, data));
     }
 
-    // 데이터가 없는 200 ok (noContent)
     public static <T> ResponseEntity<ApiResponse<T>> ok() {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK));
     }
+
+    // 201 CREATED
+    public static <T> ResponseEntity<ApiResponse<T>> created(T data) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(HttpStatus.CREATED, data));
+    }
+
+    // 204 No Content
+    public static <T> ResponseEntity<ApiResponse<T>> noContent() {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(new ApiResponse<>(HttpStatus.NO_CONTENT));
+    }
+
 
     // HTTP 상태 지정 성공 응답 of (데이터 O)
     public static <T> ResponseEntity<ApiResponse<T>> of(HttpStatus status, T data) {

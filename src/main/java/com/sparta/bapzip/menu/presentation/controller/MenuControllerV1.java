@@ -36,7 +36,7 @@ public class MenuControllerV1 {
     @PostMapping
     public ResponseEntity<ApiResponse<MenuCreateResponse>> createMenu(@RequestBody @Valid MenuCreateRequest request){
         MenuCreateResponse menuCreateResponse = menuService.createMenu(request);
-        return ApiResponse.of(HttpStatus.CREATED, menuCreateResponse);
+        return ApiResponse.created(menuCreateResponse);
     }
 
     /**
@@ -99,7 +99,7 @@ public class MenuControllerV1 {
     @PatchMapping("/{menuId}/status")
     public ResponseEntity<ApiResponse<MenuDetailResponse>> updateMenuStatus(@PathVariable UUID menuId,
                                                                @RequestBody @Valid MenuStatusUpdateRequest request){
-        MenuDetailResponse MenuDetailResponse = menuService.updateMenuStatus(menuId, request);
-        return ApiResponse.ok(MenuDetailResponse);
+        MenuDetailResponse menuDetailResponse = menuService.updateMenuStatus(menuId, request);
+        return ApiResponse.ok(menuDetailResponse);
     }
 }
