@@ -26,8 +26,16 @@ public class ServiceAreaServiceV1 {
         return AreaReturnDto.from(serviceAreaRepository.save(ServiceAreaEntity.create(requestDto)));
     }
 
-    public Boolean isExistenceArea(UUID serviceAreaId, Double x, Double y){
-        return serviceAreaRepository.isExistenceArea(serviceAreaId,x,y);
+    /**
+     * 특정 Point가 주어진 Polygon을 가진 엔티티 내에 포함되는지 여부를 확인합니다.
+     * ST_Contains 함수 자체의 BOOLEAN 결과를 직접 반환합니다.
+     * @param serviceAreaId 확인할 Polygon 엔티티의 ID
+     * @param longitude Point의 경도 (X 좌표)
+     * @param latitude Point의 위도 (Y 좌표)
+     * @return Polygon이 Point를 포함하면 TRUE, 아니면 FALSE
+     */
+    public Boolean isExistenceArea(UUID serviceAreaId, Double longitude, Double latitude){
+        return serviceAreaRepository.isExistenceArea(serviceAreaId, longitude, latitude);
     }
 
 }

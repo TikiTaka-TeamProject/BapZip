@@ -30,7 +30,7 @@ public class ServiceAreaEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, columnDefinition="geometry")
+    @Column(nullable = false, columnDefinition="geometry(Polygon,4326)")
     protected Polygon area;
 
     @Column(columnDefinition = "boolean default true")
