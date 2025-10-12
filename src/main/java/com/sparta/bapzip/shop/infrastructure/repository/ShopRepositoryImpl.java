@@ -41,4 +41,9 @@ public class ShopRepositoryImpl implements ShopRepository {
     public List<ShopEntity> findAll() {
         return shopJpaRepository.findAll();
     }
+
+    @Override
+    public Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId) {
+        return shopJpaRepository.findByIdAndIsDeletedFalse(shopId);
+    }
 }

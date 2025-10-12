@@ -14,4 +14,5 @@ public interface ShopRepository {
     Optional<ShopEntity> findById(UUID shopId);
     List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
     List<ShopEntity> findAll();
+    Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 }
