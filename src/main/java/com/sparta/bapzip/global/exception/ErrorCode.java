@@ -47,6 +47,10 @@ public enum ErrorCode {
     ORDER_NOT_DELIVERING(HttpStatus.BAD_REQUEST, "배달 중인 주문만 완료할 수 있습니다."),
     ORDER_NOT_CANCELLABLE(HttpStatus.BAD_REQUEST, "이미 처리 중인 주문은 취소할 수 없습니다."),
 
+    FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다.");
+  
+    // ====================== Shop ======================
+  
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
     // Shop: 공통
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다."),
@@ -62,7 +66,12 @@ public enum ErrorCode {
 
     // Shop: 수정, 삭제
     UNAUTHORIZED_SHOP_ACCESS(HttpStatus.FORBIDDEN, "해당 가게에 접근할 권한이 없습니다."),
-    FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다.");
+    SHOP_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게를 삭제할 권한이 없습니다."),
+    SHOP_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
+    SHOP_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "가게 삭제 처리 중 오류가 발생했습니다."),
+    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다."),
+
+    
 
     private final HttpStatus status;
     private final String message;
