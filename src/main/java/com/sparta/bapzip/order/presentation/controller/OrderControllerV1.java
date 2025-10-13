@@ -1,5 +1,6 @@
 package com.sparta.bapzip.order.presentation.controller;
 
+import com.sparta.bapzip.global.response.ApiResponse;
 import com.sparta.bapzip.order.application.OrderServiceV1;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.order.presentation.dto.response.OrderDetailResponse;
@@ -84,88 +85,87 @@ public class OrderControllerV1 {
      * 주문 수락
      */
     @PutMapping("/{orderId}/accept")
-    public ResponseEntity<Void> acceptOrder(
+    public ResponseEntity<ApiResponse<String>> acceptOrder(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.acceptOrder(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("주문이 수락되었습니다.");
     }
 
     /**
      * 조리 시작
      */
     @PutMapping("/{orderId}/start-cooking")
-    public ResponseEntity<Void> startCooking(
+    public ResponseEntity<ApiResponse<String>> startCooking(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.startCooking(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("조리를 시작했습니다.");
     }
 
     /**
      * 조리 완료
      */
     @PutMapping("/{orderId}/complete-cooking")
-    public ResponseEntity<Void> completeCooking(
+    public ResponseEntity<ApiResponse<String>> completeCooking(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.completeCooking(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("조리가 완료되었습니다.");
     }
 
     /**
      * 배달 시작
      */
     @PutMapping("/{orderId}/start-delivery")
-    public ResponseEntity<Void> startDelivery(
+    public ResponseEntity<ApiResponse<String>> startDelivery(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.startDelivery(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("배달을 시작했습니다.");
     }
 
     /**
      * 배달 완료
      */
     @PutMapping("/{orderId}/complete")
-    public ResponseEntity<Void> completeDelivery(
+    public ResponseEntity<ApiResponse<String>> completeDelivery(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.completeDelivery(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("배달이 완료되었습니다.");
     }
 
     /**
-     * 조리 완료
+     * 주문 거절
      */
     @PutMapping("/{orderId}/reject")
-    public ResponseEntity<Void> rejectOrder(
+    public ResponseEntity<ApiResponse<String>> rejectOrder(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.rejectOrder(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("주문이 거절되었습니다.");
     }
 
     /**
      * 주문 취소
      */
     @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<Void> cancelOrder(
+    public ResponseEntity<ApiResponse<String>> cancelOrder(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.cancelOrder(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("주문이 취소되었습니다.");
     }
 
     /**
      * 주문 내역 삭제
      */
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<Void> deleteOrder(
+    public ResponseEntity<ApiResponse<String>> deleteOrder(
             @PathVariable UUID orderId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails)
-    {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.delete(orderId, userDetails.getUser());
-        return ResponseEntity.ok().build();
+        return ApiResponse.ok("주문 내역이 삭제되었습니다.");
     }
 }
