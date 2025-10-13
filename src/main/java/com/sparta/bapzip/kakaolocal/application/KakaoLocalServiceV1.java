@@ -3,7 +3,7 @@ package com.sparta.bapzip.kakaolocal.application;
 import com.google.gson.JsonObject;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
-import com.sparta.bapzip.kakaolocal.domain.exception.KakaoLocalResponseNotFound;
+import com.sparta.bapzip.kakaolocal.application.exception.KakaoLocalResponseNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +32,11 @@ public class KakaoLocalServiceV1 {
         JsonObject documents = kakaoLocalCallable.getDocuments(query);
         //응답 documents가 없을경우
         if (documents == null){
-            throw new KakaoLocalResponseNotFound(ErrorCode.KAKAO_MAP_DOCUMENTS_NOT_FOUND);
+            throw new KakaoLocalResponseNotFoundException(ErrorCode.KAKAO_MAP_DOCUMENTS_NOT_FOUND);
         }
         //응답 address가 없을경우
         if (documents.get("address").isJsonNull()){
-            throw new KakaoLocalResponseNotFound(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND);
+            throw new KakaoLocalResponseNotFoundException(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND);
         }
         JsonObject address = documents.get("address").getAsJsonObject();
         return KakaoLocalResponseDto.from(documents, address);
