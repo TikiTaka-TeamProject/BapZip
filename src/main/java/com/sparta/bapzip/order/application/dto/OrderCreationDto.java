@@ -1,6 +1,5 @@
 package com.sparta.bapzip.order.application.dto;
 
-
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.order.domain.enums.OrderStatus;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
@@ -14,51 +13,31 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class OrderCreationResult {
+public class OrderCreationDto {
 
     private final UUID orderId;
     private final UUID shopId;
     private final Long userId;
     private final String shopName;
     private final OrderStatus status;
-    private final List<MenuInfo> menuInfoList;
+    private final List<OrderMenuInfo> menuInfoList;
     private final int totalAmount;
     private final String deliveryAddress;
     private final String detailAddress;
     private final String paymentType;
     private final LocalDateTime createdAt;
 
-    @Getter
-    @Builder
-    public static class MenuInfo {
-        private final UUID menuId;
-        private final String menuName;
-        private final int price;
-        private final int quantity;
-        private final int subtotal;
-
-        public static MenuInfo from(OrderMenuEntity entity) {
-            return MenuInfo.builder()
-                    .menuId(entity.getMenu().getId())
-                    .menuName(entity.getName())
-                    .price(entity.getPrice())
-                    .quantity(entity.getQuantity())
-                    .subtotal(entity.getSubtotal())
-                    .build();
-        }
-    }
-
-    public static OrderCreationResult from(
+    public static OrderCreationDto from(
             OrderEntity orderEntity,
             List<OrderMenuEntity> orderMenuEntities,
             ShopEntity shopEntity,
             Long userId
     ) {
-        List<MenuInfo> menuInfoList = orderMenuEntities.stream()
-                .map(MenuInfo::from)
+        List<OrderMenuInfo> menuInfoList = orderMenuEntities.stream()
+                .map(OrderMenuInfo::from)
                 .toList();
 
-        return OrderCreationResult.builder()
+        return OrderCreationDto.builder()
                 .orderId(orderEntity.getId())
                 .shopId(shopEntity.getId())
                 .userId(userId)

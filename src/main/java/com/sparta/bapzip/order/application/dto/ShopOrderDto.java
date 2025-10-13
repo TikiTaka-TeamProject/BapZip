@@ -1,6 +1,7 @@
 package com.sparta.bapzip.order.application.dto;
 
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
+import com.sparta.bapzip.order.domain.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,21 +13,22 @@ import java.util.UUID;
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class OrderDto {
-
+public class ShopOrderDto {
     private final UUID orderId;
-    private final UUID shopId;
-    private final String shopName;
+    private final String customerName;
+    private final OrderStatus orderStatus;
     private final int totalPrice;
+    private final String deliveryAddress;
     private final LocalDateTime orderDate;
     private final List<OrderMenuInfo> menuInfoList;
 
-    public static OrderDto from(OrderEntity order) {
-        return OrderDto.builder()
+    public static ShopOrderDto from(OrderEntity order) {
+        return ShopOrderDto.builder()
                 .orderId(order.getId())
-                .shopId(order.getShopId())
-                .shopName(order.getShopName())
+                .customerName(order.getUser().getName())
+                .orderStatus(order.getStatus())
                 .totalPrice(order.getTotalPrice())
+                .deliveryAddress(order.getDeliveryAddress())
                 .orderDate(order.getCreatedAt())
                 .menuInfoList(order.getOrderMenuList().stream()
                         .map(OrderMenuInfo::from)

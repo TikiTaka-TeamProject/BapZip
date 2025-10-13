@@ -12,4 +12,5 @@ public interface OrderRepository {
     Optional<OrderEntity> findById(UUID orderId);
     OrderEntity save(OrderEntity order);
     Page<OrderEntity> findOrderByUser(UserEntity user, Pageable pageable);
+    Page<OrderEntity> findOrderByShopId(UUID shopId, Pageable pageable);
 }
