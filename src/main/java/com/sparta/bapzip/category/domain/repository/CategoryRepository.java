@@ -1,11 +1,21 @@
 package com.sparta.bapzip.category.domain.repository;
 
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryRepository {
-    // TODO: 용은 -> Shop 테스트작업을 위해 생성. 필요없을 시 제거
+    public CategoryEntity save(CategoryEntity category);
+    public List<CategoryEntity> findAllByIsDeletedFalse();
+
     Optional<CategoryEntity> findById(UUID categoryId);
+
+    Optional<CategoryEntity> findByContent(String content);
+
+    Optional<CategoryEntity> findByName(String name);
+    public List<CategoryEntity> findAllForAdmin();
+
 }

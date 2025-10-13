@@ -50,34 +50,32 @@ public class PaymentServiceV1 {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
         OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
         PaymentEntity payment = PaymentEntity.builder()
-                    .order(order)
-                    .totalAmount(order.getTotalPrice())
-                    .status(PaymentStatusEnum.IN_PROGRESS)
-                    .build();
+                .order(order)
+                .totalAmount(order.getTotalPrice())
+                .status(PaymentStatusEnum.IN_PROGRESS)
+                .build();
         payment.markCreated(order.getUser().getId());
-            paymentRepository.save(payment);
-            StringBuilder sb = new StringBuilder();
-            if(order.getOrderMenuList() == null){
-                throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
-            } else {
-                sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
+        paymentRepository.save(payment);
+        StringBuilder sb = new StringBuilder();
+        if(order.getOrderMenuList() == null || order.getOrderMenuList().isEmpty()){
+            throw new GlobalException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
+        } else {
+            sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
 
-                if( order.getOrderMenuList().size()>=2){
-                    sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
-                }
+            if( order.getOrderMenuList().size()>=2){
+                sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
             }
-            paymentCreateRequest.setOrderId(order.getId().toString());
-            paymentCreateRequest.setOrderName(sb.toString());
-            paymentCreateRequest.setAmount(order.getTotalPrice());
+        }
+        paymentCreateRequest.setOrderId(order.getId().toString());
+        paymentCreateRequest.setOrderName(sb.toString());
+        paymentCreateRequest.setAmount(order.getTotalPrice());
         PaymentResponseDto response = createPayment(paymentCreateRequest);
-
         if (response != null && response.getPaymentKey() != null) {
             payment.updatePaymentConfirmResult(
                     response.getPaymentKey(),
                     PaymentStatusEnum.SUCCESS,
                     response.getApprovedAt()
             );
-
         } else {
             payment.updatePaymentConfirmResult(null, PaymentStatusEnum.FAILED, null);
         }
@@ -105,7 +103,6 @@ public class PaymentServiceV1 {
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
-
         if (response == null || !response.hasNonNull("paymentKey")) {
             throw new GlobalException(ErrorCode.PAYMENT_KEY_MISSING);
         }
@@ -130,7 +127,7 @@ public class PaymentServiceV1 {
         }
         String cancelReason = node.path("cancelReason").asText();
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
-            throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+            throw new GlobalException(ErrorCode.INVALID_PAYMENT_STATUS);
         }
 
         // Toss 취소 요청 DTO
@@ -169,9 +166,8 @@ public class PaymentServiceV1 {
             LocalDateTime canceledAt = dto.getCanceledAt();
             payment.updatePaymentCancelResult(PaymentStatusEnum.CANCELED, cancelReason, canceledAt);
             payment.markUpdated(userId);
-            System.out.println(payment);
+            log.info("Payment={}",payment);
             paymentRepository.save(payment);
-            // orderId, totalPrice 보완
             dto.setOrderId(payment.getOrder().getId().toString());
             dto.setTotalPrice(payment.getTotalAmount());
 
@@ -241,7 +237,7 @@ public class PaymentServiceV1 {
         }
 
         log.info("[Toss] paymentKey={}, status={}",dto.getPaymentKey(), dto.getStatus());
-        System.out.println(dto);
+        log.info("PaymentResponseDto={}", dto);
         return dto;
     }
     private LocalDateTime parseDateTime(String dateTimeStr) {
