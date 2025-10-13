@@ -43,7 +43,7 @@ public class OrderControllerV1 {
      * 특정 유저의 주문 상세내역 조회
      */
     @GetMapping(params = "orderId")
-    public ResponseEntity<?> getOrderById(
+    public ResponseEntity<OrderDetailResponse> getOrderById(
             @RequestParam UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
@@ -58,7 +58,7 @@ public class OrderControllerV1 {
      * 특정 가게의 주문 전체 조회
      */
     @GetMapping(params = "shopId")
-    public ResponseEntity<Page<?>> getOrderByShopId(
+    public ResponseEntity<Page<ShopOrderResponse>> getOrderByShopId(
             @RequestParam UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable)
@@ -84,4 +84,80 @@ public class OrderControllerV1 {
                 ));
     }
 
+    /**
+     * 주문 수락
+     */
+    @PostMapping("/{orderId}/accept")
+    public ResponseEntity<Void> acceptOrder(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.acceptOrder(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 조리 시작
+     */
+    @PostMapping("/{orderId}/start-cooking")
+    public ResponseEntity<Void> startCooking(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.startCooking(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 조리 완료
+     */
+    @PostMapping("/{orderId}/complete-cooking")
+    public ResponseEntity<Void> completeCooking(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.completeCooking(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 배달 시작
+     */
+    @PostMapping("/{orderId}/start-delivery")
+    public ResponseEntity<Void> startDelivery(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.startDelivery(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 배달 완료
+     */
+    @PostMapping("/{orderId}/complete")
+    public ResponseEntity<Void> completeDelivery(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.completeDelivery(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 주문 취소
+     */
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<Void> cancelOrder(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.cancelOrder(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 조리 완료
+     */
+    @PostMapping("/{orderId}/reject")
+    public ResponseEntity<Void> rejectOrder(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.rejectOrder(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
 }

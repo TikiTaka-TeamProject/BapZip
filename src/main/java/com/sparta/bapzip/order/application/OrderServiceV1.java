@@ -5,7 +5,7 @@ import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.order.application.dto.OrderCreationDto;
 import com.sparta.bapzip.order.application.dto.OrderDetailDto;
 import com.sparta.bapzip.order.application.dto.ShopOrderDto;
-import com.sparta.bapzip.order.application.exception.ForbiddenOrderAccessException;
+import com.sparta.bapzip.order.domain.exception.ForbiddenOrderAccessException;
 import com.sparta.bapzip.order.application.dto.OrderDto;
 import com.sparta.bapzip.order.application.exception.MenusNotFoundInOrderException;
 import com.sparta.bapzip.order.application.exception.OrderNotFoundException;
@@ -34,6 +34,7 @@ import static com.sparta.bapzip.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = false)
 public class OrderServiceV1 {
 
     private final OrderRepository orderRepository;
@@ -47,7 +48,6 @@ public class OrderServiceV1 {
      * @param request 주문 요청 DTO (가게 ID, 메뉴 ID 및 수량 정보 포함)
      * @return 생성된 주문 응답(ResponseEntity)
      */
-    @Transactional
     public OrderCreationDto createOrder(@Valid CreateOrderRequest request, UserEntity user) {
         ShopEntity shop = shopService.getShopById(request.getShopId());
         Map<UUID, MenuEntity> menuMap = getMenuMap(request.getMenuInfoList());
@@ -77,14 +77,10 @@ public class OrderServiceV1 {
      * @throws OrderNotFoundException 주문 ID에 해당하는 주문이 데이터베이스에 없을 경우 발생
      * @throws ForbiddenOrderAccessException 조회된 주문의 소유자 ID와 현재 사용자 ID가 일치하지 않을 경우 발생
      */
+    @Transactional(readOnly = true)
     public OrderDetailDto getOrderById(UUID orderId, UserEntity user) {
-        OrderEntity order = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderNotFoundException(ORDER_NOT_FOUND)
-        );
-
-        if(!order.getUser().getId().equals(user.getId())) {
-            throw new ForbiddenOrderAccessException(FORBIDDEN_ORDER_ACCESS);
-        }
+        OrderEntity order = getById(orderId);
+        order.validateCustomer(user.getId());
 
         return OrderDetailDto.from(order);
     }
@@ -94,24 +90,119 @@ public class OrderServiceV1 {
      *
      * @param user 본인의 주문을 확인하기 위한 정보
      * @param pageable 여러개의 데이터를 페이지네이션 처리하기 위한 정보
-     * @return
      */
+    @Transactional(readOnly = true)
     public Page<OrderDto> getOrdersByUser(UserEntity user, Pageable pageable) {
 
         return orderRepository.findOrderByUser(user, pageable)
                 .map(OrderDto::from);
     }
 
+    /**
+     * 가게의 주문내역을 조회한다.
+     *
+     * @param shopId 가게의 주문을 확인하기 위한 정보
+     * @param user 가게의 주인이 맞는지 확인하기 위한 정보
+     * @param pageable 여러개의 데이터를 페이지네이션 처리하기 위한 정보
+     */
+    @Transactional(readOnly = true)
     public Page<ShopOrderDto> getOrderByShopId(UUID shopId, UserEntity user, Pageable pageable) {
         ShopEntity shop = shopService.getShopById(shopId);
         shopService.validateShopOwner(shop.getId(), user.getId());
 
         return orderRepository.findOrderByShopId(shopId, pageable)
                 .map(ShopOrderDto::from);
-
     }
 
-    // private 헬퍼 메서드
+// ========== 주문 상태 변경 (OWNER) ==========
+
+    /**
+     * 주문 수락 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void acceptOrder(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.accept();
+    }
+
+    /**
+     * 주문 거절 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void rejectOrder(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.reject();
+    }
+
+    /**
+     * 조리 시작 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void startCooking(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.startCooking();
+    }
+
+    /**
+     * 조리 완료 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void completeCooking(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.completeCooking();
+    }
+
+    /**
+     * 배달 시작 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void startDelivery(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.startDelivery();
+    }
+
+    /**
+     * 배달 완료 (사장님)
+     *
+     * @param orderId 주문 ID
+     * @param user 사장님 정보
+     */
+    public void completeDelivery(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        shopService.validateShopOwner(order.getShopId(), user.getId());
+        order.completeDelivery();
+    }
+
+    // ========== 주문 상태 변경 (CUSTOMER) ==========
+
+    /**
+     * 주문 취소 (고객)
+     *
+     * @param orderId 주문 ID
+     * @param user 고객 정보
+     */
+    public void cancelOrder(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        order.validateCustomer(user.getId());
+        order.cancel();
+    }
+
+    // ========== private 헬퍼 메서드 ==========
 
     /**
      * 메뉴 ID를 키로 갖는 메뉴 엔티티 Map 반환
@@ -137,6 +228,7 @@ public class OrderServiceV1 {
                         Function.identity())
                 );
     }
+
     /**
      * 주문 요청 정보를 기반으로 OrderMenu 엔티티 리스트 생성
      *
@@ -160,5 +252,16 @@ public class OrderServiceV1 {
                             menuInfo
                     );
                 }).toList();
+    }
+
+    /**
+     * 주문 조회 에러 처리
+     *
+     * @param orderId 조회할 주문의 PK
+     */
+    private OrderEntity getById(UUID orderId) {
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderNotFoundException(ORDER_NOT_FOUND)
+        );
     }
 }
