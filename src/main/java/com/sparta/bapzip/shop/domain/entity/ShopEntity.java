@@ -6,6 +6,7 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.exception.ShopAlreadyDeletedException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -106,7 +107,7 @@ public class ShopEntity extends BaseEntity {
      */
     public void softDelete(Long userId) {
         if (this.getIsDeleted()) {
-            throw new GlobalException(ErrorCode.SHOP_ALREADY_DELETED);
+            throw new ShopAlreadyDeletedException(ErrorCode.SHOP_ALREADY_DELETED);
         }
         markDeleted(userId);
     }
