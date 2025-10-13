@@ -30,55 +30,51 @@ public class OrderControllerV1 {
      * 특정 유저 주문 전체 조회
      */
     @GetMapping
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+    public ResponseEntity<ApiResponse<Page<OrderResponse>>> getAllOrders(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable) {
-        return ResponseEntity.ok(
-                orderServiceV1.getOrdersByUser(userDetails.getUser(), pageable)
-                        .map(OrderResponse::from)
-        );
+        Page<OrderResponse> orders = orderServiceV1.getOrdersByUser(userDetails.getUser(), pageable)
+                .map(OrderResponse::from);
+        return ApiResponse.ok(orders);
     }
 
     /**
      * 특정 유저의 주문 상세내역 조회
      */
     @GetMapping(params = "orderId")
-    public ResponseEntity<OrderDetailResponse> getOrderById(
+    public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderById(
             @RequestParam UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(
-                (OrderDetailResponse
-                        .from(orderServiceV1.getOrderById(orderId, userDetails.getUser()))
-                )
-        );
+        OrderDetailResponse orderDetail = OrderDetailResponse
+                .from(orderServiceV1.getOrderById(orderId, userDetails.getUser()));
+        return ApiResponse.ok(orderDetail);
     }
 
     /**
      * 특정 가게의 주문 전체 조회
      */
     @GetMapping(params = "shopId")
-    public ResponseEntity<Page<ShopOrderResponse>> getOrderByShopId(
+    public ResponseEntity<ApiResponse<Page<ShopOrderResponse>>> getOrderByShopId(
             @RequestParam UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable) {
-        return ResponseEntity.ok(
-                orderServiceV1.getOrderByShopId(shopId, userDetails.getUser(), pageable)
-                        .map(ShopOrderResponse::from)
-        );
+        Page<ShopOrderResponse> shopOrders = orderServiceV1.getOrderByShopId(shopId, userDetails.getUser(), pageable)
+                .map(ShopOrderResponse::from);
+        return ApiResponse.ok(shopOrders);
     }
 
     /**
      * 주문 등록
      */
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(
+    public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
             @Valid @RequestBody CreateOrderRequest createOrderRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(CreateOrderResponse.from(
-                        orderServiceV1.createOrder(createOrderRequest, userDetails.getUser())
-                ));
+        CreateOrderResponse response = CreateOrderResponse.from(
+                orderServiceV1.createOrder(createOrderRequest, userDetails.getUser())
+        );
+
+        return ApiResponse.created(response);
     }
 
     /**
