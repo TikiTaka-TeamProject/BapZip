@@ -29,6 +29,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Page<OrderEntity> findOrderByShopId(UUID shopId, Pageable pageable) {
+        return orderJpaRepository.findByShopId(shopId, pageable);
+    }
+
+    @Override
     public Optional<OrderEntity> findById(UUID orderId) {
         return orderJpaRepository.findById(orderId);
     }

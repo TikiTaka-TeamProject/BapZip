@@ -41,6 +41,12 @@ public class MenuRepositoryImpl implements MenuRepository {
         return menuJpaRepository.findAll();
     }
 
+    // 가게 ID로 모든 메뉴 조회
+    @Override
+    public List<MenuEntity> findAllByShopId(UUID shopId) {
+        return menuJpaRepository.findAllByShopId(shopId);
+    }
+
     // 메뉴 List 반환 메서드
     @Override
     public List<MenuEntity> findAllByIdIn(List<UUID> ids) {
