@@ -39,12 +39,13 @@ public class CategoryControllerV1 {
     }
     // 카테고리 ID 기준 가게 리스트 조회
     @GetMapping("/{categoryId}/shops")
+    @ResponseBody
     public Page<ShopDetailForUserResponse> getShopsByCategory(
             @PathVariable UUID categoryId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "false") boolean isAsc
+            @RequestParam(defaultValue = "1", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(defaultValue = "createdAt", required = false) String sortBy,
+            @RequestParam(defaultValue = "false", required = false) boolean isAsc
     ) {
         return categoryServiceV1.getShopsByCategory(categoryId, page, size, sortBy, isAsc);
     }
