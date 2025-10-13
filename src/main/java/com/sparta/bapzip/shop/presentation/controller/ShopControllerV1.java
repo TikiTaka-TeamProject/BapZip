@@ -101,4 +101,29 @@ public class ShopControllerV1 {
                 .map(ShopDetailResponse::from)
                 .toList();
     }
+
+    /**
+     * 특정 가게 삭제(soft delete) API
+     * DELETE /v1/shops/{shopId}
+     *
+     * - 요청된 가게 ID와 소유자(ownerId)를 기준으로 가게를 조회
+     * - 가게가 존재하지 않거나 이미 삭제된 경우 예외 발생
+     * - 요청한 사용자가 가게 소유자가 아닐 경우 권한 예외 발생
+     * - 실제 삭제는 soft delete 방식으로 isDeleted = true 처리
+     *
+     * @param shopId 삭제할 가게 ID
+     * @param ownerId 요청한 사용자(Owner) ID, 권한 체크 용도
+     * @return ResponseEntity<Void> 상태 코드 204(NO CONTENT) 반환, 실제 응답 바디 없음
+     */
+    @DeleteMapping("/{shopId}")
+    public ResponseEntity<Void> deleteShop(
+            @PathVariable UUID shopId,
+            @RequestParam("ownerId") Long ownerId
+//            @AuthenticationPrincipal UserPrincipal user // 또는 토큰에서 가져온 사용자 정보
+    ) {
+//        shopService.deleteShop(shopId, user.getId());
+        shopServiceV1.deleteShop(shopId, ownerId);
+        return ResponseEntity.noContent().build();
+
+    }
 }
