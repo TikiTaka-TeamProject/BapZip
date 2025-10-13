@@ -32,13 +32,13 @@ public class UserServiceV1 {
         // 권한 확인
         UserRoleEnum role = requestDto.getRole();
         if (role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER)) {
-            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
         }
 
         // 이메일 중복 확인
         String email = requestDto.getEmail();
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new DuplicateUserException(ErrorCode.DUPLICATE_USER_EXCEPTION);
+            throw new DuplicateUserException(ErrorCode.DUPLICATE_USER);
         }
 
         UserEntity user = UserEntity.create(requestDto, passwordEncoder.encode(requestDto.getPassword()));
@@ -73,7 +73,7 @@ public class UserServiceV1 {
         }
 
         // 토큰 유저의 role이 MASTER와 MANAGER가 아닐 경우 exception 반환
-        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
     }
 
     public UserUpdateResponseDto updateUser(UserUpdateRequestDto userUpdateRequestDto, UserEntity user) {
@@ -99,7 +99,7 @@ public class UserServiceV1 {
         UserRoleEnum role = userRoleChangeRequestDto.getRole();
         // MASTER도 role을 MASTER로 변경 불가
         if (role.equals(UserRoleEnum.MASTER)) {
-            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
         }
 
         UserEntity targetUser = findUser(userId);
@@ -111,13 +111,13 @@ public class UserServiceV1 {
 
     private UserEntity findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
+                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
     private void matchPassword(String rowPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rowPassword, encodedPassword)) {
-            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION);
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
         }
     }
 }
