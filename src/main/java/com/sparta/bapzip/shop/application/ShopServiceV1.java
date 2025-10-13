@@ -125,12 +125,21 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
-    public void validateShopOwner(UUID shopId, Long ownerId, Supplier<GlobalException> exceptionSupplier) {
+    public void validateShopOwner(UUID shopId, Long ownerId) {
         ShopEntity shop = getShopById(shopId);
+
+        // 권한 체크
         if (!shop.getOwner().getId().equals(ownerId)) {
-            throw exceptionSupplier.get();
+            throw new GlobalException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
         }
     }
+
+//    public void validateShopOwner(UUID shopId, Long ownerId, Supplier<GlobalException> exceptionSupplier) {
+//        ShopEntity shop = getShopById(shopId);
+//        if (!shop.getOwner().getId().equals(ownerId)) {
+//            throw exceptionSupplier.get();
+//        }
+//    }
 
     /**
      * Shop 정보 수정
@@ -145,7 +154,7 @@ public class ShopServiceV1 {
         ShopEntity shop = getShopById(shopId);
 
         // 권한 검증 (Owner만 허용, 추후 Manager 권한 추가 가능)
-        validateShopOwner(shopId, ownerId, () -> new UnauthorizedShopAccessException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS));
+        validateShopOwner(shopId, ownerId);
 
         // shop 정보 수정
         if (shopUpdateRequest.getName() != null) shop.updateName(shopUpdateRequest.getName());
@@ -230,7 +239,7 @@ public class ShopServiceV1 {
                 .orElseThrow(() -> new ShopNotFoundException(ErrorCode.SHOP_NOT_FOUND));
 
         // 권한 체크
-        validateShopOwner(shopId, ownerId, () -> new ShopDeleteForbidden(ErrorCode.SHOP_DELETE_FORBIDDEN));
+        validateShopOwner(shopId, ownerId);
 
         shop.softDelete(ownerId);
     }
