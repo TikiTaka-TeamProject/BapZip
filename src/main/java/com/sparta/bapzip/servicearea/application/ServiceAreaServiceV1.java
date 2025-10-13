@@ -1,9 +1,9 @@
 package com.sparta.bapzip.servicearea.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.application.dto.AreaReturnDto;
 import com.sparta.bapzip.servicearea.application.dto.AreaSaveDto;
+import com.sparta.bapzip.servicearea.application.exception.ServiceAreaNotFoundException;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.servicearea.domain.repository.ServiceAreaRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class ServiceAreaServiceV1 {
 
     public ServiceAreaEntity getServiceAreaById(UUID serviceAreaId) {
         return serviceAreaRepository.getServiceAreaById(serviceAreaId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
+                .orElseThrow(() -> new ServiceAreaNotFoundException(ErrorCode.SERVICE_AREA_NOT_FOUND));
     }
 
     /**
