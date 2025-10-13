@@ -31,8 +31,7 @@ public class OrderControllerV1 {
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getAllOrders(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            Pageable pageable)
-    {
+            Pageable pageable) {
         return ResponseEntity.ok(
                 orderServiceV1.getOrdersByUser(userDetails.getUser(), pageable)
                         .map(OrderResponse::from)
@@ -45,8 +44,7 @@ public class OrderControllerV1 {
     @GetMapping(params = "orderId")
     public ResponseEntity<OrderDetailResponse> getOrderById(
             @RequestParam UUID orderId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails)
-    {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(
                 (OrderDetailResponse
                         .from(orderServiceV1.getOrderById(orderId, userDetails.getUser()))
@@ -61,8 +59,7 @@ public class OrderControllerV1 {
     public ResponseEntity<Page<ShopOrderResponse>> getOrderByShopId(
             @RequestParam UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            Pageable pageable)
-    {
+            Pageable pageable) {
         return ResponseEntity.ok(
                 orderServiceV1.getOrderByShopId(shopId, userDetails.getUser(), pageable)
                         .map(ShopOrderResponse::from)
@@ -75,8 +72,7 @@ public class OrderControllerV1 {
     @PostMapping
     public ResponseEntity<CreateOrderResponse> createOrder(
             @Valid @RequestBody CreateOrderRequest createOrderRequest,
-            @AuthenticationPrincipal UserDetailsImpl userDetails)
-    {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(CreateOrderResponse.from(
@@ -87,7 +83,7 @@ public class OrderControllerV1 {
     /**
      * 주문 수락
      */
-    @PostMapping("/{orderId}/accept")
+    @PutMapping("/{orderId}/accept")
     public ResponseEntity<Void> acceptOrder(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -98,7 +94,7 @@ public class OrderControllerV1 {
     /**
      * 조리 시작
      */
-    @PostMapping("/{orderId}/start-cooking")
+    @PutMapping("/{orderId}/start-cooking")
     public ResponseEntity<Void> startCooking(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -109,7 +105,7 @@ public class OrderControllerV1 {
     /**
      * 조리 완료
      */
-    @PostMapping("/{orderId}/complete-cooking")
+    @PutMapping("/{orderId}/complete-cooking")
     public ResponseEntity<Void> completeCooking(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -120,7 +116,7 @@ public class OrderControllerV1 {
     /**
      * 배달 시작
      */
-    @PostMapping("/{orderId}/start-delivery")
+    @PutMapping("/{orderId}/start-delivery")
     public ResponseEntity<Void> startDelivery(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -131,11 +127,22 @@ public class OrderControllerV1 {
     /**
      * 배달 완료
      */
-    @PostMapping("/{orderId}/complete")
+    @PutMapping("/{orderId}/complete")
     public ResponseEntity<Void> completeDelivery(
             @PathVariable UUID orderId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         orderServiceV1.completeDelivery(orderId, userDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 조리 완료
+     */
+    @PutMapping("/{orderId}/reject")
+    public ResponseEntity<Void> rejectOrder(
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        orderServiceV1.rejectOrder(orderId, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
@@ -151,13 +158,14 @@ public class OrderControllerV1 {
     }
 
     /**
-     * 조리 완료
+     * 주문 내역 삭제
      */
-    @PostMapping("/{orderId}/reject")
-    public ResponseEntity<Void> rejectOrder(
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(
             @PathVariable UUID orderId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        orderServiceV1.rejectOrder(orderId, userDetails.getUser());
+            @AuthenticationPrincipal UserDetailsImpl userDetails)
+    {
+        orderServiceV1.delete(orderId, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
 }
