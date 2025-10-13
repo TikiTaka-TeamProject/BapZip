@@ -38,8 +38,16 @@ public enum ErrorCode {
     MENU_NOT_IN_SHOP(HttpStatus.BAD_REQUEST, "다른 가게의 메뉴가 포함되어 있습니다."),
     MENU_NOT_FOUNT_IN_ORDER(HttpStatus.BAD_REQUEST, "존재하지 않는 메뉴가 포함되어 있습니다."),
     SOLD_OUT_MENU(HttpStatus.BAD_REQUEST, "선택하신 메뉴 중 품절된 메뉴가 포함되어 있습니다."),
+
+    // ORDER - 주문 상태 관련 에러
+    ORDER_NOT_PENDING(HttpStatus.BAD_REQUEST, "대기 중인 주문만 수락/거절할 수 있습니다."),
+    ORDER_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "수락된 주문만 조리를 시작할 수 있습니다."),
+    ORDER_NOT_COOKING(HttpStatus.BAD_REQUEST, "조리 중인 주문만 완료할 수 있습니다."),
+    ORDER_NOT_COOK_COMPLETED(HttpStatus.BAD_REQUEST, "조리 완료된 주문만 배달을 시작할 수 있습니다."),
+    ORDER_NOT_DELIVERING(HttpStatus.BAD_REQUEST, "배달 중인 주문만 완료할 수 있습니다."),
+    ORDER_NOT_CANCELLABLE(HttpStatus.BAD_REQUEST, "이미 처리 중인 주문은 취소할 수 없습니다."),
     FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다."),
-  
+
     // ====================== Shop ======================
   
     // Shop 관련 API에서 발생할 수 있는 커스텀 에러
