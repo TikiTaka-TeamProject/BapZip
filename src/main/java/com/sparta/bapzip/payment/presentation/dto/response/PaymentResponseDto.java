@@ -1,14 +1,12 @@
 package com.sparta.bapzip.payment.presentation.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public class PaymentResponseDto {
 
     private String paymentKey;      // Toss 결제 키

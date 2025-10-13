@@ -57,8 +57,8 @@ public class PaymentServiceV1 {
         payment.markCreated(order.getUser().getId());
         paymentRepository.save(payment);
         StringBuilder sb = new StringBuilder();
-        if(order.getOrderMenuList() == null){
-            throw new GlobalException(ErrorCode.ORDER_NOT_FOUND);
+        if(order.getOrderMenuList() == null || order.getOrderMenuList().isEmpty()){
+            throw new GlobalException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
         } else {
             sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
 
@@ -70,14 +70,12 @@ public class PaymentServiceV1 {
         paymentCreateRequest.setOrderName(sb.toString());
         paymentCreateRequest.setAmount(order.getTotalPrice());
         PaymentResponseDto response = createPayment(paymentCreateRequest);
-
         if (response != null && response.getPaymentKey() != null) {
             payment.updatePaymentConfirmResult(
                     response.getPaymentKey(),
                     PaymentStatusEnum.SUCCESS,
                     response.getApprovedAt()
             );
-
         } else {
             payment.updatePaymentConfirmResult(null, PaymentStatusEnum.FAILED, null);
         }
@@ -105,7 +103,6 @@ public class PaymentServiceV1 {
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
-
         if (response == null || !response.hasNonNull("paymentKey")) {
             throw new GlobalException(ErrorCode.PAYMENT_KEY_MISSING);
         }
@@ -169,9 +166,8 @@ public class PaymentServiceV1 {
             LocalDateTime canceledAt = dto.getCanceledAt();
             payment.updatePaymentCancelResult(PaymentStatusEnum.CANCELED, cancelReason, canceledAt);
             payment.markUpdated(userId);
-            System.out.println(payment);
+            log.info("Payment={}",payment);
             paymentRepository.save(payment);
-            // orderId, totalPrice 보완
             dto.setOrderId(payment.getOrder().getId().toString());
             dto.setTotalPrice(payment.getTotalAmount());
 
@@ -241,7 +237,7 @@ public class PaymentServiceV1 {
         }
 
         log.info("[Toss] paymentKey={}, status={}",dto.getPaymentKey(), dto.getStatus());
-        System.out.println(dto);
+        log.info("PaymentResponseDto={}", dto);
         return dto;
     }
     private LocalDateTime parseDateTime(String dateTimeStr) {

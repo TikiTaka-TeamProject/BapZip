@@ -17,7 +17,7 @@ public enum ErrorCode {
     // CATEGORY 관련 에러
     DUPLICATE_CATEGORY_EXCEPTION(HttpStatus.CONFLICT, "중복 된 카테고리입니다."),
     INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리 ID입니다."),
-
+    MENUS_NOT_FOUND_IN_ORDER(HttpStatus.NOT_FOUND, "주문에 포함된 메뉴를 찾을 수 없습니다."),
     // USER 관련 에러
     DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
     UNAUTHORIZED_USER_EXCEPTION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
