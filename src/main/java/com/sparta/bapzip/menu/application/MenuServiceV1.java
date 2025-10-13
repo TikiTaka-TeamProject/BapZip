@@ -3,6 +3,7 @@ package com.sparta.bapzip.menu.application;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
+import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.presentation.dto.request.MenuStatusUpdateRequest;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -107,7 +107,8 @@ public class MenuServiceV1 {
     @Transactional
     public MenuDetailResponse updateMenuStatus(UUID menuId, MenuStatusUpdateRequest request){
         MenuEntity menu = getMenuById(menuId);
-        menu.updateStatus(request.status());
+        MenuStatus newStatus = MenuStatus.from(request.status()); // String -> Enum 변환
+        menu.updateStatus(newStatus);
         return MenuDetailResponse.from(menu);
     }
 
@@ -156,7 +157,6 @@ public class MenuServiceV1 {
     }
 
     // 메뉴 List 반환
-    // todo: 기본 조회 구현만 완료. 필요 시 추가 예외처리
     public List<MenuEntity> getMenusByIds(List<UUID> menuIds) {
 
         List<MenuEntity> menus = menuRepository.findAllByIdIn(menuIds);
