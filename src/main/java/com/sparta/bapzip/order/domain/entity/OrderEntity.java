@@ -2,11 +2,10 @@ package com.sparta.bapzip.order.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
-import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
+import com.sparta.bapzip.order.domain.exception.ForbiddenOrderAccessException;
 import com.sparta.bapzip.order.domain.enums.OrderStatus;
-import com.sparta.bapzip.order.domain.exception.MenuNotInShopException;
-import com.sparta.bapzip.order.domain.exception.SoldOutMenuException;
+import com.sparta.bapzip.order.domain.exception.*;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -19,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.sparta.bapzip.global.exception.ErrorCode.*;
+import static com.sparta.bapzip.order.domain.enums.OrderStatus.*;
 
 @Entity
 @Table(name = "p_orders")
@@ -40,7 +42,8 @@ public class OrderEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    @Builder.Default
+    private OrderStatus status = PENDING;
 
     @Column(nullable = false)
     private String deliveryAddress;
@@ -66,7 +69,7 @@ public class OrderEntity extends BaseEntity {
     @Builder.Default
     private List<OrderMenuEntity> orderMenuList = new ArrayList<>();
 
-    // 비즈니스 로직
+    // ========== 비즈니스 로직 ==========
 
     /**
      * 주문 생성
@@ -83,7 +86,6 @@ public class OrderEntity extends BaseEntity {
         int totalPrice = calculateMenuTotalPrice(request.getMenuInfoList(), menuMap);
 
         return OrderEntity.builder()
-                .status(OrderStatus.PENDING)
                 .shopId(shop.getId())
                 .shopName(shop.getName())
                 .deliveryAddress(request.getDeliveryAddress())
@@ -107,7 +109,7 @@ public class OrderEntity extends BaseEntity {
                 .allMatch(menu -> menu.getShop().getId().equals(shop.getId()));
 
         if (!allMenusFromShop) {
-            throw new MenuNotInShopException(ErrorCode.MENU_NOT_IN_SHOP);
+            throw new MenuNotInShopException(MENU_NOT_IN_SHOP);
         }
     }
 
@@ -140,11 +142,110 @@ public class OrderEntity extends BaseEntity {
                 .anyMatch(MenuEntity::isSoldOut);
 
         if (hasSoldOutMenu) {
-            throw new SoldOutMenuException(ErrorCode.SOLD_OUT_MENU);
+            throw new SoldOutMenuException(SOLD_OUT_MENU);
         }
     }
 
-    // 연관관계 설정 로직
+    /**
+     * 고객 권한 검증
+     *
+     * @param customerId 검증할 고객 ID
+     * @throws ForbiddenOrderAccessException 권한이 없는 경우
+     */
+    public void validateCustomer(Long customerId) {
+        if (!this.user.getId().equals(customerId)) {
+            throw new ForbiddenOrderAccessException(FORBIDDEN_ORDER_ACCESS);
+        }
+    }
+
+    // ========== 상태 변경 비즈니스 로직 ==========
+
+    /**
+     * 주문 수락
+     *
+     * @throws OrderNotPendingException 대기 중인 주문이 아닌 경우
+     */
+    public void accept() {
+        if (this.status != PENDING) {
+            throw new OrderNotPendingException(ORDER_NOT_PENDING);
+        }
+        this.status = ACCEPTED;
+    }
+
+    /**
+     * 주문 거절
+     *
+     * @throws OrderNotPendingException 대기 중인 주문이 아닌 경우
+     */
+    public void reject() {
+        if (this.status != PENDING) {
+            throw new OrderNotPendingException(ORDER_NOT_PENDING);
+        }
+
+        this.status = REJECTED;
+    }
+
+    /**
+     * 조리 시작
+     *
+     * @throws OrderNotAcceptedException 수락된 주문이 아닌 경우
+     */
+    public void startCooking() {
+        if (this.status != ACCEPTED) {
+            throw new OrderNotAcceptedException(ORDER_NOT_ACCEPTED);
+        }
+        this.status = COOKING;
+    }
+
+    /**
+     * 조리 완료
+     *
+     * @throws OrderNotCookingException 조리 중인 주문이 아닌 경우
+     */
+    public void completeCooking() {
+        if (this.status != COOKING) {
+            throw new OrderNotCookingException(ORDER_NOT_COOKING);
+        }
+        this.status = COOK_COMPLETED;
+    }
+
+    /**
+     * 배달 시작
+     *
+     * @throws OrderNotCookCompletedException 조리 완료된 주문이 아닌 경우
+     */
+    public void startDelivery() {
+        if (this.status != COOK_COMPLETED) {
+            throw new OrderNotCookCompletedException(ORDER_NOT_COOK_COMPLETED);
+        }
+        this.status = DELIVERING;
+    }
+
+    /**
+     * 배달 완료
+     *
+     * @throws OrderNotDeliveringException 배달 중인 주문이 아닌 경우
+     */
+    public void completeDelivery() {
+        if (this.status != DELIVERING) {
+            throw new OrderNotDeliveringException(ORDER_NOT_DELIVERING);
+        }
+        this.status = DELIVERED;
+    }
+
+    /**
+     * 주문 취소
+     *
+     * @throws OrderNotCancellableException 취소 불가능한 상태인 경우
+     */
+    public void cancel() {
+        if (this.status != PENDING) {
+            throw new OrderNotCancellableException(ORDER_NOT_CANCELLABLE);
+        }
+        this.status = CANCELED;
+    }
+
+    // ========== 연관관계 설정 로직 ==========
 
     /**
      * 자식 엔티티 orderMenu 설정
@@ -153,4 +254,5 @@ public class OrderEntity extends BaseEntity {
         orderMenuList.add(orderMenu);
         orderMenu.addOrder(this);
     }
+
 }

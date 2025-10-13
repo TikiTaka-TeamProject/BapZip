@@ -13,7 +13,7 @@ public enum OrderStatus {
     COOK_COMPLETED("조리완료"),
     DELIVERING("배달중"),
     DELIVERED("배달완료"),
-    COMPLETED("주문완료");
+    CANCELED("주문 취소");
 
     private final String description;
 }
