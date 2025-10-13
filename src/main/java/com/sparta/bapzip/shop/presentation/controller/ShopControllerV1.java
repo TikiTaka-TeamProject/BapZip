@@ -3,13 +3,12 @@ package com.sparta.bapzip.shop.presentation.controller;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
+import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
-import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,14 +51,15 @@ public class ShopControllerV1 {
         return shopServiceV1.getShopDetail(shopId);
     }
 
+
     @PatchMapping("/{shopId}")
     public ResponseEntity<ShopDetailResponse> updateShop(
             @PathVariable("shopId") UUID shopId,
-            @RequestParam("ownerId") Long ownerId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ShopUpdateRequest shopUpdateRequest
-//            @AuthenticationPrincipal UserDetails userDetails
+
     ) {
-//        Long ownerId = userDetails.getId();
+        Long ownerId = userDetails.getUser().getId();
         ShopDetailResponse shopDetailResponse = shopServiceV1.updateShop(shopId, ownerId, shopUpdateRequest);
         return ResponseEntity.ok(shopDetailResponse);
     }
@@ -99,5 +99,28 @@ public class ShopControllerV1 {
                 .stream()
                 .map(ShopDetailResponse::from)
                 .toList();
+    }
+
+    /**
+     * 가게 삭제 API (soft delete)
+     * DELETE /v1/shops/{shopId}
+     *
+     * - 요청한 소유자만 삭제 가능
+     * - 실제 삭제는 soft delete 방식(isDeleted = true)
+     * - 삭제 후 응답은 HTTP 204 NO CONTENT
+     *
+     * @param shopId 삭제할 가게 UUID
+     * @param userDetails 인증된 사용자 정보
+     * @return ResponseEntity<Void> 상태 코드 204 반환
+     */
+    @DeleteMapping("/{shopId}")
+    public ResponseEntity<Void> deleteShop(
+            @PathVariable UUID shopId,
+             @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Long ownerId = userDetails.getUser().getId();
+        shopServiceV1.deleteShop(shopId, ownerId);
+        return ResponseEntity.noContent().build();
+
     }
 }

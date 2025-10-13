@@ -209,4 +209,31 @@ public class ShopServiceV1 {
         }
         return shopRepository.findByStatus(shopStatusEnum);
     }
+
+    /**
+     * 가게 삭제 처리 (Soft Delete)
+     *
+     * - 실제 DB에서 삭제하지 않고, isDeleted = true 처리
+     * - 삭제 요청 시 가게 존재 여부 확인
+     * - 요청한 사용자가 소유자가 아닌 경우 접근 권한 예외 발생
+     * - 삭제 시 deletedBy, deletedAt를 기록
+     *
+     * @param shopId 삭제할 가게 ID
+     * @param userId 삭제를 요청한 사용자 ID (가게 소유자)
+     * @throws GlobalException
+     *   - SHOP_NOT_FOUND: 존재하지 않거나 이미 삭제된 가게
+     *   - SHOP_DELETE_FORBIDDEN: 요청한 사용자가 소유자가 아닌 경우
+     */
+    @Transactional
+    public void deleteShop(UUID shopId, Long userId) {
+        ShopEntity shop = shopRepository.findByIdAndIsDeletedFalse(shopId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.SHOP_NOT_FOUND));
+
+        // 권한 체크
+        if (!shop.getOwner().getId().equals(userId)) {
+            throw new GlobalException(ErrorCode.SHOP_DELETE_FORBIDDEN);
+        }
+
+        shop.softDelete(userId);
+    }
 }

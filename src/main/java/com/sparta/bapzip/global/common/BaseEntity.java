@@ -55,8 +55,8 @@ public abstract class BaseEntity {
     }
 
     public void markDeleted(Long userId) {
+        this.isDeleted = true;
         this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
-        this.isDeleted = true;
     }
 }
