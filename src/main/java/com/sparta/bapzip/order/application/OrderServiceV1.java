@@ -114,7 +114,20 @@ public class OrderServiceV1 {
                 .map(ShopOrderDto::from);
     }
 
-// ========== 주문 상태 변경 (OWNER) ==========
+    /**
+     * 주문 내역 삭제 (soft delete)
+     *
+     * @param orderId 삭제할 주문 PK
+     * @param user 본인의 주문인지 확인하기 위한 정보
+     */
+    public void delete(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+        order.validateCustomer(user.getId());
+
+        order.delete(user.getId());
+    }
+
+    // ========== 주문 상태 변경 (OWNER) ==========
 
     /**
      * 주문 수락 (사장님)

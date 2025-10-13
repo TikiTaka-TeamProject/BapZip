@@ -98,6 +98,15 @@ public class OrderEntity extends BaseEntity {
     }
 
     /**
+     * 주문내역 삭제
+     *
+     * @param userId 누가 삭제한지 기록하기 위한 정보
+     */
+    public void delete(Long userId) {
+        markDeleted(userId);
+    }
+
+    /**
      * 메뉴가 해당 가게의 메뉴인지 검증
      *
      * @param menuMap 메뉴 ID를 키로 갖는 메뉴 엔티티 Map
@@ -254,5 +263,4 @@ public class OrderEntity extends BaseEntity {
         orderMenuList.add(orderMenu);
         orderMenu.addOrder(this);
     }
-
 }
