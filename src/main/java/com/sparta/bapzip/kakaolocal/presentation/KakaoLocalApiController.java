@@ -15,7 +15,7 @@ public class KakaoLocalApiController {
 
     /**
      * 테스트용: 좌표로 주소 가져오기
-     * GET /api/v1/kakao/coordinates-to-address?longitude=126.974971&latitude=37.574825
+     * GET /v1/kakao/coordinates-to-address?longitude=126.974971&latitude=37.574825
      */
     @GetMapping("/coordinates-to-address")
     public ResponseEntity<KakaoLocalResponseDto> coordinatesToAddress(
