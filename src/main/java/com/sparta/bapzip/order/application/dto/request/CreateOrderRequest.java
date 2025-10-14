@@ -2,12 +2,15 @@ package com.sparta.bapzip.order.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Builder
 public class CreateOrderRequest {
 
     @NotNull
@@ -25,6 +28,7 @@ public class CreateOrderRequest {
     private String specialRequest;
 
     @Getter
+    @AllArgsConstructor
     public static class MenuInfo {
         @NotBlank
         private UUID menuId;

@@ -13,7 +13,9 @@ public enum ErrorCode {
     PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "결제 취소 할 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
     PAYMENT_KEY_MISSING(HttpStatus.BAD_REQUEST, "결제 키가 누락되었습니다."),
+    PAYMENT_CANCELLATION_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
     INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 결제 상태입니다."),
+
     // CATEGORY 관련 에러
     DUPLICATE_CATEGORY_EXCEPTION(HttpStatus.CONFLICT, "중복 된 카테고리입니다."),
     INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리 ID입니다."),
@@ -21,10 +23,11 @@ public enum ErrorCode {
     NO_CATEGORY_FOUND(HttpStatus.NOT_FOUND, "등록된 카테고리가 없습니다."),
     NO_SHOP_FOUND_IN_CATEGORY(HttpStatus.NOT_FOUND, "해당 카테고리에 등록된 상점이 없습니다."),
     // USER 관련 에러
-    DUPLICATE_USER_EXCEPTION(HttpStatus.CONFLICT, "중복 된 유저입니다."),
-    UNAUTHORIZED_USER_EXCEPTION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
-    PASSWORD_NOT_MATCH_EXCEPTION(HttpStatus.UNAUTHORIZED, "패스워드가 일치하지 않습니다."),
-    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+    DUPLICATE_USER(HttpStatus.CONFLICT, "중복 된 유저입니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다."),
+    PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "패스워드가 일치하지 않습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
 
     // MENU todo: 상태코드 별 분리 필요
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),

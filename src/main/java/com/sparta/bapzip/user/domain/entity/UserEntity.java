@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(access = AccessLevel.PROTECTED)
+@Builder
 public class UserEntity extends BaseEntity {
 
     @Id
@@ -45,5 +45,9 @@ public class UserEntity extends BaseEntity {
     public void update(UserUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.name = requestDto.getName() == null ? this.name : requestDto.getName();
         this.password = requestDto.getNewPassword() == null ? this.password : passwordEncoder.encode(requestDto.getNewPassword());
+    }
+
+    public void changeRole(UserRoleEnum role) {
+        this.role = role;
     }
 }

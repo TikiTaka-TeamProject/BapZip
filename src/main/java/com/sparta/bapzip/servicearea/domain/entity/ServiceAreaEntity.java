@@ -2,13 +2,14 @@ package com.sparta.bapzip.servicearea.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
+import com.sparta.bapzip.servicearea.application.dto.AreaSaveDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +30,23 @@ public class ServiceAreaEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String district;
-
-    @Column(nullable = false)
-    private String code;
-
-    @Column(columnDefinition = "geometry(Point,4326)")
-    private Point geom;
+    @Column(nullable = false, columnDefinition="geometry(Polygon,4326)")
+    protected Polygon area;
 
     @Column(columnDefinition = "boolean default true")
-    private boolean isService;
+    private boolean isService = true;
 
     @OneToMany(mappedBy = "serviceArea")
     @JsonIgnore
     @Builder. Default
     private List<ShopEntity> shopList = new ArrayList<>();
+
+    public static ServiceAreaEntity create(AreaSaveDto request){
+        return ServiceAreaEntity.builder()
+                .name(request.getName())
+                .area(request.getArea())
+                .isService(true)
+                .build();
+    }
 
 }
