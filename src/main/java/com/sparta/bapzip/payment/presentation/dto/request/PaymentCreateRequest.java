@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter
@@ -17,7 +18,7 @@ public class PaymentCreateRequest {
     @NotNull(message = "결제 금액은 필수입니다.")
     private int amount;
     @NotNull(message = "결제 진행할 주문의 아이디는 필수입니다.")
-    private String orderId;
+    private UUID orderId;
     @NotNull
     private String orderName;
     @NotNull(message = "카드 정보는 필수입니다.")

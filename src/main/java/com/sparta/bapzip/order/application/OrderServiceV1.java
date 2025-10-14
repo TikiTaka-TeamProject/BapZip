@@ -14,6 +14,7 @@ import com.sparta.bapzip.order.domain.repository.OrderRepository;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
+import com.sparta.bapzip.payment.application.PaymentServiceV1;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
@@ -41,6 +42,7 @@ public class OrderServiceV1 {
     private final ShopServiceV1 shopService;
     private final MenuServiceV1 menuService;
     private final OrderMenuServiceV1 orderMenuService;
+    private final PaymentServiceV1 paymentServiceV1;
 
     /**
      * 새로운 주문을 생성
@@ -64,7 +66,7 @@ public class OrderServiceV1 {
         orderMenuList.forEach(savedOrder::addOrderMenu);
 
         orderMenuService.saveAll(orderMenuList);
-
+        paymentServiceV1.createPayment(order.getId());
         return OrderCreationDto.from(savedOrder, orderMenuList, shop, user.getId());
     }
 
@@ -150,6 +152,7 @@ public class OrderServiceV1 {
     public void rejectOrder(UUID orderId, UserEntity user) {
         OrderEntity order = getById(orderId);
         shopService.validateShopOwner(order.getShopId(), user.getId());
+        paymentServiceV1.cancelPayment(user.getId(), orderId, "사장 주문 거절");
         order.reject();
     }
 
@@ -212,6 +215,7 @@ public class OrderServiceV1 {
     public void cancelOrder(UUID orderId, UserEntity user) {
         OrderEntity order = getById(orderId);
         order.validateCustomer(user.getId());
+        paymentServiceV1.cancelPayment(user.getId(), orderId, "고객 주문 취소");
         order.cancel();
     }
 

@@ -41,12 +41,22 @@ public class PaymentServiceV1 {
     /**
      * PaymentEntity 생성
      *
-     * @param paymentCreateRequest 주문자의 카드 정보가 담긴 PaymentCreateRequest
+     * @param orderId 주문자의 카드 정보가 담긴 PaymentCreateRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
      * @throws PaymentException ORDER_NOT_FOUND
      */
+    private PaymentCreateRequest createRequestWithCard(UUID orderId) {
+        PaymentCreateRequest requestDto = new PaymentCreateRequest();
+        requestDto.setOrderId(orderId);
+        requestDto.setCardNumber("4111111111111111");
+        requestDto.setCardExpirationYear("28");
+        requestDto.setCardExpirationMonth("12");
+        requestDto.setCardPassword("01");
+        requestDto.setCustomerIdentityNumber("860824");
+        return requestDto;
+    }
     @Transactional
-    public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
+    public PaymentResponseDto createPayment(UUID orderId) {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
         OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new PaymentException(ErrorCode.ORDER_NOT_FOUND));
         PaymentEntity payment = PaymentEntity.builder()
@@ -66,7 +76,9 @@ public class PaymentServiceV1 {
                 sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
             }
         }
-        paymentCreateRequest.setOrderId(order.getId().toString());
+        PaymentCreateRequest paymentCreateRequest =createRequestWithCard(orderId);
+
+        paymentCreateRequest.setOrderId(order.getId());
         paymentCreateRequest.setOrderName(sb.toString());
         paymentCreateRequest.setAmount(order.getTotalPrice());
         PaymentResponseDto response = createPayment(paymentCreateRequest);
@@ -112,20 +124,13 @@ public class PaymentServiceV1 {
      * 결제 취소 요청 및 상태 업데이트
      * @param userId 주문을 취소처리하는 유저 식별자
      * @param orderId 주문 식별자
-     * @param cancelReasonJson 취소 사유 => orderService에서 String 형태로 받아오도록 추후 수정
+     * @param cancelReason 취소 사유
      * @return 결제 취소 응답 DTO
      */
     @Transactional
-    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReasonJson) {
+    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReason) {
         PaymentEntity payment = getPaymentByOrderId(orderId);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = null;
-        try {
-            node = mapper.readTree(cancelReasonJson);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        String cancelReason = node.path("cancelReason").asText();
+
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
             throw new PaymentException(ErrorCode.PAYMENT_CANCELLATION_NOT_ALLOWED);
         }
@@ -233,7 +238,7 @@ public class PaymentServiceV1 {
         if (request instanceof PaymentCancelRequest cancelReq && cancelReq.getOrderId() != null) {
             dto.setOrderId(cancelReq.getOrderId().toString());
         } else if (request instanceof PaymentCreateRequest createReq && createReq.getOrderId() != null) {
-            dto.setOrderId(createReq.getOrderId());
+            dto.setOrderId(String.valueOf(createReq.getOrderId()));
         }
 
         log.info("[Toss] paymentKey={}, status={}",dto.getPaymentKey(), dto.getStatus());
