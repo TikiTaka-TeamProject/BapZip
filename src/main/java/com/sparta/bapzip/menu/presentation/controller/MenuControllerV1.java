@@ -11,30 +11,37 @@ import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
+import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/menus")
 public class MenuControllerV1 {
 
-    // todo: AuthenticationPrincipal
-
     private final MenuServiceV1 menuService;
 
     /**
-     * 메뉴 생성
+     * 메뉴 생성 - OWNER
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<MenuCreateResponse>> createMenu(@RequestBody @Valid MenuCreateRequest request){
-        MenuCreateResponse menuCreateResponse = menuService.createMenu(request);
+    public ResponseEntity<ApiResponse<MenuCreateResponse>> createMenu(@RequestBody @Valid MenuCreateRequest request,
+                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Long ownerId = userDetails.getUser().getId(); // ownerId만 검증
+        log.info("create MenuController - 사용자 ID: {}, 이름 {}", ownerId, userDetails.getUser().getName());
+
+        MenuCreateResponse menuCreateResponse = menuService.createMenu(request, ownerId);
         return ApiResponse.created(menuCreateResponse);
     }
 
@@ -65,7 +72,6 @@ public class MenuControllerV1 {
 
     /**
      * 가게 별 메뉴 조회
-     * todo: url 매핑
      */
     @GetMapping("/shops/{shopId}")
     public ResponseEntity<ApiResponse<MenuListByShopResponse>> getMenusByShop(@PathVariable UUID shopId){
@@ -74,7 +80,8 @@ public class MenuControllerV1 {
     }
 
     /**
-     * 메뉴 전체 조회
+     * 메뉴 전체 조회 - MANAGER, MASTER
+     * todo: 페이징 적용
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<MenuSearchResponse>>> getAllMenus(){
@@ -83,22 +90,28 @@ public class MenuControllerV1 {
     }
 
     /**
-     * 메뉴 정보 수정
+     * 메뉴 정보 수정 - OWNER
      */
     @PatchMapping("/{menuId}")
     public ResponseEntity<ApiResponse<MenuDetailResponse>> updateMenu(@PathVariable UUID menuId,
-                                                         @RequestBody @Valid MenuUpdateRequest request){
-        MenuDetailResponse menuDetailResponse = menuService.updateMenu(menuId, request);
+                                                         @RequestBody @Valid MenuUpdateRequest request,
+                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Long ownerId = userDetails.getUser().getId();
+        log.info("updateMenu MenuController - 사용자 ID: {}, 이름 {}", ownerId, userDetails.getUser().getName());
+        MenuDetailResponse menuDetailResponse = menuService.updateMenu(menuId, request, ownerId);
         return ApiResponse.ok(menuDetailResponse);
     }
 
     /**
-     * 메뉴 상태 수정
+     * 메뉴 상태 수정 - OWNER
      */
     @PatchMapping("/{menuId}/status")
     public ResponseEntity<ApiResponse<MenuDetailResponse>> updateMenuStatus(@PathVariable UUID menuId,
-                                                               @RequestBody @Valid MenuStatusUpdateRequest request){
-        MenuDetailResponse menuDetailResponse = menuService.updateMenuStatus(menuId, request);
+                                                               @RequestBody @Valid MenuStatusUpdateRequest request,
+                                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long ownerId = userDetails.getUser().getId();
+        MenuDetailResponse menuDetailResponse = menuService.updateMenuStatus(menuId, request, ownerId);
         return ApiResponse.ok(menuDetailResponse);
     }
 }

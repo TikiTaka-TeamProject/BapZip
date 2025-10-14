@@ -37,9 +37,11 @@ public class MenuServiceV1 {
 
     // 메뉴 생성
     @Transactional
-    public MenuCreateResponse createMenu(MenuCreateRequest request) {
-        // 유효한 가게 검증 로직 shopService 호출
+    public MenuCreateResponse createMenu(MenuCreateRequest request, Long ownerId) {
+
+        // shop - owner 검증
         ShopEntity shop = shopServiceV1.getShopById(request.shopId());
+        shopServiceV1.validateShopOwner(shop.getId(), ownerId);
 
         MenuEntity menu = MenuEntity.createMenu(request, shop);
         MenuEntity savedMenu = menuRepository.save(menu);
@@ -84,11 +86,11 @@ public class MenuServiceV1 {
 
 
     // 메뉴 정보 수정
-    // todo: (+) 의도한 공백 값 처리 로직 추가
     @Transactional
-    public MenuDetailResponse updateMenu(UUID menuId, MenuUpdateRequest request) {
+    public MenuDetailResponse updateMenu(UUID menuId, MenuUpdateRequest request, Long ownerId) {
 
         MenuEntity menu = getMenuById(menuId);
+        shopServiceV1.validateShopOwner(menu.getShop().getId(), ownerId);
 
         if (request.name() != null && !request.name().isBlank()) {
             menu.updateName(request.name());
@@ -105,10 +107,14 @@ public class MenuServiceV1 {
 
     // 메뉴 상태 수정 - AVAILABLE, SOLD_OUT
     @Transactional
-    public MenuDetailResponse updateMenuStatus(UUID menuId, MenuStatusUpdateRequest request){
+    public MenuDetailResponse updateMenuStatus(UUID menuId, MenuStatusUpdateRequest request, Long ownerId){
+
         MenuEntity menu = getMenuById(menuId);
+        shopServiceV1.validateShopOwner(menu.getShop().getId(), ownerId);
+
         MenuStatus newStatus = MenuStatus.from(request.status()); // String -> Enum 변환
         menu.updateStatus(newStatus);
+
         return MenuDetailResponse.from(menu);
     }
 
