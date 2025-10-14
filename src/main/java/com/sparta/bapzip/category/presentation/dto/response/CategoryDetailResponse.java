@@ -27,6 +27,7 @@ public class CategoryDetailResponse {
                 .isDeleted(category.getIsDeleted())
                 .build();
     }
+
     public static CategoryDetailResponse toDto(CategoryEntity category) {
         return CategoryDetailResponse.builder()
                 .id(category.getId())
