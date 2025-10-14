@@ -5,7 +5,10 @@ import com.sparta.bapzip.order.application.OrderServiceV1;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.review.application.dto.ReviewDto;
 import com.sparta.bapzip.review.application.dto.request.CreateReviewRequest;
+import com.sparta.bapzip.review.application.dto.request.UpdateReviewRequest;
 import com.sparta.bapzip.review.application.exception.DuplicateReviewException;
+import com.sparta.bapzip.review.application.exception.ReviewNotFoundException;
+import com.sparta.bapzip.review.application.exception.UnauthorizedReviewAccessException;
 import com.sparta.bapzip.review.domain.entity.ReviewEntity;
 import com.sparta.bapzip.review.domain.repository.ReviewRepository;
 import com.sparta.bapzip.review.presentation.dto.response.ReviewCreateResponse;
@@ -111,5 +114,38 @@ public class ReviewServiceV1 {
         return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
     }
 
+
+    /**
+     * 리뷰를 부분 수정(PATCH)합니다.
+     *
+     * <p>
+     * 지정된 리뷰 ID와 사용자 정보를 기반으로 리뷰를 수정합니다.
+     * {@link UpdateReviewRequest}의 필드(score, content)만 업데이트하며,
+     * 리뷰 작성자가 아닌 경우 수정할 수 없습니다.
+     * 수정 후 {@link ReviewDto} 형태로 반환합니다.
+     * </p>
+     *
+     * @param user       리뷰 작성자 정보
+     * @param reviewId   수정할 리뷰 ID
+     * @param request    리뷰 수정 요청 DTO
+     * @return 수정된 리뷰 정보를 담은 {@link ReviewDto}
+     * @throws IllegalStateException    리뷰 작성자가 아닌 사용자가 수정 요청을 한 경우
+     * @throws IllegalArgumentException 존재하지 않는 리뷰 ID가 전달된 경우
+     */
+    @Transactional
+    public ReviewDto updateReview(UserEntity user, String reviewId, UpdateReviewRequest request) {
+        ReviewEntity review = reviewRepository.findById(UUID.fromString(reviewId))
+                .orElseThrow(() -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        // 작성자 체크
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedReviewAccessException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS);
+        }
+
+        // 리뷰 수정
+        review.updateReview(request.getScore(), request.getContent());
+
+        return ReviewDto.from(review);
+    }
 
 }

@@ -4,6 +4,7 @@ import com.sparta.bapzip.global.response.ApiResponse;
 import com.sparta.bapzip.review.application.ReviewServiceV1;
 import com.sparta.bapzip.review.application.dto.ReviewDto;
 import com.sparta.bapzip.review.application.dto.request.CreateReviewRequest;
+import com.sparta.bapzip.review.application.dto.request.UpdateReviewRequest;
 import com.sparta.bapzip.review.presentation.dto.response.ReviewCreateResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -51,6 +52,7 @@ public class ReviewControllerV1 {
         return ApiResponse.created(response);
     }
 
+
     /**
      * 특정 가게에 작성된 모든 리뷰를 조회합니다.
      *
@@ -89,5 +91,31 @@ public class ReviewControllerV1 {
     ) {
         List<ReviewDto> reviews = reviewServiceV1.getMyReviewsByShop(userDetails.getUser(), shopId);
         return ApiResponse.ok(reviews);
+    }
+
+    /**
+     * 리뷰를 수정합니다.
+     *
+     * <p>
+     * 특정 리뷰 ID와 사용자 정보를 기반으로 리뷰를 수정합니다.
+     * {@link UpdateReviewRequest}에 포함된 필드만 부분적으로 업데이트되며,
+     * 수정된 리뷰 정보는 {@link ReviewDto} 형태로 반환됩니다.
+     * </p>
+     *
+     * @param reviewId 수정할 리뷰 ID
+     * @param updateRequest 리뷰 수정 요청 DTO
+     * @param userDetails 인증된 사용자 정보({@link UserDetailsImpl})
+     * @return 수정된 리뷰 정보를 포함한 {@link ApiResponse} 객체
+     * @throws IllegalStateException 리뷰 작성자가 아닌 사용자가 수정 요청을 한 경우
+     * @throws IllegalArgumentException 존재하지 않는 리뷰 ID가 전달된 경우
+     */
+    @PatchMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<ReviewDto>> updateReview(
+            @PathVariable String reviewId,
+            @Valid @RequestBody UpdateReviewRequest updateRequest,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        ReviewDto updatedReview = reviewServiceV1.updateReview(userDetails.getUser(), reviewId, updateRequest);
+        return ApiResponse.ok(updatedReview);
     }
 }

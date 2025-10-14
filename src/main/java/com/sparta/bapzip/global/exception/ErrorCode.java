@@ -74,7 +74,9 @@ public enum ErrorCode {
     SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다."),
 
     // ====================== Review ======================
-    DUPLICATE_REVIEW(HttpStatus.CONFLICT, "이미 해당 주문에 대한 리뷰가 존재합니다.");
+    DUPLICATE_REVIEW(HttpStatus.CONFLICT, "이미 해당 주문에 대한 리뷰가 존재합니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
+    UNAUTHORIZED_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "리뷰 작성자만 접근할 수 있습니다.");
 
     private final HttpStatus status;
     private final String message;

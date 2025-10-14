@@ -66,4 +66,16 @@ public class ReviewEntity extends BaseEntity {
     @JoinColumn(name = "order_id", nullable = false)
     @OneToOne
     private OrderEntity order;
+
+
+
+    /**
+     * 리뷰 내용을 수정합니다.
+     * @param newScore 새로운 평점
+     * @param newContent 새로운 내용
+     */
+    public void updateReview(int newScore, String newContent) {
+        this.score = newScore;
+        this.content = newContent;
+    }
 }
