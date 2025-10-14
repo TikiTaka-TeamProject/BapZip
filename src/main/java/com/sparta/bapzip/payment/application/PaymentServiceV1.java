@@ -132,7 +132,7 @@ public class PaymentServiceV1 {
         PaymentEntity payment = getPaymentByOrderId(orderId);
 
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
-            throw new PaymentException(ErrorCode.PAYMENT_CANCELLATION_NOT_ALLOWED);
+            throw new PaymentException(ErrorCode.INVALID_PAYMENT_STATUS);
         }
 
         // Toss 취소 요청 DTO
