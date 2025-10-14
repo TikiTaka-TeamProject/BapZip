@@ -14,9 +14,6 @@ public class ShopUpdateRequest {
     private String name;
     private String address;
     private UUID categoryId;
-    private UUID serviceAreaId;
     private Double longitude;
     private Double latitude;
-
-
 }

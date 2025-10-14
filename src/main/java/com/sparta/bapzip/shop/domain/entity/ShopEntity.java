@@ -4,9 +4,13 @@ import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
+import com.sparta.bapzip.menu.domain.entity.MenuEntity;
+import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
+import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.exception.ShopAlreadyDeletedException;
+import com.sparta.bapzip.shop.presentation.dto.request.CreateShopRequest;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -64,36 +69,29 @@ public class ShopEntity extends BaseEntity {
     public void updateCategory(CategoryEntity category) { this.category = category; }
     public void updateServiceArea(ServiceAreaEntity serviceArea) { this.serviceArea = serviceArea; }
 
-    @Builder
-    public ShopEntity(String name, String address, Point location,
-                      UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
-        this.name = name;
-        this.address = address;
-        this.location = location;
-        this.owner = owner;
-        this.category = category;
-        this.serviceArea = serviceArea;
-    }
+//    @Builder
+//    public ShopEntity(String name, String address, Point location,
+//                      UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea, ShopStatusEnum status) {
+//        this.name = name;
+//        this.address = address;
+//        this.location = location;
+//        this.owner = owner;
+//        this.category = category;
+//        this.serviceArea = serviceArea;
+//        this.status = status != null ? status : ShopStatusEnum.PENDING;
+//    }
 
-    /**
-     * ShopEntity 생성 메서드
-     *
-     * @param name 가게 이름
-     * @param address 가게 주소
-     * @param location 가게 위치(Point)
-     * @param owner 소유자(UserEntity)
-     * @param category 카테고리(CategoryEntity)
-     * @param serviceArea 서비스 지역(ServiceAreaEntity)
-     * @return 생성된 ShopEntity 객체
-     *
-     * 생성 시 createdBy, updatedBy, createdAt, updatedAt를 자동으로 기록
-     */
-    public static ShopEntity create(String name, String address, Point location,
-                                    UserEntity owner, CategoryEntity category, ServiceAreaEntity serviceArea) {
-        ShopEntity shop = new ShopEntity(name, address, location, owner, category, serviceArea);
-        shop.markCreated(owner.getId());
-        shop.markUpdated(owner.getId());
-        return shop;
+    public static ShopEntity create(CreateShopRequest request, UserEntity owner,
+                                    CategoryEntity category, ServiceAreaEntity serviceArea, Point location) {
+        return  ShopEntity.builder()
+                .name(request.getName())
+                .address(request.getAddress())
+                .location(location)
+                .owner(owner)
+                .category(category)
+                .serviceArea(serviceArea)
+                .status(ShopStatusEnum.PENDING)
+                .build();
     }
 
     /**
@@ -112,4 +110,11 @@ public class ShopEntity extends BaseEntity {
         }
         markDeleted(userId);
     }
+
+    public void updateStatus(ShopStatusEnum status) {
+        if (status != null) {
+            this.status = status;
+        }
+    }
+
 }

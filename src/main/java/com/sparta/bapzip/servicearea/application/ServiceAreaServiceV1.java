@@ -42,4 +42,8 @@ public class ServiceAreaServiceV1 {
         return serviceAreaRepository.isExistenceArea(serviceAreaId, longitude, latitude);
     }
 
+    public ServiceAreaEntity getServiceAreaByPoint(Double longitude, Double latitude) {
+        return serviceAreaRepository.findByPoint(longitude, latitude)
+                .orElseThrow(() -> new ServiceAreaNotFoundException(ErrorCode.SERVICE_AREA_NOT_FOUND));
+    }
 }

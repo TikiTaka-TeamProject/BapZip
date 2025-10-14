@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ServiceAreaJpaRepository extends JpaRepository<ServiceAreaEntity, UUID> {
@@ -17,5 +18,14 @@ public interface ServiceAreaJpaRepository extends JpaRepository<ServiceAreaEntit
             @Param("entityId") UUID entityId,
             @Param("longitude") double longitude,
             @Param("latitude") double latitude
+    );
+
+    // 특정 Point가 속한 ServiceArea 조회
+    @Query(value = "SELECT * FROM p_service_areas s " +
+            "WHERE ST_Contains(s.area, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326))",
+            nativeQuery = true)
+    Optional<ServiceAreaEntity> findByPoint(
+            @Param("longitude") double longitude, //x
+            @Param("latitude") double latitude //y
     );
 }

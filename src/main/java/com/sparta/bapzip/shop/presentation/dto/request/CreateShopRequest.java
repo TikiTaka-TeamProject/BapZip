@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class CreatShopRequest {
+public class CreateShopRequest {
     @NotNull(message = "가게 이름은 필수입니다.")
     private String name;
 
@@ -27,8 +27,5 @@ public class CreatShopRequest {
 
     @NotNull(message = "카테고리 ID는 필수입니다.")
     private UUID categoryId;
-
-    @NotNull(message = "서비스 지역 ID는 필수입니다.")
-    private UUID serviceAreaId;
 }
 

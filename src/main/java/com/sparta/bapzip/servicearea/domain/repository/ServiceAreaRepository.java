@@ -6,10 +6,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ServiceAreaRepository {
-    // TODO: 용은 -> Shop 테스트작업을 위해 생성. 필요없을 시 제거
     Optional<ServiceAreaEntity> getServiceAreaById(UUID serviceAreaId);
 
     ServiceAreaEntity save(ServiceAreaEntity serviceAreaEntity);
 
     Boolean isExistenceArea(UUID id, Double x, Double y);
+
+    Optional<ServiceAreaEntity> findByPoint(Double longitude, Double latitude);
 }
