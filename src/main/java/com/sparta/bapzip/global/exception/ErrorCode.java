@@ -49,6 +49,7 @@ public enum ErrorCode {
     ORDER_NOT_DELIVERING(HttpStatus.BAD_REQUEST, "배달 중인 주문만 완료할 수 있습니다."),
     ORDER_NOT_CANCELLABLE(HttpStatus.BAD_REQUEST, "이미 처리 중인 주문은 취소할 수 없습니다."),
     FORBIDDEN_ORDER_ACCESS(HttpStatus.FORBIDDEN, "본인의 주문만 조회할 수 있습니다."),
+    ORDER_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "완료된 주문에 대해서만 리뷰룰 작성할 수 있습니다."),
 
     // ====================== Shop ======================
   
@@ -70,9 +71,10 @@ public enum ErrorCode {
     SHOP_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게를 삭제할 권한이 없습니다."),
     SHOP_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
     SHOP_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "가게 삭제 처리 중 오류가 발생했습니다."),
-    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다.");
+    SHOP_HAS_ACTIVE_ORDERS(HttpStatus.BAD_REQUEST, "진행 중인 주문이 있는 가게는 삭제할 수 없습니다."),
 
-    
+    // ====================== Review ======================
+    DUPLICATE_REVIEW(HttpStatus.CONFLICT, "이미 해당 주문에 대한 리뷰가 존재합니다.");
 
     private final HttpStatus status;
     private final String message;
