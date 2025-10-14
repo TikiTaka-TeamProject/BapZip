@@ -5,6 +5,7 @@ import com.sparta.bapzip.review.domain.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -38,5 +39,39 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public boolean existsByOrderIdAndUserId(UUID orderId, Long userId) {
         return reviewJpaRepository.existsByOrderIdAndUserId(orderId, userId);
+    }
+
+    /**
+     * 특정 가게에 작성된 모든 리뷰를 조회합니다.
+     *
+     * @param shopId 조회할 가게 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    @Override
+    public List<ReviewEntity> findAllByShopId(UUID shopId) {
+        return reviewJpaRepository.findAllByShopId(shopId);
+    }
+
+    /**
+     * 특정 사용자가 작성한 모든 리뷰를 조회합니다.
+     *
+     * @param userId 조회할 사용자 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    @Override
+    public List<ReviewEntity> findAllByUserId(Long userId) {
+        return reviewJpaRepository.findAllByUserId(userId);
+    }
+
+    /**
+     * 특정 사용자가 작성한 특정 가게 리뷰를 조회합니다.
+     *
+     * @param userId 조회할 사용자 ID
+     * @param shopId 조회할 가게 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    @Override
+    public List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId) {
+        return reviewJpaRepository.findAllByUserIdAndShopId(userId, shopId);
     }
 }

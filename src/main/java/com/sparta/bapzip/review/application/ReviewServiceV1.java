@@ -3,6 +3,7 @@ package com.sparta.bapzip.review.application;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.order.application.OrderServiceV1;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
+import com.sparta.bapzip.review.application.dto.ReviewDto;
 import com.sparta.bapzip.review.application.dto.request.CreateReviewRequest;
 import com.sparta.bapzip.review.application.exception.DuplicateReviewException;
 import com.sparta.bapzip.review.domain.entity.ReviewEntity;
@@ -16,8 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 /**
- * 리뷰 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
+ * 리뷰 관련 비즈니스 로직을 처리하는 서비스 클래스
  *
  * <p>리뷰 작성, 중복 리뷰 체크, 가게 및 주문 조회 등의 기능을 수행합니다.</p>
  */
@@ -27,7 +32,6 @@ public class ReviewServiceV1 {
 
     private final ReviewRepository reviewRepository;
     private final ShopServiceV1 shopServiceV1;
-    private final UserServiceV1 userServiceV1;
     private final OrderServiceV1 orderServiceV1;
 
     /**
@@ -72,4 +76,40 @@ public class ReviewServiceV1 {
         // 5. DTO 변환 후 반환
         return ReviewCreateResponse.from(savedReview);
     }
+
+    /**
+     * 특정 가게에 작성된 모든 리뷰를 조회합니다.
+     *
+     * @param shopId 조회할 가게의 ID
+     * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
+     */
+    public List<ReviewDto> getReviewsByShop(String shopId) {
+        List<ReviewEntity> reviews = reviewRepository.findAllByShopId(UUID.fromString(shopId));
+        return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
+    }
+
+    /**
+     * 특정 사용자가 작성한 모든 리뷰를 조회합니다.
+     *
+     * @param user 조회할 사용자
+     * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
+     */
+    public List<ReviewDto> getMyReviews(UserEntity user) {
+        List<ReviewEntity> reviews = reviewRepository.findAllByUserId(user.getId());
+        return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
+    }
+
+    /**
+     * 특정 사용자가 작성한 특정 가게 리뷰를 조회합니다.
+     *
+     * @param user   조회할 사용자
+     * @param shopId 조회할 가게의 ID
+     * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
+     */
+    public List<ReviewDto> getMyReviewsByShop(UserEntity user, String shopId) {
+        List<ReviewEntity> reviews = reviewRepository.findAllByUserIdAndShopId(user.getId(), UUID.fromString(shopId));
+        return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
+    }
+
+
 }
