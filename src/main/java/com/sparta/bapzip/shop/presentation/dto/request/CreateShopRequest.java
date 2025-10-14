@@ -14,14 +14,6 @@ public class CreateShopRequest {
     @NotNull(message = "가게 주소는 필수입니다.")
     private String address;
 
-    @NotNull(message = "경도(x)는 필수입니다.")
-    private Double longitude;
-
-    @NotNull(message = "위도(y)는 필수입니다.")
-    private Double latitude;
-
-    private ShopStatusEnum status;
-
     @NotNull(message = "오너 ID는 필수입니다.")
     private Long ownerId;
 

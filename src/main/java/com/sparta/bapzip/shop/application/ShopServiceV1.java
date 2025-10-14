@@ -1,5 +1,7 @@
 package com.sparta.bapzip.shop.application;
 
+import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
+import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
@@ -37,8 +39,9 @@ public class ShopServiceV1 {
     private final UserServiceV1 userServiceV1;
     private final CategoryServiceV1 categoryServiceV1;
     private final ServiceAreaServiceV1 serviceAreaServiceV1;
+    private final KakaoLocalServiceV1 kakaoLocalServiceV1;
 
-    public CreateShopResponse createShop(CreateShopRequest createShopRequest, Long ownerId) {
+    public CreateShopResponse createShop(CreateShopRequest request, Long ownerId) {
         // 1. Owner 조회
         UserEntity owner = userServiceV1.findUser(ownerId);
 
@@ -48,22 +51,25 @@ public class ShopServiceV1 {
         }
 
         // 3. 카테고리 조회
-        CategoryEntity category = categoryServiceV1.getCategoryById(createShopRequest.getCategoryId());
+        CategoryEntity category = categoryServiceV1.getCategoryById(request.getCategoryId());
+
+        // 4.주소료 좌표 조회
+        KakaoLocalResponseDto kakaoData =kakaoLocalServiceV1.getResponse(request.getAddress());
 
         // 4. 좌표 유효성 체크
-        double lon = createShopRequest.getLongitude();
-        double lat = createShopRequest.getLatitude();
-        validateCoordinates(lon, lat);
+        double longitude = Double.parseDouble(kakaoData.getLongitude());
+        double latitude = Double.parseDouble(kakaoData.getLatitude());
+        validateCoordinates(longitude, latitude);
 
         // 5. Service Area 조회 (좌표 기반)
-        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(lon, lat);
+        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
 
         // 6. 위치(Point) 생성
-        Point location = createPoint(createShopRequest.getLongitude(), createShopRequest.getLatitude());
+        Point location = createPoint(longitude, latitude);
 
         // 7. Shop 엔티티 생성
         ShopEntity shop = ShopEntity.create(
-                createShopRequest,
+                request,
                 owner,
                 category,
                 serviceArea,
@@ -137,21 +143,27 @@ public class ShopServiceV1 {
         // 2. 권한 검증
         validateShopOwner(shopId, ownerId);
 
-        // 3. 이름, 주소 수정
-        if (shopUpdateRequest.getName() != null) shop.updateName(shopUpdateRequest.getName());
-        if (shopUpdateRequest.getAddress() != null) shop.updateAddress(shopUpdateRequest.getAddress());
+        // 3. 이름 수정
+        if (shopUpdateRequest.getName() != null) {
+            shop.updateName(shopUpdateRequest.getName());
+        }
 
-        // 4. 좌표 수정
-        if (shopUpdateRequest.getLongitude() != null && shopUpdateRequest.getLatitude() != null) {
-            double lon = shopUpdateRequest.getLongitude();
-            double lat = shopUpdateRequest.getLatitude();
-            validateCoordinates(lon, lat);
+        // 4. 주소 수정 및 좌표 자동 갱신
+        if (shopUpdateRequest.getAddress() != null) {
+            shop.updateAddress(shopUpdateRequest.getAddress());
 
-            Point newLocation = createPoint(lon, lat);
+            // Kakao API로 주소 → 좌표 조회
+            KakaoLocalResponseDto kakaoData = kakaoLocalServiceV1.getResponse(shopUpdateRequest.getAddress());
+            double longitude = Double.parseDouble(kakaoData.getLongitude());
+            double latitude = Double.parseDouble(kakaoData.getLatitude());
+            validateCoordinates(longitude, latitude);
+
+            // Point 생성
+            Point newLocation = createPoint(longitude, latitude);
             shop.updateLocation(newLocation);
 
-            // ServiceArea 업데이트
-            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(lon, lat);
+            // ServiceArea 자동 업데이트
+            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
             shop.updateServiceArea(serviceArea);
         }
 
@@ -163,6 +175,7 @@ public class ShopServiceV1 {
 
         return ShopDetailResponse.from(shop);
     }
+
 
     // Manager 전용 상태 변경
     @Transactional

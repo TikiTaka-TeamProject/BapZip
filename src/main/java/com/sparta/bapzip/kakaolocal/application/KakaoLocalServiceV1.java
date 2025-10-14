@@ -34,11 +34,17 @@ public class KakaoLocalServiceV1 {
         if (documents == null){
             throw new KakaoLocalResponseNotFoundException(ErrorCode.KAKAO_MAP_DOCUMENTS_NOT_FOUND);
         }
-        //응답 address가 없을경우
-        if (documents.get("address").isJsonNull()){
+        // 지번/도로명 주소 fallback 처리
+        JsonObject address = null;
+        if (documents.has("address") && !documents.get("address").isJsonNull()) {
+            address = documents.get("address").getAsJsonObject();
+        } else if (documents.has("road_address") && !documents.get("road_address").isJsonNull()) {
+            address = documents.get("road_address").getAsJsonObject();
+        }
+
+        if (address == null) {
             throw new KakaoLocalResponseNotFoundException(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND);
         }
-        JsonObject address = documents.get("address").getAsJsonObject();
         return KakaoLocalResponseDto.from(documents, address);
     }
 }
