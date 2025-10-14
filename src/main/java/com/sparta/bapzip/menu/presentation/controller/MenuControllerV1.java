@@ -7,16 +7,14 @@ import com.sparta.bapzip.menu.application.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuSearchRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuUpdateRequest;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.*;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,11 +78,13 @@ public class MenuControllerV1 {
     }
 
     /**
-     * 메뉴 전체 조회 - MANAGER, MASTER (관리자용) -> Response Admin (메뉴 상태 추가)
+     * 메뉴 전체 조회 - MANAGER, MASTER (관리자용)
+     * todo: Security Config @EnableMethodSecurity(prePostEnabled = true) 추가 시 활성화 => PreAuthorize
      */
+    @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MenuSearchResponse>>> getAllMenus(){
-        List<MenuSearchResponse> menuList = menuService.getAllMenus();
+    public ResponseEntity<ApiResponse<List<MenuAdminResponse>>> getAllMenus(){
+        List<MenuAdminResponse> menuList = menuService.getAllMenus();
         return ApiResponse.ok(menuList);
     }
 

@@ -9,10 +9,7 @@ import com.sparta.bapzip.menu.application.exception.MenuNotFoundException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
-import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
+import com.sparta.bapzip.menu.presentation.dto.response.*;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.RequiredArgsConstructor;
@@ -144,10 +141,10 @@ public class MenuServiceV1 {
 
 
     // 메뉴 전체 조회 - 관리자용
-    public List<MenuSearchResponse> getAllMenus() {
+    public List<MenuAdminResponse> getAllMenus() {
         List<MenuEntity> menus = menuRepository.findAll();
         return menus.stream()
-                .map(MenuSearchResponse::from)
+                .map(MenuAdminResponse::from)
                 .toList(); // DTO -> List 반환
     }
 
