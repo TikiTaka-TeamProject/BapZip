@@ -17,6 +17,7 @@ import java.util.Objects;
 public class KakaoLocalApiClient implements KakaoLocalCallable {
 
     private final String API_URL = "https://dapi.kakao.com/v2/local/search/address.json?query=";
+    private final String API_URL_COORD = "https://dapi.kakao.com/v2/local/geo/coord2address.json?";
 
     @Value("${KAKAO_REST_API_KEY}")
     private String apiKey;
@@ -34,6 +35,26 @@ public class KakaoLocalApiClient implements KakaoLocalCallable {
         JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
         JsonObject documents = null;
         if (!Objects.requireNonNull(jsonObject).getAsJsonArray("documents").isEmpty()){
+            documents = jsonObject.getAsJsonArray("documents").get(0).getAsJsonObject();
+        }
+        return documents;
+    }
+
+    @Override
+    public JsonObject getDocumentsByCoordinates(Double longitude, Double latitude) {
+        RestTemplate restTemplate = new RestTemplate();
+        Gson gson = new Gson();
+        String url = API_URL_COORD +"x=" + longitude + "&y=" + latitude;
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", "KakaoAK " + apiKey);
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+
+        String response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+        JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
+
+        JsonObject documents = null;
+        if (jsonObject.has("documents") && !jsonObject.getAsJsonArray("documents").isEmpty()) {
             documents = jsonObject.getAsJsonArray("documents").get(0).getAsJsonObject();
         }
         return documents;
