@@ -1,5 +1,7 @@
 package com.sparta.bapzip.category.domain.entity;
 import com.sparta.bapzip.category.presentation.dto.request.CategoryRequestDto;
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
+import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import jakarta.persistence.*;
@@ -7,6 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("CategoryEntity 도메인 테스트")
@@ -104,7 +110,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("동일한 이름의 카테고리는 생성할 수 없다")
-        void create_DuplicateName() {
+        void createDuplicateName() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("한식")
@@ -126,7 +132,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("동일한 내용의 카테고리는 생성할 수 없다")
-        void create_DuplicateContent() {
+        void createDuplicateContent() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("한식")
@@ -148,7 +154,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("이름과 내용이 모두 동일한 카테고리는 생성할 수 없다")
-        void create_DuplicateNameAndContent() {
+        void createDuplicateNameAndContent() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("한식")
@@ -171,7 +177,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("이름과 내용이 모두 다르면 생성할 수 있다")
-        void create_UniqueNameAndContent() {
+        void createUniqueNameAndContent() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("한식")
@@ -198,7 +204,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("MANAGER가 카테고리 정보를 수정한다")
-        void update_ByManager_Success() {
+        void updateByManagerSuccess() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
@@ -222,7 +228,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("수정 시 중복된 이름이 있으면 수정할 수 없다")
-        void update_DuplicateName() {
+        void updateDuplicateName() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("중식")
@@ -245,7 +251,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("수정 시 중복된 내용이 있으면 수정할 수 없다")
-        void update_DuplicateContent() {
+        void updateDuplicateContent() {
             // given
             CategoryEntity existingCategory = CategoryEntity.builder()
                     .name("중식")
@@ -268,7 +274,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("카테고리 이름만 수정한다")
-        void update_NameOnly() {
+        void updateNameOnly() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
@@ -290,7 +296,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("카테고리 설명만 수정한다")
-        void update_ContentOnly() {
+        void updateContentOnly() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
@@ -317,7 +323,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("MANAGER가 카테고리를 삭제한다")
-        void delete_ByManager_Success() {
+        void deleteByManagerSuccess() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
@@ -336,7 +342,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("삭제된 카테고리는 isDeleted가 true다")
-        void delete_IsDeletedTrue() {
+        void deleteIsDeletedTrue() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("일식")
@@ -358,7 +364,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("MANAGER는 삭제된 카테고리를 포함한 모든 카테고리를 조회할 수 있다")
-        void read_AllCategories_ByManager() {
+        void readAllCategoriesByManager() {
             // given
             CategoryEntity activeCategory = CategoryEntity.builder()
                     .name("한식")
@@ -381,7 +387,7 @@ class CategoryEntityTest {
 
         @Test
         @DisplayName("일반 유저는 isDeleted가 false인 카테고리만 조회할 수 있다")
-        void read_ActiveCategoriesOnly_ByCustomer() {
+        void readActiveCategoriesOnlyByCustomer() {
             // given
             CategoryEntity activeCategory = CategoryEntity.builder()
                     .name("한식")
@@ -400,10 +406,9 @@ class CategoryEntityTest {
             assertThat(activeCategory.getIsDeleted()).isFalse(); // 일반 유저 조회 가능
             assertThat(deletedCategory.getIsDeleted()).isTrue(); // 일반 유저 조회 불가
         }
-
         @Test
-        @DisplayName("일반 유저는 특정 카테고리에 해당하는 가게 목록을 조회할 수 있다")
-        void read_ShopListByCategory_ByCustomer() {
+        @DisplayName("메니저는 특정 카테고리에 해당하는 모든 가게 목록을 조회할 수 있다")
+        void readShopListByCategoryByManager() {
             // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
@@ -411,29 +416,65 @@ class CategoryEntityTest {
                     .build();
             category.markCreated(adminUser.getId());
 
-            // when & then
-            assertThat(category.getShopEntityList()).isNotNull();
-            assertThat(category.getShopEntityList()).isEmpty();
-            // 일반 유저는 카테고리의 가게 목록 조회 가능
-        }
-    }
+            // 비활성화된 가게 포함
+            ShopEntity activeShop = ShopEntity.builder()
+                    .name("활성 가게")
+                    .category(category)
+                    .status(ShopStatusEnum.APPROVED)
+                    .build();
+            activeShop.markCreated(adminUser.getId());
 
-    @Nested
-    @DisplayName("CategoryEntity 연관관계 테스트")
-    class CategoryRelationshipTest {
+            ShopEntity inactiveShop = ShopEntity.builder()
+                    .name("비활성 가게")
+                    .category(category)
+                    .status(ShopStatusEnum.PENDING)
+                    .build();
+            inactiveShop.markCreated(adminUser.getId());
+
+            // when
+            List<ShopEntity> shops = category.getShopEntityList();
+
+            // then
+            assertThat(shops).isNotNull();
+            assertThat(shops).hasSize(2);
+            assertThat(shops).containsExactlyInAnyOrder(activeShop, inactiveShop);
+        }
 
         @Test
-        @DisplayName("카테고리의 가게 목록이 초기화된다")
-        void shopList_Initialized() {
-            // given & when
+        @DisplayName("일반 유저는 특정 카테고리에 해당하는 활성화 된 가게 목록을 조회할 수 있다")
+        void readShopListByCategoryByCustomer() {
+            // given
             CategoryEntity category = CategoryEntity.builder()
                     .name("한식")
                     .content("한국 전통 음식")
                     .build();
+            category.markCreated(adminUser.getId());
+
+            ShopEntity activeShop = ShopEntity.builder()
+                    .name("활성 가게")
+                    .category(category)
+                    .status(ShopStatusEnum.APPROVED)
+                    .build();
+            activeShop.markCreated(adminUser.getId());
+
+            ShopEntity inactiveShop = ShopEntity.builder()
+                    .name("비활성 가게")
+                    .category(category)
+                    .status(ShopStatusEnum.PENDING)
+                    .build();
+            inactiveShop.markCreated(adminUser.getId());
+
+            // when
+            List<ShopEntity> activeShops = category.getShopEntityList().stream()
+                    .filter(shop -> shop.getStatus() == ShopStatusEnum.APPROVED)
+                    .collect(Collectors.toList());
 
             // then
-            assertThat(category.getShopEntityList()).isNotNull();
-            assertThat(category.getShopEntityList()).isEmpty();
+            assertThat(activeShops).isNotNull();
+            assertThat(activeShops).hasSize(1);
+            assertThat(activeShops).contains(activeShop);
+            assertThat(activeShops).doesNotContain(inactiveShop);
         }
     }
+
 }
