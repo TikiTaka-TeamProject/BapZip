@@ -82,5 +82,12 @@ public class MenuEntity extends BaseEntity {
     public void updateStatus(MenuStatus status) {
         this.status = status;
     }
-  
+
+    /**
+     * menu soft delete
+     */
+    public void deleteMenu(Long userId){
+        markDeleted(userId);
+    }
+
 }

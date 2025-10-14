@@ -114,4 +114,16 @@ public class MenuControllerV1 {
         MenuDetailResponse menuDetailResponse = menuService.updateMenuStatus(menuId, request, ownerId);
         return ApiResponse.ok(menuDetailResponse);
     }
+
+    /**
+     * 메뉴 삭제 - OWNER
+     */
+    @DeleteMapping("/{menuId}")
+    public ResponseEntity<ApiResponse<Void>> deleteMenu(@PathVariable UUID menuId,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Long ownerId = userDetails.getUser().getId();
+        menuService.deleteMenu(menuId, ownerId);
+        return ApiResponse.noContent();
+    }
 }

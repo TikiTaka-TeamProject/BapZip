@@ -2,12 +2,12 @@ package com.sparta.bapzip.menu.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
-import com.sparta.bapzip.menu.domain.entity.MenuEntity;
-import com.sparta.bapzip.menu.domain.enums.MenuStatus;
-import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.application.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuUpdateRequest;
+import com.sparta.bapzip.menu.domain.entity.MenuEntity;
+import com.sparta.bapzip.menu.domain.enums.MenuStatus;
+import com.sparta.bapzip.menu.domain.repository.MenuRepository;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuCreateResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuDetailResponse;
 import com.sparta.bapzip.menu.presentation.dto.response.MenuListByShopResponse;
@@ -15,6 +15,7 @@ import com.sparta.bapzip.menu.presentation.dto.response.MenuSearchResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,8 +34,6 @@ public class MenuServiceV1 {
 
     private final MenuRepository menuRepository;
     private final ShopServiceV1 shopServiceV1;
-
-    // todo: 메서드 USER ROLE 검증 필요 -> 메뉴 생성, 삭제...
 
     // 메뉴 생성
     @Transactional
@@ -143,7 +143,6 @@ public class MenuServiceV1 {
     }
 
 
-
     // 메뉴 전체 조회
     public List<MenuSearchResponse> getAllMenus() {
         List<MenuEntity> menus = menuRepository.findAll();
@@ -151,6 +150,23 @@ public class MenuServiceV1 {
                 .map(MenuSearchResponse::from)
                 .toList(); // DTO -> List 반환
     }
+
+
+
+    /**
+     * 메뉴 삭제 (soft delete)
+     * @param menuId 삭제할 메뉴 ID
+     * @param ownerId OWNER ID
+     *                실제로 DB에서 삭제되는 것이 아니므로 반복 요청 발생 -> 예외 처리 필요
+     */
+    @Transactional
+    public void deleteMenu(UUID menuId, Long ownerId) {
+        MenuEntity menu = getMenuById(menuId);
+        shopServiceV1.validateShopOwner(menu.getShop().getId(), ownerId);
+
+        menu.deleteMenu(ownerId);
+    }
+
 
     /**
      * 엔티티 조회 헬퍼
