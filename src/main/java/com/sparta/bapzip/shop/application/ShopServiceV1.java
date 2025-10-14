@@ -19,7 +19,6 @@ import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
-import com.sparta.bapzip.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -41,6 +40,15 @@ public class ShopServiceV1 {
     private final ServiceAreaServiceV1 serviceAreaServiceV1;
     private final KakaoLocalServiceV1 kakaoLocalServiceV1;
 
+    /**
+     * 신규 가게 생성
+     *
+     * @param request   가게 생성 정보 DTO
+     * @param ownerId   가게 소유자 ID
+     * @return 생성된 가게 정보 DTO
+     * @throws ShopAlreadyExistsException 이미 해당 Owner가 가게를 가지고 있는 경우
+     * @throws GlobalException 좌표 범위 오류 발생 시
+     */
     public CreateShopResponse createShop(CreateShopRequest request, Long ownerId) {
         // 1. Owner 조회
         UserEntity owner = userServiceV1.findUser(ownerId);
@@ -82,23 +90,37 @@ public class ShopServiceV1 {
         return CreateShopResponse.from(saved);
     }
 
+    /**
+     * 좌표 유효성 검사
+     *
+     * @param longitude 경도
+     * @param latitude  위도
+     * @throws GlobalException 좌표가 유효 범위를 벗어날 경우
+     */
     private void validateCoordinates(double longitude, double latitude) {
         if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
             throw new GlobalException(ErrorCode.COORDINATE_OUT_OF_RANGE);
         }
     }
 
+    /**
+     * Point 객체 생성
+     *
+     * @param longitude 경도
+     * @param latitude  위도
+     * @return 좌표 기반 Point 객체
+     */
     private Point createPoint(double longitude, double latitude) {
         GeometryFactory geometryFactory = new GeometryFactory();
         return geometryFactory.createPoint(new Coordinate(longitude, latitude));
     }
 
     /**
-     * 가게 ID를 기준으로 ShopEntity 조회
+     * 가게 UUID 기준 Shop 조회
      *
-     * @param shopId 조회할 가게의 UUID
+     * @param shopId 조회할 가게 UUID
      * @return 조회된 ShopEntity
-     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
+     * @throws ShopNotFoundException 존재하지 않는 가게 UUID일 경우
      */
     public ShopEntity getShopById(UUID shopId) {
         return shopRepository.findById(shopId)
@@ -106,12 +128,10 @@ public class ShopServiceV1 {
     }
 
     /**
-     * 가게 ID 기준으로 상세 정보 조회
-     * ShopEntity를 조회 후 필요한 정보를 ShopDetailResponse로 변환
+     * 가게 UUID 기준 Shop 상세 정보 조회
      *
-     * @param shopId 조회할 가게의 UUID
+     * @param shopId 조회할 가게 UUID
      * @return ShopDetailResponse 가게 상세 정보 DTO
-     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
      */
     public ShopDetailResponse getShopDetail(UUID shopId) {
         ShopEntity shop = getShopById(shopId);
@@ -119,6 +139,13 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
+    /**
+     * 요청자가 가게 소유자인지 검증
+     *
+     * @param shopId  검증할 가게 UUID
+     * @param ownerId 요청자 ID
+     * @throws GlobalException 요청자가 소유자가 아닌 경우
+     */
     public void validateShopOwner(UUID shopId, Long ownerId) {
         ShopEntity shop = getShopById(shopId);
 
@@ -130,10 +157,13 @@ public class ShopServiceV1 {
 
     /**
      * Shop 정보 수정
-     * @param shopId 수정할 shop UUID
-     * @param ownerId 요청한 사용자 ID (Owner 권한 체크)
-     * @param shopUpdateRequest 수정할 정보
-     * @return 수정된 Shop 정보를 ShopDetailResponse로 반환
+     * - 이름, 주소, 카테고리 수정 가능
+     * - 주소 변경 시 좌표 및 서비스 지역 자동 갱신
+     *
+     * @param shopId           수정할 가게 UUID
+     * @param ownerId          요청자 ID (소유자 권한 체크)
+     * @param shopUpdateRequest 수정 정보 DTO
+     * @return 수정된 ShopDetailResponse
      */
     @Transactional
     public ShopDetailResponse updateShop(UUID shopId, Long ownerId, ShopUpdateRequest shopUpdateRequest) {
@@ -177,17 +207,22 @@ public class ShopServiceV1 {
     }
 
 
-    // Manager 전용 상태 변경
+    /**
+     * 관리자용 Shop 상태 변경
+     *
+     * @param shopId   상태를 변경할 가게 UUID
+     * @param newStatus 새로운 상태
+     * @return 상태가 변경된 ShopDetailResponse
+     */
     @Transactional
     public ShopDetailResponse updateShopStatus(UUID shopId, ShopStatusEnum newStatus) {
         ShopEntity shop = getShopById(shopId);
         shop.updateStatus(newStatus);
         return ShopDetailResponse.from(shop);
     }
+
     /**
-     * 승인 상태(APPROVED)인 가게 리스트 조회
-     *
-     * ShopRepository를 통해 상태가 APPROVED인 ShopEntity 리스트를 조회합니다.
+     * 승인(APPROVED) 상태 가게 리스트 조회
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
@@ -196,13 +231,10 @@ public class ShopServiceV1 {
     }
 
     /**
-     * 상태별 가게 목록 조회
+     * 상태별 가게 리스트 조회
      *
-     * 전달된 상태(shopStatusEnum)에 따라 가게 목록을 조회합니다.
-     * 상태가 null인 경우, 모든 가게를 조회합니다.
-     *
-     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum). null이면 전체 조회
-     * @return List<ShopEntity> 조회된 가게 엔티티 리스트
+     * @param shopStatusEnum 조회할 상태 (null이면 전체 조회)
+     * @return List<ShopEntity> 조회된 가게 리스트
      */
     public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
         if (shopStatusEnum == null) {
@@ -214,16 +246,10 @@ public class ShopServiceV1 {
     /**
      * 가게 삭제 처리 (Soft Delete)
      *
-     * - 실제 DB에서 삭제하지 않고, isDeleted = true 처리
-     * - 삭제 요청 시 가게 존재 여부 확인
-     * - 요청한 사용자가 소유자가 아닌 경우 접근 권한 예외 발생
-     * - 삭제 시 deletedBy, deletedAt를 기록
-     *
-     * @param shopId 삭제할 가게 ID
-     * @param ownerId 삭제를 요청한 사용자 ID (가게 소유자)
-     * @throws GlobalException
-     *   - SHOP_NOT_FOUND: 존재하지 않거나 이미 삭제된 가게
-     *   - SHOP_DELETE_FORBIDDEN: 요청한 사용자가 소유자가 아닌 경우
+     * @param shopId  삭제할 가게 UUID
+     * @param ownerId 삭제 요청자 ID (소유자 권한 체크)
+     * @throws ShopNotFoundException 존재하지 않거나 이미 삭제된 경우
+     * @throws GlobalException 요청자가 소유자가 아닌 경우
      */
     @Transactional
     public void deleteShop(UUID shopId, Long ownerId) {
