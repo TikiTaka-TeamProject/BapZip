@@ -22,7 +22,7 @@ public class PaymentControllerV1 {
     private final PaymentServiceV1 paymentService;
     @PostMapping("/confirm")
     public ResponseEntity<PaymentResponseDto> createPayment(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PaymentCreateRequest requestDto) {
-        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.fromString("6a7b8230-b26b-45db-bcd0-84fb189ff53b"), requestDto);
+        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.fromString("6f406b06-fabf-4236-afc5-64ce383fcfbf"), requestDto);
 
         return ResponseEntity.ok(response);
     }

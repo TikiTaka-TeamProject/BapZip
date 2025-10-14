@@ -2,10 +2,8 @@ package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
+import com.sparta.bapzip.user.application.dto.request.UserRoleChangeRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
-import com.sparta.bapzip.user.application.dto.response.UserDeleteResponseDto;
-import com.sparta.bapzip.user.application.dto.response.UserResponseDto;
-import com.sparta.bapzip.user.application.dto.response.UserUpdateResponseDto;
 import com.sparta.bapzip.user.application.excpetion.DuplicateUserException;
 import com.sparta.bapzip.user.application.excpetion.PasswordNotMatchException;
 import com.sparta.bapzip.user.application.excpetion.UnauthorizedUserException;
@@ -14,7 +12,7 @@ import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
-import com.sparta.bapzip.user.application.dto.response.SignupResponseDto;
+import com.sparta.bapzip.user.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,13 +32,13 @@ public class UserServiceV1 {
         // 권한 확인
         UserRoleEnum role = requestDto.getRole();
         if (role.equals(UserRoleEnum.MANAGER) || role.equals(UserRoleEnum.MASTER)) {
-            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
         }
 
         // 이메일 중복 확인
         String email = requestDto.getEmail();
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new DuplicateUserException(ErrorCode.DUPLICATE_USER_EXCEPTION);
+            throw new DuplicateUserException(ErrorCode.DUPLICATE_USER);
         }
 
         UserEntity user = UserEntity.create(requestDto, passwordEncoder.encode(requestDto.getPassword()));
@@ -75,7 +73,7 @@ public class UserServiceV1 {
         }
 
         // 토큰 유저의 role이 MASTER와 MANAGER가 아닐 경우 exception 반환
-        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
+        throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
     }
 
     public UserUpdateResponseDto updateUser(UserUpdateRequestDto userUpdateRequestDto, UserEntity user) {
@@ -97,15 +95,29 @@ public class UserServiceV1 {
         return UserDeleteResponseDto.of(saveUser);
     }
 
+    public UserRoleChangeResponseDto changeUserRole(Long userId, UserRoleChangeRequestDto userRoleChangeRequestDto, UserEntity user) {
+        UserRoleEnum role = userRoleChangeRequestDto.getRole();
+        // MASTER도 role을 MASTER로 변경 불가
+        if (role.equals(UserRoleEnum.MASTER)) {
+            throw new UnauthorizedUserException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        UserEntity targetUser = findUser(userId);
+        targetUser.changeRole(role);
+        targetUser.markUpdated(user.getId());
+
+        return UserRoleChangeResponseDto.of(targetUser);
+    }
+
     private UserEntity findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND_EXCEPTION)
+                () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
     private void matchPassword(String rowPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rowPassword, encodedPassword)) {
-            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION);
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
         }
     }
 }
