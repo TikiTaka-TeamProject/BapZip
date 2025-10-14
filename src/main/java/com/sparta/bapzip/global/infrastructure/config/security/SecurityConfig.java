@@ -68,6 +68,7 @@ public class SecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers("/v1/users/signup", "/v1/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/users").hasAnyRole("MASTER", "MANAGER")
+                        .requestMatchers("/v1/categories/admin/**").hasAnyRole("MASTER", "MANAGER")
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

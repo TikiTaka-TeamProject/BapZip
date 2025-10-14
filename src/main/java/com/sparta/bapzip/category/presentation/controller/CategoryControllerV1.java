@@ -1,10 +1,10 @@
 package com.sparta.bapzip.category.presentation.controller;
 
 import com.sparta.bapzip.category.application.CategoryServiceV1;
-import com.sparta.bapzip.category.domain.entity.CategoryEntity;
+import com.sparta.bapzip.category.domain.exception.CategoryException;
 import com.sparta.bapzip.category.presentation.dto.request.CategoryRequestDto;
 import com.sparta.bapzip.category.presentation.dto.response.CategoryDetailResponse;
-import com.sparta.bapzip.shop.application.ShopServiceV1;
+import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,10 @@ public class CategoryControllerV1 {
     //  MASTER, MANAGER만 접근 가능
     @GetMapping("/admin")
     @PreAuthorize("hasAnyRole('MASTER','MANAGER')")
-    public ResponseEntity<List<CategoryDetailResponse>> getAllCategoriesForAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(categoryServiceV1.getAllCategories());
+    public ResponseEntity<List<CategoryDetailResponse>> getAllCategoriesForAdmin() {
+        List<CategoryDetailResponse> categories = categoryServiceV1.getAllCategories();
+        return ResponseEntity.ok(categories);
+
     }
     // 카테고리 ID 기준 가게 리스트 조회
     @GetMapping("/{categoryId}/shops")
@@ -51,22 +53,19 @@ public class CategoryControllerV1 {
     }
 
     // 카테고리 생성
-    @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
+    @PostMapping("/admin/create")
     public ResponseEntity<CategoryDetailResponse> createCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CategoryRequestDto request) {
         CategoryDetailResponse categoryDetailResponse = categoryServiceV1.createCategory(request.getName(), request.getContent(), userDetails);
         return ResponseEntity.ok(categoryDetailResponse);
     }
-    @PatchMapping("/{categoryId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
+    @PatchMapping("/admin/{categoryId}")
     public ResponseEntity<CategoryDetailResponse> updateCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId,@RequestBody CategoryRequestDto request) {
         CategoryDetailResponse categoryDetailResponse = categoryServiceV1.updateCategory(categoryId, request.getName(), request.getContent(), userDetails);
         return ResponseEntity.ok(categoryDetailResponse);
     }
 
     // 카테고리 삭제 (Soft Delete)
-    @DeleteMapping("/{categoryId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
+    @DeleteMapping("/admin/{categoryId}")
     public ResponseEntity<CategoryDetailResponse> deleteCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId) {
         CategoryDetailResponse categoryDetailResponse = categoryServiceV1.deleteCategory(categoryId, userDetails);
         return ResponseEntity.ok(categoryDetailResponse);

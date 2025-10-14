@@ -35,8 +35,12 @@ public class CategoryServiceV1 {
     // 삭제되지 않은 카테고리 리스트 조회
     @Transactional(readOnly = true)
     public List<CategoryDetailResponse> getActiveCategories() {
-        return categoryRepository.findAllByIsDeletedFalse()
-                .stream()
+        List<CategoryEntity> categories = categoryRepository.findAllByIsDeletedFalse();
+        if (categories == null || categories.isEmpty()) {
+            throw new CategoryException(ErrorCode.NO_CATEGORY_FOUND);
+        }
+
+        return categories.stream()
                 .map(CategoryDetailResponse::toDto)
                 .toList();
     }
@@ -50,7 +54,9 @@ public class CategoryServiceV1 {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, validatedSortBy));
         Page<ShopEntity> shopPage = shopRepository.findByCategoryIdAndIsDeletedFalse(categoryId, pageable);
-
+        if (shopPage == null || shopPage.isEmpty()) {
+            throw new CategoryException(ErrorCode.NO_SHOP_FOUND_IN_CATEGORY);
+        }
         return shopPage.map(ShopDetailForUserResponse::from);
     }
 
@@ -89,8 +95,13 @@ public class CategoryServiceV1 {
     }
 
     public List<CategoryDetailResponse> getAllCategories() {
-        return categoryRepository.findAllForAdmin()
-                .stream()
+        List<CategoryEntity> categories = categoryRepository.findAllForAdmin();
+
+        if (categories == null || categories.isEmpty()) {
+            throw new CategoryException(ErrorCode.NO_CATEGORY_FOUND);
+        }
+
+        return categories.stream()
                 .map(CategoryDetailResponse::toDtoForAdmin)
                 .toList();
     }
