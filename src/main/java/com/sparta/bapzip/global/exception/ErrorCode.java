@@ -29,6 +29,7 @@ public enum ErrorCode {
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 메뉴입니다."),
     INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴가 포함되어 있습니다."),
     INVALID_MENU_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴 상태 값입니다."),
+    MENU_ALREADY_DELETED(HttpStatus.BAD_REQUEST,"이미 삭제 처리 된 메뉴입니다."),
 
     //404 Not Found
     AI_LOG_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 Ai-Log입니다."),

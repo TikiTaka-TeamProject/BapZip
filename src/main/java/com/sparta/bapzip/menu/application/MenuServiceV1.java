@@ -1,10 +1,11 @@
 package com.sparta.bapzip.menu.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.menu.application.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuStatusUpdateRequest;
 import com.sparta.bapzip.menu.application.dto.request.MenuUpdateRequest;
+import com.sparta.bapzip.menu.application.exception.InvalidMenuIdException;
+import com.sparta.bapzip.menu.application.exception.MenuNotFoundException;
 import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 import com.sparta.bapzip.menu.domain.repository.MenuRepository;
@@ -175,7 +176,7 @@ public class MenuServiceV1 {
     // 메뉴 엔티티 조회
     public MenuEntity getMenuById(UUID menuId) {
         return menuRepository.findById(menuId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.MENU_NOT_FOUND));
+                .orElseThrow(() -> new MenuNotFoundException(ErrorCode.MENU_NOT_FOUND));
     }
 
     // 메뉴 List 반환
@@ -184,7 +185,7 @@ public class MenuServiceV1 {
         List<MenuEntity> menus = menuRepository.findAllByIdIn(menuIds);
 
         if (menus.size() != menuIds.size()) { // 요청 <-> db 조회 개수 다를 경우
-            throw new GlobalException(ErrorCode.INVALID_MENU_ID);
+            throw new InvalidMenuIdException(ErrorCode.INVALID_MENU_ID);
         }
 
         return menus;

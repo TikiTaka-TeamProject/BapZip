@@ -1,7 +1,7 @@
 package com.sparta.bapzip.menu.domain.enums;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.global.exception.GlobalException;
+import com.sparta.bapzip.menu.domain.exception.InvalidMenuStatusException;
 
 public enum MenuStatus {
     AVAILABLE,   // 판매중
@@ -11,7 +11,7 @@ public enum MenuStatus {
         try {
             return MenuStatus.valueOf(value);
         } catch (IllegalArgumentException e) {
-            throw new GlobalException(ErrorCode.INVALID_MENU_STATUS);
+            throw new InvalidMenuStatusException(ErrorCode.INVALID_MENU_STATUS);
         }
     }
 
