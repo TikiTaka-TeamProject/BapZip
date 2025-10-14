@@ -6,7 +6,7 @@ import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
-import com.sparta.bapzip.shop.presentation.dto.request.CreateShopRequest;
+import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
@@ -17,7 +17,7 @@ import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
-import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class ShopServiceV1 {
      * @throws ShopAlreadyExistsException 이미 해당 Owner가 가게를 가지고 있는 경우
      * @throws GlobalException 좌표 범위 오류 발생 시
      */
-    public CreateShopResponse createShop(CreateShopRequest request, Long ownerId) {
+    public CreateShopResponse createShop(ShopCreationRequest request, Long ownerId) {
         // 1. Owner 조회
         UserEntity owner = userServiceV1.findUser(ownerId);
 
@@ -77,7 +76,8 @@ public class ShopServiceV1 {
 
         // 7. Shop 엔티티 생성
         ShopEntity shop = ShopEntity.create(
-                request,
+                request.getName(),
+                request.getAddress(),
                 owner,
                 category,
                 serviceArea,

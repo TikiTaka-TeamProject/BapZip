@@ -1,13 +1,12 @@
-package com.sparta.bapzip.shop.presentation.dto.request;
+package com.sparta.bapzip.shop.application.dto.request;
 
-import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
-public class CreateShopRequest {
+public class ShopCreationRequest {
     @NotNull(message = "가게 이름은 필수입니다.")
     private String name;
 

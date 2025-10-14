@@ -1,4 +1,4 @@
-package com.sparta.bapzip.shop.presentation.dto.request;
+package com.sparta.bapzip.shop.application.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
