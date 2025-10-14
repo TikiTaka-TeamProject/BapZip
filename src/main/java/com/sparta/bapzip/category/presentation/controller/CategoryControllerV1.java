@@ -54,13 +54,13 @@ public class CategoryControllerV1 {
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
     public ResponseEntity<CategoryDetailResponse> createCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CategoryRequestDto request) {
-        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.createCategory(request.getName(), request.getContent(), userDetails.getUser().getId());
+        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.createCategory(request.getName(), request.getContent(), userDetails);
         return ResponseEntity.ok(categoryDetailResponse);
     }
     @PatchMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
     public ResponseEntity<CategoryDetailResponse> updateCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId,@RequestBody CategoryRequestDto request) {
-        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.updateCategory(categoryId, request.getName(), request.getContent(), userDetails.getUser().getId());
+        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.updateCategory(categoryId, request.getName(), request.getContent(), userDetails);
         return ResponseEntity.ok(categoryDetailResponse);
     }
 
@@ -68,7 +68,7 @@ public class CategoryControllerV1 {
     @DeleteMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
     public ResponseEntity<CategoryDetailResponse> deleteCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID categoryId) {
-        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.deleteCategory(categoryId, userDetails.getUser().getId());
+        CategoryDetailResponse categoryDetailResponse = categoryServiceV1.deleteCategory(categoryId, userDetails);
         return ResponseEntity.ok(categoryDetailResponse);
     }
 }
