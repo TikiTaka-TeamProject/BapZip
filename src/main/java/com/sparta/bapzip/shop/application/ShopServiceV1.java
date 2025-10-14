@@ -1,5 +1,6 @@
 package com.sparta.bapzip.shop.application;
 
+import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -41,11 +43,11 @@ public class ShopServiceV1 {
     public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
         // Owner 조회
         UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
-                .orElseThrow(() -> new GlobalException(ErrorCode.OWNER_NOT_FOUND));
+                .orElseThrow(() -> new OwnerNotFoundException(ErrorCode.OWNER_NOT_FOUND));
 
         // 이미 Shop을 가진 Owner인지 체크
         if (shopRepository.existsByOwnerId(owner.getId())) {
-            throw new GlobalException(ErrorCode.SHOP_ALREADY_EXISTS);
+            throw new ShopAlreadyExistsException(ErrorCode.SHOP_ALREADY_EXISTS);
         }
 
         // Category 조회
@@ -106,7 +108,7 @@ public class ShopServiceV1 {
      */
     public ShopEntity getShopById(UUID shopId) {
         return shopRepository.findById(shopId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.SHOP_NOT_FOUND));
+                .orElseThrow(() -> new ShopNotFoundException(ErrorCode.SHOP_NOT_FOUND));
     }
 
     /**
@@ -131,6 +133,13 @@ public class ShopServiceV1 {
             throw new GlobalException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
         }
     }
+
+//    public void validateShopOwner(UUID shopId, Long ownerId, Supplier<GlobalException> exceptionSupplier) {
+//        ShopEntity shop = getShopById(shopId);
+//        if (!shop.getOwner().getId().equals(ownerId)) {
+//            throw exceptionSupplier.get();
+//        }
+//    }
 
     /**
      * Shop 정보 수정
@@ -159,7 +168,7 @@ public class ShopServiceV1 {
 
             // 좌표 유효성 체크
             if (lon < -180 || lon > 180 || lat < -90 || lat > 90) {
-                throw new GlobalException(ErrorCode.COORDINATE_OUT_OF_RANGE);
+                throw new CoordinateOutOfRangeException(ErrorCode.COORDINATE_OUT_OF_RANGE);
             }
 
             Point newLocation = new GeometryFactory().createPoint(new Coordinate(lon, lat));
@@ -219,21 +228,19 @@ public class ShopServiceV1 {
      * - 삭제 시 deletedBy, deletedAt를 기록
      *
      * @param shopId 삭제할 가게 ID
-     * @param userId 삭제를 요청한 사용자 ID (가게 소유자)
+     * @param ownerId 삭제를 요청한 사용자 ID (가게 소유자)
      * @throws GlobalException
      *   - SHOP_NOT_FOUND: 존재하지 않거나 이미 삭제된 가게
      *   - SHOP_DELETE_FORBIDDEN: 요청한 사용자가 소유자가 아닌 경우
      */
     @Transactional
-    public void deleteShop(UUID shopId, Long userId) {
+    public void deleteShop(UUID shopId, Long ownerId) {
         ShopEntity shop = shopRepository.findByIdAndIsDeletedFalse(shopId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.SHOP_NOT_FOUND));
+                .orElseThrow(() -> new ShopNotFoundException(ErrorCode.SHOP_NOT_FOUND));
 
         // 권한 체크
-        if (!shop.getOwner().getId().equals(userId)) {
-            throw new GlobalException(ErrorCode.SHOP_DELETE_FORBIDDEN);
-        }
+        validateShopOwner(shopId, ownerId);
 
-        shop.softDelete(userId);
+        shop.softDelete(ownerId);
     }
 }
