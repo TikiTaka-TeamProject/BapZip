@@ -40,7 +40,6 @@ public class MenuServiceV1 {
     @Transactional
     public MenuCreateResponse createMenu(MenuCreateRequest request, Long ownerId) {
 
-        // shop - owner 검증
         ShopEntity shop = shopServiceV1.getShopById(request.shopId());
         shopServiceV1.validateShopOwner(shop.getId(), ownerId);
 
@@ -69,7 +68,7 @@ public class MenuServiceV1 {
         ShopEntity shop = shopServiceV1.getShopById(shopId);
 
         // 해당 가게 모든 메뉴 조회
-        List<MenuEntity> menus = menuRepository.findAllByShopId(shopId);
+        List<MenuEntity> menus = menuRepository.findAllByShopIdAndIsDeletedFalse(shopId);
 
         // 메뉴 리스트 -> MenuItemDto 리스트로 변환
         List<MenuListByShopResponse.MenuItemDto> menuItems = menus.stream()
@@ -139,12 +138,12 @@ public class MenuServiceV1 {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, sortBy));
 
-        Page<MenuEntity> menuPage = menuRepository.findByNameContaining(keyword, pageable);
+        Page<MenuEntity> menuPage = menuRepository.findByNameContainingAndIsDeletedFalse(keyword, pageable);
         return menuPage.map(MenuSearchResponse::from);
     }
 
 
-    // 메뉴 전체 조회
+    // 메뉴 전체 조회 - 관리자용
     public List<MenuSearchResponse> getAllMenus() {
         List<MenuEntity> menus = menuRepository.findAll();
         return menus.stream()
@@ -158,7 +157,6 @@ public class MenuServiceV1 {
      * 메뉴 삭제 (soft delete)
      * @param menuId 삭제할 메뉴 ID
      * @param ownerId OWNER ID
-     *                실제로 DB에서 삭제되는 것이 아니므로 반복 요청 발생 -> 예외 처리 필요
      */
     @Transactional
     public void deleteMenu(UUID menuId, Long ownerId) {
@@ -175,7 +173,7 @@ public class MenuServiceV1 {
 
     // 메뉴 엔티티 조회
     public MenuEntity getMenuById(UUID menuId) {
-        return menuRepository.findById(menuId)
+        return menuRepository.findByIdAndIsDeletedFalse(menuId)
                 .orElseThrow(() -> new MenuNotFoundException(ErrorCode.MENU_NOT_FOUND));
     }
 

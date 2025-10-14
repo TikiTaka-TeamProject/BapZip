@@ -31,6 +31,7 @@ public class MenuControllerV1 {
 
     private final MenuServiceV1 menuService;
 
+
     /**
      * 메뉴 생성 - OWNER
      */
@@ -39,7 +40,6 @@ public class MenuControllerV1 {
                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Long ownerId = userDetails.getUser().getId(); // ownerId만 검증
-        log.info("create MenuController - 사용자 ID: {}, 이름 {}", ownerId, userDetails.getUser().getName());
 
         MenuCreateResponse menuCreateResponse = menuService.createMenu(request, ownerId);
         return ApiResponse.created(menuCreateResponse);
@@ -80,8 +80,7 @@ public class MenuControllerV1 {
     }
 
     /**
-     * 메뉴 전체 조회 - MANAGER, MASTER
-     * todo: 페이징 적용
+     * 메뉴 전체 조회 - MANAGER, MASTER (관리자용) -> Response Admin (메뉴 상태 추가)
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<MenuSearchResponse>>> getAllMenus(){
