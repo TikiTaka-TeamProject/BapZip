@@ -4,7 +4,6 @@ import com.sparta.bapzip.global.common.BaseEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -30,15 +29,7 @@ public class AiEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
-
     private UUID menuId;
-
-    public AiEntity(String prompt, @Nullable String response, UserEntity user, UUID menuId) {
-        this.prompt = prompt;
-        this.response = response;
-        this.user = user;
-        this.menuId = menuId;
-    }
 
     public static AiEntity create(String prompt, String response, UserEntity user, UUID menuId){
         return AiEntity.builder()
