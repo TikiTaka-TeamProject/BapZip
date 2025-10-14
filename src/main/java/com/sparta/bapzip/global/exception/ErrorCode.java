@@ -14,6 +14,7 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
     PAYMENT_KEY_MISSING(HttpStatus.BAD_REQUEST, "결제 키가 누락되었습니다."),
     PAYMENT_CANCELLATION_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "결제 취소 할 수 없습니다."),
+
     // CATEGORY 관련 에러
     DUPLICATE_CATEGORY_EXCEPTION(HttpStatus.CONFLICT, "중복 된 카테고리입니다."),
     INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리 ID입니다."),

@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.order.domain.repository.OrderRepository;
 import com.sparta.bapzip.payment.domain.entity.PaymentEntity;
 import com.sparta.bapzip.payment.domain.entity.PaymentStatusEnum;
+import com.sparta.bapzip.payment.domain.exception.PaymentException;
 import com.sparta.bapzip.payment.infrastructure.config.payment.TossPaymentsConfig;
 import com.sparta.bapzip.payment.domain.repository.PaymentRepository;
 import com.sparta.bapzip.payment.presentation.dto.request.*;
@@ -36,19 +36,19 @@ public class PaymentServiceV1 {
 
     public PaymentEntity getPaymentByOrderId(UUID orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new PaymentException(ErrorCode.PAYMENT_NOT_FOUND));
     }
     /**
      * PaymentEntity 생성
      *
      * @param paymentCreateRequest 주문자의 카드 정보가 담긴 PaymentCreateRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
-     * @throws GlobalException ORDER_NOT_FOUND 에러 발생 시
+     * @throws PaymentException ORDER_NOT_FOUND
      */
     @Transactional
     public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
-        OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new PaymentException(ErrorCode.ORDER_NOT_FOUND));
         PaymentEntity payment = PaymentEntity.builder()
                 .order(order)
                 .totalAmount(order.getTotalPrice())
@@ -58,7 +58,7 @@ public class PaymentServiceV1 {
         paymentRepository.save(payment);
         StringBuilder sb = new StringBuilder();
         if(order.getOrderMenuList() == null || order.getOrderMenuList().isEmpty()){
-            throw new GlobalException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
+            throw new PaymentException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
         } else {
             sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
 
@@ -99,12 +99,12 @@ public class PaymentServiceV1 {
                         resp -> resp.bodyToMono(String.class)
                                 .map(body -> {
                                     log.error("Toss API error: {}", body);
-                                    return new GlobalException(ErrorCode.PAYMENT_REQUEST_FAILED);
+                                    return new PaymentException(ErrorCode.PAYMENT_REQUEST_FAILED);
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
         if (response == null || !response.hasNonNull("paymentKey")) {
-            throw new GlobalException(ErrorCode.PAYMENT_KEY_MISSING);
+            throw new PaymentException(ErrorCode.PAYMENT_KEY_MISSING);
         }
         return mapPaymentResponse(response, paymentCreateRequest);
     }
@@ -127,7 +127,7 @@ public class PaymentServiceV1 {
         }
         String cancelReason = node.path("cancelReason").asText();
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
-            throw new GlobalException(ErrorCode.INVALID_PAYMENT_STATUS);
+            throw new PaymentException(ErrorCode.PAYMENT_CANCELLATION_NOT_ALLOWED);
         }
 
         // Toss 취소 요청 DTO
@@ -150,13 +150,13 @@ public class PaymentServiceV1 {
                         resp -> resp.bodyToMono(String.class)
                                 .map(body -> {
                                     log.error("Toss cancel API error: {}", body);
-                                    return new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+                                    return new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
 
         if (response == null || !response.hasNonNull("status")) {
-            throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+            throw new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
 
         // Toss 응답 → DTO 변환
@@ -175,7 +175,7 @@ public class PaymentServiceV1 {
         } else {
             payment.markUpdated(userId);
             paymentRepository.save(payment);
-            throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+            throw new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
 
         return dto;
