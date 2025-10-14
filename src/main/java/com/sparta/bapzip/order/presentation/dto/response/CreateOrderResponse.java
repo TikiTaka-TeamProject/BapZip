@@ -40,7 +40,7 @@ public class CreateOrderResponse {
                 .shopName(dto.getShopName())
                 .status(dto.getStatus())
                 .menuInfoList(mappedMenuInfoList)
-                .totalAmount(dto.getTotalAmount())
+                .totalAmount(dto.getTotalPrice())
                 .deliveryAddress(dto.getDeliveryAddress())
                 .detailAddress(dto.getDetailAddress())
                 .paymentType(dto.getPaymentType())

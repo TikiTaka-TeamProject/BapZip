@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(access = AccessLevel.PROTECTED)
+@Builder
 public class UserEntity extends BaseEntity {
 
     @Id
