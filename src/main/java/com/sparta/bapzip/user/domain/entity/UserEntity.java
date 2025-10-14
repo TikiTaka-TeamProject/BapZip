@@ -46,4 +46,8 @@ public class UserEntity extends BaseEntity {
         this.name = requestDto.getName() == null ? this.name : requestDto.getName();
         this.password = requestDto.getNewPassword() == null ? this.password : passwordEncoder.encode(requestDto.getNewPassword());
     }
+
+    public void changeRole(UserRoleEnum role) {
+        this.role = role;
+    }
 }
