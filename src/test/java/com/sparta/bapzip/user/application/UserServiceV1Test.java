@@ -333,7 +333,7 @@ class UserServiceV1Test {
     }
 
     @Nested
-    @DisplayName("📦 유저 삭제 테스트")
+    @DisplayName("유저 삭제 테스트")
     class DeleteUserTests {
 
         @Test
@@ -395,7 +395,7 @@ class UserServiceV1Test {
     }
 
     @Nested
-    @DisplayName("📦 유저 권한 변경 테스트")
+    @DisplayName("유저 권한 변경 테스트")
     class ChangeUserRoleTests {
 
         @Test
