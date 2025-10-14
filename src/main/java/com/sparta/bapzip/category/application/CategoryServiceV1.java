@@ -53,6 +53,17 @@ public class CategoryServiceV1 {
 
         return shopPage.map(ShopDetailForUserResponse::from);
     }
+    @Transactional(readOnly = true)
+    public Page<ShopDetailForUserResponse> getAllShopsByCategory(UUID categoryId, int page, int size, String sortBy, boolean isAsc) {
+        int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
+        String validatedSortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy;
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, validatedSortBy));
+       Page<ShopEntity> shopPage = shopRepository.findByCategoryId(categoryId, pageable);
+
+        return shopPage.map(ShopDetailForUserResponse::from);
+    }
 
     // 카테고리 생성
     @Transactional

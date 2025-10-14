@@ -20,4 +20,6 @@ public interface ShopRepository {
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
     List<ShopEntity> findAll();
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
+
+    Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);
 }
