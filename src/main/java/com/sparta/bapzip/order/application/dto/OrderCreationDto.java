@@ -21,7 +21,7 @@ public class OrderCreationDto {
     private final String shopName;
     private final OrderStatus status;
     private final List<OrderMenuInfo> menuInfoList;
-    private final int totalAmount;
+    private final int totalPrice;
     private final String deliveryAddress;
     private final String detailAddress;
     private final String paymentType;
@@ -44,7 +44,7 @@ public class OrderCreationDto {
                 .shopName(shopEntity.getName())
                 .status(orderEntity.getStatus())
                 .menuInfoList(menuInfoList)
-                .totalAmount(orderEntity.getTotalPrice())
+                .totalPrice(orderEntity.getTotalPrice())
                 .deliveryAddress(orderEntity.getDeliveryAddress())
                 .detailAddress(orderEntity.getDetailAddress())
                 .paymentType(orderEntity.getPaymentType())
