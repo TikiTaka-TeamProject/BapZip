@@ -58,18 +58,29 @@ public class ShopControllerV1 {
         return shopServiceV1.getShopDetail(shopId);
     }
 
-
+    /**
+     * 특정 Shop의 정보를 수정합니다.
+     * <p>
+     * - 수정 가능한 항목: 이름(name), 주소(address), 카테고리(category)
+     * - 주소 변경 시 좌표(location) 자동 갱신
+     * <p>
+     * 요청자는 반드시 OWNER 권한을 가져야 하며, {@link PreAuthorize} 어노테이션으로 권한 검증이 수행됩니다.
+     *
+     * @param shopId            수정할 Shop의 UUID
+     * @param userDetails       인증된 사용자 정보(@AuthenticationPrincipal)
+     * @param shopUpdateRequest 수정할 Shop 정보가 담긴 DTO
+     * @return 수정된 Shop 정보를 담은 {@link ApiResponse} 객체
+     */
     @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("/{shopId}")
-    public ResponseEntity<ShopDetailResponse> updateShop(
+    public ResponseEntity<ApiResponse<ShopDetailResponse>> updateShop(
             @PathVariable("shopId") UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ShopUpdateRequest shopUpdateRequest
 
     ) {
-        Long ownerId = userDetails.getUser().getId();
-        ShopDetailResponse shopDetailResponse = shopServiceV1.updateShop(shopId, ownerId, shopUpdateRequest);
-        return ResponseEntity.ok(shopDetailResponse);
+        ShopDetailResponse shopDetailResponse = shopServiceV1.updateShop(shopId, userDetails.getUser(), shopUpdateRequest);
+        return ApiResponse.ok(shopDetailResponse);
     }
 
      /**

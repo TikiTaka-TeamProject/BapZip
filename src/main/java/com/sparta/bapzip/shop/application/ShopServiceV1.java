@@ -157,17 +157,17 @@ public class ShopServiceV1 {
      * - 주소 변경 시 좌표 및 서비스 지역 자동 갱신
      *
      * @param shopId           수정할 가게 UUID
-     * @param ownerId          요청자 ID (소유자 권한 체크)
+     * @param user          요청자 ID (소유자 권한 체크)
      * @param shopUpdateRequest 수정 정보 DTO
      * @return 수정된 ShopDetailResponse
      */
     @Transactional
-    public ShopDetailResponse updateShop(UUID shopId, Long ownerId, ShopUpdateRequest shopUpdateRequest) {
+    public ShopDetailResponse updateShop(UUID shopId, UserEntity user, ShopUpdateRequest shopUpdateRequest) {
         // 1. shop 체크
         ShopEntity shop = getShopById(shopId);
 
         // 2. 권한 검증
-        validateShopOwner(shopId, ownerId);
+        validateShopOwner(shopId, user.getId());
 
         // 3. 이름 수정
         if (shopUpdateRequest.getName() != null) {
@@ -187,10 +187,6 @@ public class ShopServiceV1 {
             // Point 생성
             Point newLocation = createPoint(longitude, latitude);
             shop.updateLocation(newLocation);
-
-            // ServiceArea 자동 업데이트
-            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
-//            shop.updateServiceArea(serviceArea);
         }
 
         // 5. 카테고리 수정
