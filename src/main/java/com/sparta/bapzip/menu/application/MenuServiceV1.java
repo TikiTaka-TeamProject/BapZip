@@ -67,15 +67,9 @@ public class MenuServiceV1 {
         // 해당 가게 모든 메뉴 조회
         List<MenuEntity> menus = menuRepository.findAllByShopIdAndIsDeletedFalse(shopId);
 
-        // 메뉴 리스트 -> MenuItemDto 리스트로 변환
+        // 메뉴 리스트
         List<MenuListByShopResponse.MenuItemDto> menuItems = menus.stream()
-                .map(menu -> new MenuListByShopResponse.MenuItemDto(
-                        menu.getId(),
-                        menu.getName(),
-                        menu.getContent(),
-                        menu.getPrice(),
-                        menu.getStatus()
-                ))
+                .map(MenuListByShopResponse.MenuItemDto::from)
                 .toList();
 
         return new MenuListByShopResponse(shop.getId(), shop.getName(), menuItems);

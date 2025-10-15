@@ -70,19 +70,19 @@ public class MenuControllerV1 {
 
     /**
      * 가게 별 메뉴 조회
+     * v1/menus?shopId=
      */
-    @GetMapping("/shops/{shopId}")
-    public ResponseEntity<ApiResponse<MenuListByShopResponse>> getMenusByShop(@PathVariable UUID shopId){
+    @GetMapping
+    public ResponseEntity<ApiResponse<MenuListByShopResponse>> getMenusByShop(@RequestParam UUID shopId){
         MenuListByShopResponse menuListByShop = menuService.getMenusByShop(shopId);
         return ApiResponse.ok(menuListByShop);
     }
 
     /**
      * 메뉴 전체 조회 - MANAGER, MASTER (관리자용)
-     * todo: Security Config @EnableMethodSecurity(prePostEnabled = true) 추가 시 활성화 => PreAuthorize
      */
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
-    @GetMapping
+    @GetMapping("/admin")
     public ResponseEntity<ApiResponse<List<MenuAdminResponse>>> getAllMenus(){
         List<MenuAdminResponse> menuList = menuService.getAllMenus();
         return ApiResponse.ok(menuList);
