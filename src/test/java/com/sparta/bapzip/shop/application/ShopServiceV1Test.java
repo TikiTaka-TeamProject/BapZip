@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ShopServiceV1FullTest {
+class ShopServiceV1Test {
 
     @Mock private ShopRepository shopRepository;
     @Mock private UserServiceV1 userServiceV1;
