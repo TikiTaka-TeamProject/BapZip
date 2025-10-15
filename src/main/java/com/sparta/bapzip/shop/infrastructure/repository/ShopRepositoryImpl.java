@@ -72,4 +72,14 @@ public class ShopRepositoryImpl implements ShopRepository {
         return shopJpaRepository.findShopWithAvgScore(shopId);
     }
 
+    @Override
+    public Page<ShopEntity> findShopsByPolygon(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable) {
+        return shopJpaRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
+    }
+
+    @Override
+    public Page<ShopEntity> findShops(String name, UUID categoryId, Pageable pageable) {
+        return shopJpaRepository.findShops(name, categoryId, pageable);
+    }
+
 }

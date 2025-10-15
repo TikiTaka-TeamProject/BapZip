@@ -35,7 +35,7 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
     @Query(value = """
             SELECT * 
             FROM p_shops s
-            WHERE (:name IS NULL OR s.name ILIKE %:name%)
+            WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
               AND (:categoryId IS NULL OR s.category_id = :categoryId)
               AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
               AND s.is_deleted = false
@@ -43,7 +43,7 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             countQuery = """
             SELECT COUNT(*) 
             FROM p_shops s
-            WHERE (:name IS NULL OR s.name ILIKE %:name%)
+            WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
               AND (:categoryId IS NULL OR s.category_id = :categoryId)
               AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
               AND s.is_deleted = false
@@ -59,9 +59,16 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
     @Query(value = """
         SELECT * 
         FROM p_shops s
-        WHERE (:name IS NULL OR s.name ILIKE %:name%)
+        WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
           AND (:categoryId IS NULL OR s.category_id = :categoryId)
           AND s.is_deleted = false
+        """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM p_shops s
+            WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
+              AND (:categoryId IS NULL OR s.category_id = :categoryId)
+              AND s.is_deleted = false
         """,
             nativeQuery = true)
     Page<ShopEntity> findShopsWithoutPolygon(
@@ -78,4 +85,48 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
         GROUP BY s.id
     """, nativeQuery = true)
     Optional<ShopEntity> findShopWithAvgScore(@Param("shopId") UUID shopId);
+
+
+    // -----------------------------
+    // 1. 일반 검색 (JPQL, Pageable + Sort 자동)
+    // -----------------------------
+    @Query("""
+       SELECT s 
+       FROM ShopEntity s
+       WHERE (:name IS NULL OR s.name LIKE CONCAT('%', :name, '%'))
+         AND (:categoryId IS NULL OR s.category.id = :categoryId)
+         AND s.isDeleted = false
+       """)
+    Page<ShopEntity> findShops(
+            @Param("name") String name,
+            @Param("categoryId") UUID categoryId,
+            Pageable pageable
+    );
+
+    // -----------------------------
+    // 2. Polygon 검색 (NativeQuery)
+    // -----------------------------
+    @Query(value = """
+            SELECT * 
+            FROM p_shops s
+            WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
+              AND (:categoryId IS NULL OR s.category_id = :categoryId)
+              AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
+              AND s.is_deleted = false
+            """,
+            countQuery = """
+            SELECT COUNT(*) 
+            FROM p_shops s
+            WHERE (:name IS NULL OR s.name ILIKE CONCAT('%', :name, '%'))
+              AND (:categoryId IS NULL OR s.category_id = :categoryId)
+              AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
+              AND s.is_deleted = false
+            """,
+            nativeQuery = true)
+    Page<ShopEntity> findShopsByPolygon(
+            @Param("name") String name,
+            @Param("categoryId") UUID categoryId,
+            @Param("areaPolygon") Polygon areaPolygon,
+            Pageable pageable
+    );
 }

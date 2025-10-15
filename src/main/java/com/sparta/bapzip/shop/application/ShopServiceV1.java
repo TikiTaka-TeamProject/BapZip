@@ -2,13 +2,11 @@ package com.sparta.bapzip.shop.application;
 
 import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
-import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
-import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
@@ -25,9 +23,12 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 import java.util.List;
@@ -221,7 +222,14 @@ public class ShopServiceV1 {
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
-    public Page<ShopEntity> getApprovedShops(Pageable pageable) {
+    public Page<ShopEntity> getApprovedShops(int page, int size, String sortBy, boolean isAsc) {
+        // 허용된 정렬 필드만 체크
+        Set<String> allowedSortFields = Set.of("name", "createdAt", "updatedAt");
+        sortBy = allowedSortFields.contains(sortBy) ? sortBy : "createdAt";
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(direction, sortBy));
+
         return shopRepository.findByStatus(ShopStatusEnum.APPROVED, pageable);
     }
 
@@ -257,11 +265,29 @@ public class ShopServiceV1 {
         shop.softDelete(ownerId);
     }
 
-    public Page<ShopEntity> searchShops(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable) {
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
+            "name", "createdAt", "updatedAt", "category.name"
+    );
+
+    public Page<ShopEntity> searchShops(
+            String name,
+            UUID categoryId,
+            Polygon areaPolygon,
+            int page,
+            int size,
+            String sortBy,
+            boolean isAsc
+    ) {
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(direction, sortBy));
+
         if (areaPolygon != null) {
-            return shopRepository.findShopsByFilters(name, categoryId, areaPolygon, pageable);
+            return shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
         } else {
-            return shopRepository.findShopsWithoutPolygon(name, categoryId, pageable);
+            return shopRepository.findShops(name, categoryId, pageable);
         }
     }
 
