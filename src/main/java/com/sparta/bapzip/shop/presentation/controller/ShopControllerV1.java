@@ -1,7 +1,8 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
 import com.sparta.bapzip.shop.application.ShopServiceV1;
-import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
+import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,9 @@ import java.util.List;
 
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -34,8 +33,12 @@ public class ShopControllerV1 {
 
     @PostMapping
 //    @PreAuthorize("hasRole('OWNER')")
-    public CreateShopResponse createShop(@RequestBody CreatShopRequest createShopRequest) {
-        return shopServiceV1.createShop(createShopRequest);
+    public CreateShopResponse createShop(
+            @RequestBody ShopCreationRequest shopCreationRequest,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Long ownerId = userDetails.getUser().getId();
+        return shopServiceV1.createShop(shopCreationRequest, ownerId);
 
     }
 
@@ -116,7 +119,7 @@ public class ShopControllerV1 {
     @DeleteMapping("/{shopId}")
     public ResponseEntity<Void> deleteShop(
             @PathVariable UUID shopId,
-             @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Long ownerId = userDetails.getUser().getId();
         shopServiceV1.deleteShop(shopId, ownerId);

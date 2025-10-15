@@ -33,51 +33,48 @@ class ServiceAreaServiceV1Test {
     @BeforeEach
     void setUp(){
         String areaJson =
-                "[{x: 37.583597, y: 126.969919}," +
-                        "{x: 37.583469, y: 126.981209}," +
-                        "{x: 37.574448, y: 126.981070}," +
-                        "{x: 37.573268, y: 126.969774}]";
+                "[{x: 126.969919, y: 37.583597}," +   // x=longitude, y=latitude
+                        "{x: 126.981209, y: 37.583469}," +
+                        "{x: 126.981070, y: 37.574448}," +
+                        "{x: 126.969774, y: 37.573268}]";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         List<Point> area;
         try {
-             area = objectMapper.readValue(areaJson, new TypeReference<List<Point>>() {});
+            area = objectMapper.readValue(areaJson, new TypeReference<List<Point>>() {});
         } catch (Exception e) {
             throw new RuntimeException("JSON 파싱 오류가 발생하여 area가 null입니다.", e);
         }
-        AreaSaveRequest saveRequest = new AreaSaveRequest("name", area);
+        AreaSaveRequest saveRequest = new AreaSaveRequest("광화문 지역", area);
         AreaSaveDto areaSaveDto = AreaSaveDto.from(saveRequest);
         ServiceAreaEntity createEntity = ServiceAreaEntity.create(areaSaveDto);
         repository.save(createEntity);
         this.savedEntityId = createEntity.getId();
-
     }
 
     @Test
-    @DisplayName("해당포인트가 서비스지역내에 있을경우")
+    @DisplayName("해당 포인트가 서비스지역 내에 있을 경우")
     void isExistenceArea() {
-
         //given
-        Double x = 37.574825;
-        Double y = 126.974971;
+        Double longitude = 126.974971; // x=longitude
+        Double latitude = 37.574825;   // y=latitude
 
         //when
-        Boolean result = serviceAreaServiceV1.isExistenceArea(savedEntityId, x, y);
+        Boolean result = serviceAreaServiceV1.isExistenceArea(savedEntityId, longitude, latitude);
 
         //then
         Assertions.assertTrue(result);
     }
 
     @Test
-    @DisplayName("해당포인트가 서비스지역내에 없을경우")
+    @DisplayName("해당 포인트가 서비스지역 내에 없을 경우")
     void isExistenceArea2() {
-
         //given
-        Double x = 37.576854;
-        Double y = 126.991034;
+        Double longitude = 126.991034; // x=longitude
+        Double latitude = 37.576854;   // y=latitude
 
         //when
-        Boolean result = serviceAreaServiceV1.isExistenceArea(savedEntityId, x, y);
+        Boolean result = serviceAreaServiceV1.isExistenceArea(savedEntityId, longitude, latitude);
 
         //then
         Assertions.assertFalse(result);

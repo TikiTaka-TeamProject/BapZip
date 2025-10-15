@@ -1,4 +1,4 @@
-package com.sparta.bapzip.shop.presentation.dto.request;
+package com.sparta.bapzip.shop.application.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,9 +14,4 @@ public class ShopUpdateRequest {
     private String name;
     private String address;
     private UUID categoryId;
-    private UUID serviceAreaId;
-    private Double longitude;
-    private Double latitude;
-
-
 }

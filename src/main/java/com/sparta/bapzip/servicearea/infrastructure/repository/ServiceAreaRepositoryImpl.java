@@ -29,4 +29,9 @@ public class ServiceAreaRepositoryImpl implements ServiceAreaRepository {
     public Boolean isExistenceArea(UUID id, Double x, Double y) {
         return serviceAreaJpaRepository.isExistenceArea(id, x, y);
     }
+
+    @Override
+    public Optional<ServiceAreaEntity> findByPoint(Double longitude, Double latitude) {
+        return serviceAreaJpaRepository.findByPoint(longitude, latitude);
+    }
 }

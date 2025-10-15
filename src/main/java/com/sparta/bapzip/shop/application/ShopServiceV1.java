@@ -1,9 +1,13 @@
 package com.sparta.bapzip.shop.application;
 
+import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
+import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
+import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
+import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
@@ -11,12 +15,10 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
-import com.sparta.bapzip.shop.presentation.dto.request.CreatShopRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
-import com.sparta.bapzip.shop.presentation.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
-import com.sparta.bapzip.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -26,85 +28,99 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
 public class ShopServiceV1 {
 
     private final ShopRepository shopRepository;
-
-    // TODO: 타도메인간 통신 Service 개발 후 수정 필요
-    private final UserRepository userRepository;
+    private final UserServiceV1 userServiceV1;
     private final CategoryServiceV1 categoryServiceV1;
     private final ServiceAreaServiceV1 serviceAreaServiceV1;
+    private final KakaoLocalServiceV1 kakaoLocalServiceV1;
 
+    /**
+     * 신규 가게 생성
+     *
+     * @param request   가게 생성 정보 DTO
+     * @param ownerId   가게 소유자 ID
+     * @return 생성된 가게 정보 DTO
+     * @throws ShopAlreadyExistsException 이미 해당 Owner가 가게를 가지고 있는 경우
+     * @throws GlobalException 좌표 범위 오류 발생 시
+     */
+    public CreateShopResponse createShop(ShopCreationRequest request, Long ownerId) {
+        // 1. Owner 조회
+        UserEntity owner = userServiceV1.findUser(ownerId);
 
-    public CreateShopResponse createShop(CreatShopRequest createShopRequest) {
-        // Owner 조회
-        UserEntity owner = userRepository.findById(createShopRequest.getOwnerId())
-                .orElseThrow(() -> new OwnerNotFoundException(ErrorCode.OWNER_NOT_FOUND));
-
-        // 이미 Shop을 가진 Owner인지 체크
+        // 2. 이미 Shop을 가진 Owner인지 체크
         if (shopRepository.existsByOwnerId(owner.getId())) {
             throw new ShopAlreadyExistsException(ErrorCode.SHOP_ALREADY_EXISTS);
         }
 
-        // Category 조회
-        // TODO: Category 임시 메서드
-        CategoryEntity category = categoryServiceV1.getCategoryById(createShopRequest.getCategoryId());
+        // 3. 카테고리 조회
+        CategoryEntity category = categoryServiceV1.getCategoryById(request.getCategoryId());
 
-        // TODO: 임시 데이터
-//        CategoryEntity category = CategoryEntity.builder()
-//                .id(createShopRequest.getCategoryId())
-//                .build();
+        // 4.주소료 좌표 조회
+        KakaoLocalResponseDto kakaoData =kakaoLocalServiceV1.getResponse(request.getAddress());
 
-        // Service Area 조회
-        // TODO: ServiceArea 메서드 필요
-        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaById(createShopRequest.getServiceAreaId());
+        // 4. 좌표 유효성 체크
+        double longitude = Double.parseDouble(kakaoData.getLongitude());
+        double latitude = Double.parseDouble(kakaoData.getLatitude());
+        validateCoordinates(longitude, latitude);
 
-        // TODO: 임시 데이터
-        // Service Area 더미 엔티티 생성
-//        ServiceAreaEntity serviceArea = ServiceAreaEntity.builder()
-//                .id(createShopRequest.getServiceAreaId())
-//                .build();
+        // 5. Service Area 조회 (좌표 기반)
+        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
 
+        // 6. 위치(Point) 생성
+        Point location = createPoint(longitude, latitude);
 
-        // 위치(Point) 생성
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Point location = geometryFactory.createPoint(
-                new Coordinate(
-                        createShopRequest.getLongitude(), // longitude: x
-                        createShopRequest.getLatitude()  // latitude: y
-                )
-        );
-
+        // 7. Shop 엔티티 생성
         ShopEntity shop = ShopEntity.create(
-                createShopRequest.getName(),
-                createShopRequest.getAddress(),
-                location,
+                request.getName(),
+                request.getAddress(),
                 owner,
                 category,
-                serviceArea
+                serviceArea,
+                location
         );
 
-        // TODO: 생성, 수정 기록 메서드 필요
-        // 변경 기록
-        shop.markCreated(owner.getId());
-        shop.markUpdated(owner.getId());
-
-        // 저장
+        // 8.저장
         ShopEntity saved = shopRepository.save(shop);
 
         return CreateShopResponse.from(saved);
     }
 
     /**
-     * 가게 ID를 기준으로 ShopEntity 조회
+     * 좌표 유효성 검사
      *
-     * @param shopId 조회할 가게의 UUID
+     * @param longitude 경도
+     * @param latitude  위도
+     * @throws GlobalException 좌표가 유효 범위를 벗어날 경우
+     */
+    private void validateCoordinates(double longitude, double latitude) {
+        if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
+            throw new GlobalException(ErrorCode.COORDINATE_OUT_OF_RANGE);
+        }
+    }
+
+    /**
+     * Point 객체 생성
+     *
+     * @param longitude 경도
+     * @param latitude  위도
+     * @return 좌표 기반 Point 객체
+     */
+    private Point createPoint(double longitude, double latitude) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        return geometryFactory.createPoint(new Coordinate(longitude, latitude));
+    }
+
+    /**
+     * 가게 UUID 기준 Shop 조회
+     *
+     * @param shopId 조회할 가게 UUID
      * @return 조회된 ShopEntity
-     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
+     * @throws ShopNotFoundException 존재하지 않는 가게 UUID일 경우
      */
     public ShopEntity getShopById(UUID shopId) {
         return shopRepository.findById(shopId)
@@ -112,12 +128,10 @@ public class ShopServiceV1 {
     }
 
     /**
-     * 가게 ID 기준으로 상세 정보 조회
-     * ShopEntity를 조회 후 필요한 정보를 ShopDetailResponse로 변환
+     * 가게 UUID 기준 Shop 상세 정보 조회
      *
-     * @param shopId 조회할 가게의 UUID
+     * @param shopId 조회할 가게 UUID
      * @return ShopDetailResponse 가게 상세 정보 DTO
-     * @throws GlobalException SHOP_NOT_FOUND 에러 발생 시
      */
     public ShopDetailResponse getShopDetail(UUID shopId) {
         ShopEntity shop = getShopById(shopId);
@@ -125,6 +139,13 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
+    /**
+     * 요청자가 가게 소유자인지 검증
+     *
+     * @param shopId  검증할 가게 UUID
+     * @param ownerId 요청자 ID
+     * @throws GlobalException 요청자가 소유자가 아닌 경우
+     */
     public void validateShopOwner(UUID shopId, Long ownerId) {
         ShopEntity shop = getShopById(shopId);
 
@@ -134,56 +155,49 @@ public class ShopServiceV1 {
         }
     }
 
-//    public void validateShopOwner(UUID shopId, Long ownerId, Supplier<GlobalException> exceptionSupplier) {
-//        ShopEntity shop = getShopById(shopId);
-//        if (!shop.getOwner().getId().equals(ownerId)) {
-//            throw exceptionSupplier.get();
-//        }
-//    }
-
     /**
      * Shop 정보 수정
-     * @param shopId 수정할 shop UUID
-     * @param ownerId 요청한 사용자 ID (Owner 권한 체크)
-     * @param shopUpdateRequest 수정할 정보
-     * @return 수정된 Shop 정보를 ShopDetailResponse로 반환
+     * - 이름, 주소, 카테고리 수정 가능
+     * - 주소 변경 시 좌표 및 서비스 지역 자동 갱신
+     *
+     * @param shopId           수정할 가게 UUID
+     * @param ownerId          요청자 ID (소유자 권한 체크)
+     * @param shopUpdateRequest 수정 정보 DTO
+     * @return 수정된 ShopDetailResponse
      */
     @Transactional
     public ShopDetailResponse updateShop(UUID shopId, Long ownerId, ShopUpdateRequest shopUpdateRequest) {
-        // shop 체크
+        // 1. shop 체크
         ShopEntity shop = getShopById(shopId);
 
-        // 권한 검증 (Owner만 허용, 추후 Manager 권한 추가 가능)
+        // 2. 권한 검증
         validateShopOwner(shopId, ownerId);
 
-        // shop 정보 수정
-        if (shopUpdateRequest.getName() != null) shop.updateName(shopUpdateRequest.getName());
-        if (shopUpdateRequest.getAddress() != null) shop.updateAddress(shopUpdateRequest.getAddress());
+        // 3. 이름 수정
+        if (shopUpdateRequest.getName() != null) {
+            shop.updateName(shopUpdateRequest.getName());
+        }
 
-        // TODO:메서드 따로 뺴내기
-        // 좌표 수정 시 유효성 테크 후 Point 겍체 생성 ->
-        if (shopUpdateRequest.getLongitude() != null && shopUpdateRequest.getLatitude() != null) {
-            double lon = shopUpdateRequest.getLongitude();
-            double lat = shopUpdateRequest.getLatitude();
+        // 4. 주소 수정 및 좌표 자동 갱신
+        if (shopUpdateRequest.getAddress() != null) {
+            shop.updateAddress(shopUpdateRequest.getAddress());
 
-            // 좌표 유효성 체크
-            if (lon < -180 || lon > 180 || lat < -90 || lat > 90) {
-                throw new CoordinateOutOfRangeException(ErrorCode.COORDINATE_OUT_OF_RANGE);
-            }
+            // Kakao API로 주소 → 좌표 조회
+            KakaoLocalResponseDto kakaoData = kakaoLocalServiceV1.getResponse(shopUpdateRequest.getAddress());
+            double longitude = Double.parseDouble(kakaoData.getLongitude());
+            double latitude = Double.parseDouble(kakaoData.getLatitude());
+            validateCoordinates(longitude, latitude);
 
-            Point newLocation = new GeometryFactory().createPoint(new Coordinate(lon, lat));
+            // Point 생성
+            Point newLocation = createPoint(longitude, latitude);
             shop.updateLocation(newLocation);
 
-            // TODO: 좌표 변경에 따라 serviceArea 자동 계산 및 업데이트
-//            ServiceAreaEntity newServiceArea = serviceAreaRepository.findByLocation(lon, lat)
-//                    .orElseThrow(() -> new GlobalException(ErrorCode.SERVICE_AREA_NOT_FOUND));
-//            shop.updateServiceArea(newServiceArea);
-
-            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaById(shopUpdateRequest.getServiceAreaId());
+            // ServiceArea 자동 업데이트
+            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
             shop.updateServiceArea(serviceArea);
         }
 
-        // 카테고리 변경
+        // 5. 카테고리 수정
         if (shopUpdateRequest.getCategoryId() != null) {
             CategoryEntity category = categoryServiceV1.getCategoryById(shopUpdateRequest.getCategoryId());
             shop.updateCategory(category);
@@ -192,10 +206,23 @@ public class ShopServiceV1 {
         return ShopDetailResponse.from(shop);
     }
 
+
     /**
-     * 승인 상태(APPROVED)인 가게 리스트 조회
+     * 관리자용 Shop 상태 변경
      *
-     * ShopRepository를 통해 상태가 APPROVED인 ShopEntity 리스트를 조회합니다.
+     * @param shopId   상태를 변경할 가게 UUID
+     * @param newStatus 새로운 상태
+     * @return 상태가 변경된 ShopDetailResponse
+     */
+    @Transactional
+    public ShopDetailResponse updateShopStatus(UUID shopId, ShopStatusEnum newStatus) {
+        ShopEntity shop = getShopById(shopId);
+        shop.updateStatus(newStatus);
+        return ShopDetailResponse.from(shop);
+    }
+
+    /**
+     * 승인(APPROVED) 상태 가게 리스트 조회
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
@@ -204,13 +231,10 @@ public class ShopServiceV1 {
     }
 
     /**
-     * 상태별 가게 목록 조회
+     * 상태별 가게 리스트 조회
      *
-     * 전달된 상태(shopStatusEnum)에 따라 가게 목록을 조회합니다.
-     * 상태가 null인 경우, 모든 가게를 조회합니다.
-     *
-     * @param shopStatusEnum 조회할 가게 상태 (ShopStatusEnum). null이면 전체 조회
-     * @return List<ShopEntity> 조회된 가게 엔티티 리스트
+     * @param shopStatusEnum 조회할 상태 (null이면 전체 조회)
+     * @return List<ShopEntity> 조회된 가게 리스트
      */
     public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
         if (shopStatusEnum == null) {
@@ -222,16 +246,10 @@ public class ShopServiceV1 {
     /**
      * 가게 삭제 처리 (Soft Delete)
      *
-     * - 실제 DB에서 삭제하지 않고, isDeleted = true 처리
-     * - 삭제 요청 시 가게 존재 여부 확인
-     * - 요청한 사용자가 소유자가 아닌 경우 접근 권한 예외 발생
-     * - 삭제 시 deletedBy, deletedAt를 기록
-     *
-     * @param shopId 삭제할 가게 ID
-     * @param ownerId 삭제를 요청한 사용자 ID (가게 소유자)
-     * @throws GlobalException
-     *   - SHOP_NOT_FOUND: 존재하지 않거나 이미 삭제된 가게
-     *   - SHOP_DELETE_FORBIDDEN: 요청한 사용자가 소유자가 아닌 경우
+     * @param shopId  삭제할 가게 UUID
+     * @param ownerId 삭제 요청자 ID (소유자 권한 체크)
+     * @throws ShopNotFoundException 존재하지 않거나 이미 삭제된 경우
+     * @throws GlobalException 요청자가 소유자가 아닌 경우
      */
     @Transactional
     public void deleteShop(UUID shopId, Long ownerId) {

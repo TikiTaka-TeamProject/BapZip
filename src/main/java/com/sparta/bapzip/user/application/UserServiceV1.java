@@ -21,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceV1 {
@@ -109,7 +111,7 @@ public class UserServiceV1 {
         return UserRoleChangeResponseDto.of(targetUser);
     }
 
-    private UserEntity findUser(Long userId) {
+    public UserEntity findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)
         );

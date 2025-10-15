@@ -5,4 +5,5 @@ import com.google.gson.JsonObject;
 public interface KakaoLocalCallable {
 
     JsonObject getDocuments(String address);
+    JsonObject getDocumentsByCoordinates(Double longitude, Double latitude);
 }
