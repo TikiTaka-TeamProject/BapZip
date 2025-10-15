@@ -122,12 +122,7 @@ public class MenuServiceV1 {
      */
     public Page<MenuSearchResponse> searchMenus(String keyword, int page, int size, String sortBy, boolean isAsc) {
 
-        // size 10, 30, 50 유효, 아닐 시 10 고정
-        int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
-
-        // sort (정렬) param
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page - 1, validatedSize, Sort.by(direction, sortBy));
+        Pageable pageable = createPageable(page, size, sortBy, isAsc);
 
         Page<MenuEntity> menuPage = menuRepository.findByNameContainingAndIsDeletedFalse(keyword, pageable);
         return menuPage.map(MenuSearchResponse::from);
@@ -135,13 +130,11 @@ public class MenuServiceV1 {
 
 
     // 메뉴 전체 조회 - 관리자용
-    public List<MenuAdminResponse> getAllMenus() {
-        List<MenuEntity> menus = menuRepository.findAll();
-        return menus.stream()
-                .map(MenuAdminResponse::from)
-                .toList(); // DTO -> List 반환
+    public Page<MenuAdminResponse> getAllMenus(int page, int size, String sortBy, boolean isAsc) {
+        Pageable pageable = createPageable(page, size, sortBy, isAsc);
+        Page<MenuEntity> menuPage = menuRepository.findAll(pageable);
+        return menuPage.map(MenuAdminResponse::from);
     }
-
 
 
     /**
@@ -178,5 +171,16 @@ public class MenuServiceV1 {
         }
 
         return menus;
+    }
+
+
+    /**
+     * 메뉴 페이징 메서드
+     */
+    private Pageable createPageable(int page, int size, String sortBy, boolean isAsc) {
+
+        int validatedSize = List.of(10, 30, 50).contains(size) ? size : 10;
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return PageRequest.of(page - 1, validatedSize, Sort.by(direction, sortBy));
     }
 }

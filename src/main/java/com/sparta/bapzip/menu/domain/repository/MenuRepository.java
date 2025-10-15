@@ -26,6 +26,6 @@ public interface MenuRepository {
     /**
      * soft delete 처리 된 메뉴 포함 조회
      */
-    List<MenuEntity> findAll();
+    Page<MenuEntity> findAll(Pageable pageable);
 
 }
