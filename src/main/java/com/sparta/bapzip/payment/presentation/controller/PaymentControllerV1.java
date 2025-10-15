@@ -20,16 +20,16 @@ import java.util.UUID;
 @RequestMapping("/v1/payments")
 public class PaymentControllerV1 {
     private final PaymentServiceV1 paymentService;
-    @PostMapping("/confirm")
-    public ResponseEntity<PaymentResponseDto> createPayment(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PaymentCreateRequest requestDto) {
-        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.fromString("6f406b06-fabf-4236-afc5-64ce383fcfbf"), requestDto);
-
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/confirm")
+//    public ResponseEntity<PaymentResponseDto> createPayment(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody PaymentCreateRequest requestDto) {
+//        PaymentResponseDto response = paymentService.createPaymentWithCard(UUID.fromString("6f406b06-fabf-4236-afc5-64ce383fcfbf"), requestDto);
+//
+//        return ResponseEntity.ok(response);
+//    }
     // 로그인 기능 연결 이후 보완 필요
-    @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<PaymentResponseDto> cancelPayment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String orderId, @RequestBody String cancelReasonJson) {
-       PaymentResponseDto response = paymentService.cancelPayment(userDetails.getUser().getId(), UUID.fromString(orderId), cancelReasonJson);
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/{orderId}/cancel")
+//    public ResponseEntity<PaymentResponseDto> cancelPayment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable String orderId, @RequestBody String cancelReasonJson) {
+//       PaymentResponseDto response = paymentService.cancelPayment(userDetails.getUser().getId(), UUID.fromString(orderId), cancelReasonJson);
+//        return ResponseEntity.ok(response);
+//    }
 }

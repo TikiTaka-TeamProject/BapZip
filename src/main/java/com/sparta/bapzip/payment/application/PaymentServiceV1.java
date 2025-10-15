@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bapzip.global.exception.ErrorCode;
-import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.order.domain.entity.OrderEntity;
 import com.sparta.bapzip.order.domain.repository.OrderRepository;
 import com.sparta.bapzip.payment.domain.entity.PaymentEntity;
 import com.sparta.bapzip.payment.domain.entity.PaymentStatusEnum;
+import com.sparta.bapzip.payment.domain.exception.PaymentException;
 import com.sparta.bapzip.payment.infrastructure.config.payment.TossPaymentsConfig;
 import com.sparta.bapzip.payment.domain.repository.PaymentRepository;
 import com.sparta.bapzip.payment.presentation.dto.request.*;
@@ -36,19 +36,29 @@ public class PaymentServiceV1 {
 
     public PaymentEntity getPaymentByOrderId(UUID orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.PAYMENT_NOT_FOUND));
+                .orElseThrow(() -> new PaymentException(ErrorCode.PAYMENT_NOT_FOUND));
     }
     /**
      * PaymentEntity 생성
      *
-     * @param paymentCreateRequest 주문자의 카드 정보가 담긴 PaymentCreateRequest
+     * @param orderId 주문자의 카드 정보가 담긴 PaymentCreateRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
-     * @throws GlobalException ORDER_NOT_FOUND 에러 발생 시
+     * @throws PaymentException ORDER_NOT_FOUND
      */
+    private PaymentCreateRequest createRequestWithCard(UUID orderId) {
+        PaymentCreateRequest requestDto = new PaymentCreateRequest();
+        requestDto.setOrderId(orderId);
+        requestDto.setCardNumber("4111111111111111");
+        requestDto.setCardExpirationYear("28");
+        requestDto.setCardExpirationMonth("12");
+        requestDto.setCardPassword("01");
+        requestDto.setCustomerIdentityNumber("860824");
+        return requestDto;
+    }
     @Transactional
-    public PaymentResponseDto createPaymentWithCard(UUID orderId, PaymentCreateRequest paymentCreateRequest) {
+    public PaymentResponseDto createPayment(UUID orderId) {
         // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
-        OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new PaymentException(ErrorCode.ORDER_NOT_FOUND));
         PaymentEntity payment = PaymentEntity.builder()
                 .order(order)
                 .totalAmount(order.getTotalPrice())
@@ -58,7 +68,7 @@ public class PaymentServiceV1 {
         paymentRepository.save(payment);
         StringBuilder sb = new StringBuilder();
         if(order.getOrderMenuList() == null || order.getOrderMenuList().isEmpty()){
-            throw new GlobalException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
+            throw new PaymentException(ErrorCode.MENUS_NOT_FOUND_IN_ORDER);
         } else {
             sb.append(order.getOrderMenuList().get(0).getMenu().getShop().getName()+"의 "+order.getOrderMenuList().get(0).getMenu().getName());
 
@@ -66,7 +76,9 @@ public class PaymentServiceV1 {
                 sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
             }
         }
-        paymentCreateRequest.setOrderId(order.getId().toString());
+        PaymentCreateRequest paymentCreateRequest =createRequestWithCard(orderId);
+
+        paymentCreateRequest.setOrderId(order.getId());
         paymentCreateRequest.setOrderName(sb.toString());
         paymentCreateRequest.setAmount(order.getTotalPrice());
         PaymentResponseDto response = createPayment(paymentCreateRequest);
@@ -99,12 +111,12 @@ public class PaymentServiceV1 {
                         resp -> resp.bodyToMono(String.class)
                                 .map(body -> {
                                     log.error("Toss API error: {}", body);
-                                    return new GlobalException(ErrorCode.PAYMENT_REQUEST_FAILED);
+                                    return new PaymentException(ErrorCode.PAYMENT_REQUEST_FAILED);
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
         if (response == null || !response.hasNonNull("paymentKey")) {
-            throw new GlobalException(ErrorCode.PAYMENT_KEY_MISSING);
+            throw new PaymentException(ErrorCode.PAYMENT_KEY_MISSING);
         }
         return mapPaymentResponse(response, paymentCreateRequest);
     }
@@ -112,22 +124,15 @@ public class PaymentServiceV1 {
      * 결제 취소 요청 및 상태 업데이트
      * @param userId 주문을 취소처리하는 유저 식별자
      * @param orderId 주문 식별자
-     * @param cancelReasonJson 취소 사유 => orderService에서 String 형태로 받아오도록 추후 수정
+     * @param cancelReason 취소 사유
      * @return 결제 취소 응답 DTO
      */
     @Transactional
-    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReasonJson) {
+    public PaymentResponseDto cancelPayment(Long userId, UUID orderId, String cancelReason) {
         PaymentEntity payment = getPaymentByOrderId(orderId);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = null;
-        try {
-            node = mapper.readTree(cancelReasonJson);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        String cancelReason = node.path("cancelReason").asText();
+
         if (payment.getStatus() != PaymentStatusEnum.SUCCESS) {
-            throw new GlobalException(ErrorCode.INVALID_PAYMENT_STATUS);
+            throw new PaymentException(ErrorCode.INVALID_PAYMENT_STATUS);
         }
 
         // Toss 취소 요청 DTO
@@ -150,13 +155,13 @@ public class PaymentServiceV1 {
                         resp -> resp.bodyToMono(String.class)
                                 .map(body -> {
                                     log.error("Toss cancel API error: {}", body);
-                                    return new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+                                    return new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
                                 }))
                 .bodyToMono(JsonNode.class)
                 .block();
 
         if (response == null || !response.hasNonNull("status")) {
-            throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+            throw new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
 
         // Toss 응답 → DTO 변환
@@ -175,7 +180,7 @@ public class PaymentServiceV1 {
         } else {
             payment.markUpdated(userId);
             paymentRepository.save(payment);
-            throw new GlobalException(ErrorCode.PAYMENT_CANCEL_FAILED);
+            throw new PaymentException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
 
         return dto;
@@ -233,7 +238,7 @@ public class PaymentServiceV1 {
         if (request instanceof PaymentCancelRequest cancelReq && cancelReq.getOrderId() != null) {
             dto.setOrderId(cancelReq.getOrderId().toString());
         } else if (request instanceof PaymentCreateRequest createReq && createReq.getOrderId() != null) {
-            dto.setOrderId(createReq.getOrderId());
+            dto.setOrderId(String.valueOf(createReq.getOrderId()));
         }
 
         log.info("[Toss] paymentKey={}, status={}",dto.getPaymentKey(), dto.getStatus());
