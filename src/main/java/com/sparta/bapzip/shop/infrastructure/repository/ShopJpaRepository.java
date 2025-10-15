@@ -3,9 +3,12 @@ package com.sparta.bapzip.shop.infrastructure.repository;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import lombok.NonNull;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +26,48 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 
     Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);
+
+    /**
+     * 이름, 카테고리, 영역 Polygon으로 검색
+     * - name: 부분 일치 (ILIKE)
+     * - categoryId: 일치
+     * - areaPolygon: 위치가 폴리곤 내부인지 확인
+     */
+    @Query(value = """
+            SELECT * 
+            FROM p_shops s
+            WHERE (:name IS NULL OR s.name ILIKE %:name%)
+              AND (:categoryId IS NULL OR s.category_id = :categoryId)
+              AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
+              AND s.is_deleted = false
+            """,
+            countQuery = """
+            SELECT COUNT(*) 
+            FROM p_shops s
+            WHERE (:name IS NULL OR s.name ILIKE %:name%)
+              AND (:categoryId IS NULL OR s.category_id = :categoryId)
+              AND (:areaPolygon IS NULL OR ST_Contains(:areaPolygon, s.location))
+              AND s.is_deleted = false
+            """,
+            nativeQuery = true)
+    Page<ShopEntity> findShopsByFilters(
+            @Param("name") String name,
+            @Param("categoryId") UUID categoryId,
+            @Param("areaPolygon") Polygon areaPolygon,
+            Pageable pageable
+    );
+
+    @Query(value = """
+        SELECT * 
+        FROM p_shops s
+        WHERE (:name IS NULL OR s.name ILIKE %:name%)
+          AND (:categoryId IS NULL OR s.category_id = :categoryId)
+          AND s.is_deleted = false
+        """,
+            nativeQuery = true)
+    Page<ShopEntity> findShopsWithoutPolygon(
+            @Param("name") String name,
+            @Param("categoryId") UUID categoryId,
+            Pageable pageable
+    );
 }

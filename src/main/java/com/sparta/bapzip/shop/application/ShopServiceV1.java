@@ -2,11 +2,13 @@ package com.sparta.bapzip.shop.application;
 
 import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
+import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
@@ -21,6 +23,7 @@ import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -252,4 +255,13 @@ public class ShopServiceV1 {
 
         shop.softDelete(ownerId);
     }
+
+    public Page<ShopEntity> searchShops(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable) {
+        if (areaPolygon != null) {
+            return shopRepository.findShopsByFilters(name, categoryId, areaPolygon, pageable);
+        } else {
+            return shopRepository.findShopsWithoutPolygon(name, categoryId, pageable);
+        }
+    }
+
 }

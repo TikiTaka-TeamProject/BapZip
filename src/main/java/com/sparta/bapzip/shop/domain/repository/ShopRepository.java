@@ -2,6 +2,7 @@ package com.sparta.bapzip.shop.domain.repository;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,4 +23,8 @@ public interface ShopRepository {
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 
     Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);
+
+    Page<ShopEntity> findShopsByFilters(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable);
+
+    Page<ShopEntity> findShopsWithoutPolygon(String name, UUID categoryId, Pageable pageable);
 }

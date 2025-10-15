@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,4 +29,13 @@ public interface ServiceAreaJpaRepository extends JpaRepository<ServiceAreaEntit
             @Param("longitude") double longitude, //x
             @Param("latitude") double latitude //y
     );
+
+    Optional<ServiceAreaEntity> findByName(String name);
+
+    @Query("""
+    SELECT sa
+    FROM ServiceAreaEntity sa
+    WHERE LOWER(sa.name) LIKE LOWER(CONCAT('%', :name, '%'))
+    """)
+    List<ServiceAreaEntity> findByNameLike(@Param("name") String name);
 }

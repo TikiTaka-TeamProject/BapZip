@@ -44,4 +44,12 @@ public class ServiceAreaEntity extends BaseEntity {
                 .build();
     }
 
+    /**
+     * ServiceArea의 Polygon 반환
+     *
+     * @return Polygon 객체
+     */
+    public Polygon getAreaPolygon() {
+        return this.area;
+    }
 }

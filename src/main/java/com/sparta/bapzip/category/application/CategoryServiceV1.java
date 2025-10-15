@@ -1,10 +1,12 @@
 package com.sparta.bapzip.category.application;
 
+import com.sparta.bapzip.category.application.exception.CategoryNotFoundException;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.category.domain.exception.CategoryException;
 import com.sparta.bapzip.category.domain.repository.CategoryRepository;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.category.presentation.dto.response.CategoryDetailResponse;
+import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
@@ -115,5 +117,18 @@ public class CategoryServiceV1 {
         return categories.stream()
                 .map(CategoryDetailResponse::toDtoForAdmin)
                 .toList();
+    }
+
+    /**
+     * 카테고리 이름으로 ID 조회
+     *
+     * @param name 카테고리 이름
+     * @return UUID 카테고리 ID
+     * @throws GlobalException 존재하지 않으면 예외 발생
+     */
+    public UUID getCategoryIdByName(String name) {
+        return categoryRepository.findByName(name)
+                .orElseThrow(() -> new CategoryNotFoundException(ErrorCode.CATEGORY_NOT_FOUND))
+                .getId();
     }
 }

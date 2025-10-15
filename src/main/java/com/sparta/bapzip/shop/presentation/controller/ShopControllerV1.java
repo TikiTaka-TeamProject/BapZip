@@ -1,6 +1,10 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
+import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.global.response.ApiResponse;
+import com.sparta.bapzip.global.response.PageResponseDto;
+import com.sparta.bapzip.global.util.PageableUtils;
+import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
@@ -8,8 +12,11 @@ import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,6 +42,8 @@ import java.util.UUID;
 public class ShopControllerV1 {
 
     private final ShopServiceV1 shopServiceV1;
+    private final CategoryServiceV1 categoryServiceV1;
+    private final ServiceAreaServiceV1 serviceAreaServiceV1;
 
     /**
      * 새로운 Shop을 생성합니다.
@@ -116,11 +125,14 @@ public class ShopControllerV1 {
      * @return  ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ShopDetailForUserResponse>>> getApprovedShops(Pageable pageable) {
-        Page<ShopDetailForUserResponse> pageResponse = shopServiceV1.getApprovedShops(pageable)
-                .map(ShopDetailForUserResponse::from); // Page.map() 사용 가능
-
-        return ApiResponse.ok(pageResponse);
+    public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailForUserResponse>>> getApprovedShops(
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+    ) {
+        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
+        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(pageable)
+                .map(ShopDetailForUserResponse::from);
+        return ApiResponse.ok(PageResponseDto.fromPage(pageResult));
     }
 
     /**
@@ -133,14 +145,15 @@ public class ShopControllerV1 {
      */
     @GetMapping("/status")
     @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
-    public ResponseEntity<ApiResponse<Page<ShopDetailResponse>>> getShopsByStatus(
+    public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailResponse>>> getShopsByStatus(
             @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum,
-            Pageable pageable
-            ) {
-        Page<ShopDetailResponse> pageResponse = shopServiceV1.getShopsByStatus(shopStatusEnum, pageable)
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+    ) {
+        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
+        Page<ShopDetailResponse> pageResult = shopServiceV1.getShopsByStatus(shopStatusEnum, pageable)
                 .map(ShopDetailResponse::from);
-
-        return ApiResponse.ok(pageResponse);
+        return ApiResponse.ok(PageResponseDto.fromPage(pageResult));
     }
 
     /**
@@ -168,4 +181,31 @@ public class ShopControllerV1 {
 
         return ApiResponse.noContent();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailForUserResponse>>> searchShops(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "categoryName", required = false) String categoryName,
+            @RequestParam(value = "serviceAreaName", required = false) String serviceAreaName,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+    ) {
+        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
+
+        UUID categoryId = null;
+        if (categoryName != null) {
+            categoryId = categoryServiceV1.getCategoryIdByName(categoryName);
+        }
+
+        Polygon areaPolygon = null;
+        if (serviceAreaName != null) {
+            areaPolygon = serviceAreaServiceV1.getServiceAreaPolygonByName(serviceAreaName);
+        }
+
+        Page<ShopEntity> shopPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, pageable);
+        Page<ShopDetailForUserResponse> dtoPage = shopPage.map(ShopDetailForUserResponse::from);
+
+        return ApiResponse.ok(PageResponseDto.fromPage(dtoPage));
+    }
 }
+

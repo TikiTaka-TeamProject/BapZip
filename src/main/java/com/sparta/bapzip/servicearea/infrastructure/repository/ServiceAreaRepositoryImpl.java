@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,4 +35,15 @@ public class ServiceAreaRepositoryImpl implements ServiceAreaRepository {
     public Optional<ServiceAreaEntity> findByPoint(Double longitude, Double latitude) {
         return serviceAreaJpaRepository.findByPoint(longitude, latitude);
     }
+
+    @Override
+    public Optional<ServiceAreaEntity> findByName(String name) {
+        return serviceAreaJpaRepository.findByName(name);
+    }
+
+    @Override
+    public List<ServiceAreaEntity> findByNameLike(String name) {
+        return serviceAreaJpaRepository.findByNameLike(name);
+    }
+
 }
