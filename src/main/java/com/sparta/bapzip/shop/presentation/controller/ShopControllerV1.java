@@ -8,6 +8,8 @@ import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +36,19 @@ public class ShopControllerV1 {
 
     private final ShopServiceV1 shopServiceV1;
 
+    /**
+     * 새로운 Shop을 생성합니다.
+     * POST /v1/shops
+     *
+     * <p>
+     * - 요청자는 반드시 OWNER 권한을 가져야 하며, {@link PreAuthorize} 어노테이션으로 권한 검증이 수행됩니다.
+     * - 이미 해당 Owner가 Shop을 가지고 있는 경우 {@link com.sparta.bapzip.shop.application.exception.ShopAlreadyExistsException} 발생
+     * - 주소를 기반으로 좌표(location)가 생성되고, 유효성 체크 수행
+     *
+     * @param shopCreationRequest 새로 생성할 Shop 정보가 담긴 DTO
+     * @param userDetails        인증된 사용자 정보(@AuthenticationPrincipal)
+     * @return 생성된 Shop 정보를 담은 {@link ApiResponse} 객체
+     */
     @PostMapping
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<CreateShopResponse>> createShop(
@@ -63,6 +78,8 @@ public class ShopControllerV1 {
 
     /**
      * 특정 Shop의 정보를 수정합니다.
+     * PATCH /v1/shops/{shopId}
+     *
      * <p>
      * - 수정 가능한 항목: 이름(name), 주소(address), 카테고리(category)
      * - 주소 변경 시 좌표(location) 자동 갱신
@@ -86,22 +103,24 @@ public class ShopControllerV1 {
         return ApiResponse.ok(shopDetailResponse);
     }
 
-     /**
+
+    /**
      * 승인된 가게 리스트 조회
+     * GET /v1/shops/
      *
-     * GET /v1/shops
-     *
+     * <p>
      * ShopServiceV1를 통해 승인 상태(APPROVED)인 가게들을 조회하고,
      * ShopDetailResponse DTO로 변환하여 반환
+     * </p>
      *
-     * @return ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
+     * @return  ResponseEntity<List<ShopDetailResponse>> 승인된 가게 리스트
      */
     @GetMapping
-    public List<ShopDetailForUserResponse> getApprovedShops(){
-        return shopServiceV1.getApprovedShops()
-                .stream()
-                .map(ShopDetailForUserResponse::from) // DTO 변환 메서드 사용 가능
-                .toList();
+    public ResponseEntity<ApiResponse<Page<ShopDetailForUserResponse>>> getApprovedShops(Pageable pageable) {
+        Page<ShopDetailForUserResponse> pageResponse = shopServiceV1.getApprovedShops(pageable)
+                .map(ShopDetailForUserResponse::from); // Page.map() 사용 가능
+
+        return ApiResponse.ok(pageResponse);
     }
 
     /**
@@ -112,24 +131,26 @@ public class ShopControllerV1 {
      *                       - null일 경우 모든 상태의 가게를 조회
      * @return List<ShopDetailResponse> 해당 상태(또는 전체)의 가게 상세 정보 리스트
      */
-    @GetMapping("/status")
-    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
-    public List<ShopDetailResponse> getShopsByStatus(
-            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
-            ) {
-        return shopServiceV1.getShopsByStatus(shopStatusEnum)
-                .stream()
-                .map(ShopDetailResponse::from)
-                .toList();
-    }
+//    @GetMapping("/status")
+//    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
+//    public List<ShopDetailResponse> getShopsByStatus(
+//            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
+//            ) {
+//        return shopServiceV1.getShopsByStatus(shopStatusEnum)
+//                .stream()
+//                .map(ShopDetailResponse::from)
+//                .toList();
+//    }
 
     /**
      * 가게 삭제 API (soft delete)
      * DELETE /v1/shops/{shopId}
      *
+     * <p>
      * - 요청한 소유자만 삭제 가능
      * - 실제 삭제는 soft delete 방식(isDeleted = true)
      * - 삭제 후 응답은 HTTP 204 NO CONTENT
+     * </p>
      *
      * @param shopId 삭제할 가게 UUID
      * @param userDetails 인증된 사용자 정보

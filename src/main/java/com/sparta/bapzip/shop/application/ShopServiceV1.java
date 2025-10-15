@@ -8,15 +8,12 @@ import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.user.application.UserServiceV1;
-import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
-import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
-import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
@@ -24,6 +21,8 @@ import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -218,8 +217,8 @@ public class ShopServiceV1 {
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
-    public List<ShopEntity> getApprovedShops() {
-        return shopRepository.findByStatus(ShopStatusEnum.APPROVED);
+    public Page<ShopEntity> getApprovedShops(Pageable pageable) {
+        return shopRepository.findByStatus(ShopStatusEnum.APPROVED, pageable);
     }
 
     /**
@@ -228,12 +227,12 @@ public class ShopServiceV1 {
      * @param shopStatusEnum 조회할 상태 (null이면 전체 조회)
      * @return List<ShopEntity> 조회된 가게 리스트
      */
-    public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
-        if (shopStatusEnum == null) {
-            return shopRepository.findAll();
-        }
-        return shopRepository.findByStatus(shopStatusEnum);
-    }
+//    public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
+//        if (shopStatusEnum == null) {
+//            return shopRepository.findAll();
+//        }
+//        return shopRepository.findByStatus(shopStatusEnum);
+//    }
 
     /**
      * 가게 삭제 처리 (Soft Delete)

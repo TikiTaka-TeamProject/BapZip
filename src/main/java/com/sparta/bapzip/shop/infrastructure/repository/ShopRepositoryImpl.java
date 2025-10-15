@@ -35,8 +35,8 @@ public class ShopRepositoryImpl implements ShopRepository {
     }
 
     @Override
-    public List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum) {
-        return shopJpaRepository.findByStatus(shopStatusEnum);
+    public Page<ShopEntity> findByStatus(ShopStatusEnum status, Pageable pageable) {
+        return shopJpaRepository.findByStatus(status, pageable);
     }
 
     @Override

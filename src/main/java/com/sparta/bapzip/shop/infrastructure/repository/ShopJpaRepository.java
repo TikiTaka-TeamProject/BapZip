@@ -17,7 +17,7 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
     @NonNull
     Optional<ShopEntity> findById(@NonNull UUID shopId);
 
-    List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
+    Page<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum, Pageable pageable);
 
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);

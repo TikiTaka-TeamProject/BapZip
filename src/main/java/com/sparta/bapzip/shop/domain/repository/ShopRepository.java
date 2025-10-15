@@ -14,7 +14,7 @@ public interface ShopRepository {
     boolean existsByOwnerId(Long ownerId);
     // 가게 ID로 조회
     Optional<ShopEntity> findById(UUID shopId);
-    List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
+    Page<ShopEntity> findByStatus(ShopStatusEnum status, Pageable pageable);
 
     // 카테고리 ID로 조회
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
