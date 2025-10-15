@@ -148,4 +148,18 @@ public class ReviewServiceV1 {
         return ReviewDto.from(review);
     }
 
+    @Transactional
+    public void deleteReview(UserEntity user, UUID reviewId) {
+        ReviewEntity review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        // 작성자 체크
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedReviewAccessException(ErrorCode.UNAUTHORIZED_REVIEW_ACCESS);
+        }
+
+        // soft delete
+        review.markDeleted(user.getId());
+        reviewRepository.save(review);
+    }
 }
