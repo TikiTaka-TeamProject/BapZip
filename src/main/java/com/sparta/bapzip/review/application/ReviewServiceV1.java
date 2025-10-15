@@ -148,6 +148,20 @@ public class ReviewServiceV1 {
         return ReviewDto.from(review);
     }
 
+    /**
+     * 사용자가 작성한 리뷰를 삭제(soft delete)합니다.
+     *
+     * <p>
+     * 리뷰 ID와 사용자 정보를 기반으로 해당 리뷰를 조회하고,
+     * 작성자 본인 여부를 검증한 뒤 soft delete 처리를 수행합니다.
+     * 삭제 시 실제 데이터를 물리적으로 제거하지 않고 {@code deletedAt}, {@code deletedBy}, {@code isDeleted} 값을 갱신합니다.
+     * </p>
+     *
+     * @param user     삭제를 요청한 사용자 정보
+     * @param reviewId 삭제할 리뷰의 고유 ID
+     * @throws ReviewNotFoundException            존재하지 않는 리뷰 ID일 경우 발생
+     * @throws UnauthorizedReviewAccessException  리뷰 작성자가 아닌 사용자가 삭제 요청을 한 경우 발생
+     */
     @Transactional
     public void deleteReview(UserEntity user, UUID reviewId) {
         ReviewEntity review = reviewRepository.findById(reviewId)
