@@ -155,17 +155,17 @@ public class ShopControllerV1 {
      *
      * @param shopId 삭제할 가게 UUID
      * @param userDetails 인증된 사용자 정보
-     * @return ResponseEntity<Void> 상태 코드 204 반환
+     * @return ResponseEntity<ApiResponse<Void>> 상태 코드 204 반환
      */
     @DeleteMapping("/{shopId}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> deleteShop(
+    public ResponseEntity<ApiResponse<Void>> deleteShop(
             @PathVariable UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Long ownerId = userDetails.getUser().getId();
         shopServiceV1.deleteShop(shopId, ownerId);
-        return ResponseEntity.noContent().build();
 
+        return ApiResponse.noContent();
     }
 }
