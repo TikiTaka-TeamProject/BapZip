@@ -27,11 +27,10 @@ public class CategoryServiceV1 {
 
     private final CategoryRepository categoryRepository;
     private final ShopRepository shopRepository;
-    private final com.sparta.bapzip.category.application.CategoryException CategoryException;
 
     public CategoryEntity getCategoryById(UUID categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new com.sparta.bapzip.category.application.CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
     }
     // 삭제되지 않은 카테고리 리스트 조회
     @Transactional(readOnly = true)
