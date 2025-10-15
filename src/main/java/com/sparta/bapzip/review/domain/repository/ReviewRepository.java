@@ -2,6 +2,7 @@ package com.sparta.bapzip.review.domain.repository;
 
 import com.sparta.bapzip.review.domain.entity.ReviewEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -26,4 +27,29 @@ public interface ReviewRepository {
      * @return 리뷰가 존재하면 {@code true}, 존재하지 않으면 {@code false}
      */
     boolean existsByOrderIdAndUserId(UUID orderId, Long userId);
+
+    /**
+     * 특정 가게에 작성된 모든 리뷰를 조회합니다.
+     *
+     * @param shopId 조회할 가게 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    List<ReviewEntity> findAllByShopId(UUID shopId);
+
+    /**
+     * 특정 사용자가 작성한 모든 리뷰를 조회합니다.
+     *
+     * @param userId 조회할 사용자 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    List<ReviewEntity> findAllByUserId(Long userId);
+
+    /**
+     * 특정 사용자가 작성한 특정 가게 리뷰를 조회합니다.
+     *
+     * @param userId 조회할 사용자 ID
+     * @param shopId 조회할 가게 ID
+     * @return 조회된 {@link ReviewEntity} 리스트
+     */
+    List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId);
 }
