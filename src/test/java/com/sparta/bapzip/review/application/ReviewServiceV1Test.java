@@ -221,7 +221,7 @@ class ReviewServiceV1Test {
         void getReviewsByShopSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
@@ -230,7 +230,7 @@ class ReviewServiceV1Test {
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
-            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
         }
 
         @Test
@@ -270,14 +270,14 @@ class ReviewServiceV1Test {
         @DisplayName("가게에 리뷰가 없는 경우 빈 리스트 반환")
         void getReviewsByShopEmptyList() {
             // given
-            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(Collections.emptyList());
+            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(Collections.emptyList());
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
 
             // then
             assertThat(result).isEmpty();
-            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
         }
     }
 
@@ -379,7 +379,7 @@ class ReviewServiceV1Test {
                     .build();
 
             List<ReviewEntity> reviews = Arrays.asList(review, review2);
-            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
