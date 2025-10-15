@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Review 관련 API를 처리하는 컨트롤러 (v1)
@@ -118,4 +119,31 @@ public class ReviewControllerV1 {
         ReviewDto updatedReview = reviewServiceV1.updateReview(userDetails.getUser(), reviewId, updateRequest);
         return ApiResponse.ok(updatedReview);
     }
+
+    /**
+     * 특정 리뷰를 소프트 삭제(soft delete)합니다.
+     *
+     * <p>
+     * 인증된 사용자가 작성한 리뷰만 삭제할 수 있으며,
+     * 실제 데이터베이스에서는 {@link com.sparta.bapzip.global.common.BaseEntity#markDeleted(Long)}
+     * 를 사용하여 삭제 플래그(isDeleted)를 설정하고 삭제 일시와 삭제자 정보를 기록합니다.
+     * </p>
+     *
+     * @param reviewId    삭제할 리뷰의 ID
+     * @param userDetails 인증된 사용자 정보({@link UserDetailsImpl})
+     * @return 삭제가 정상적으로 처리되면 HTTP 상태 코드 204(No Content)를 반환하는 {@link ApiResponse} 객체
+     * @throws com.sparta.bapzip.review.application.exception.ReviewNotFoundException
+     *         존재하지 않는 리뷰 ID가 전달된 경우 발생
+     * @throws com.sparta.bapzip.review.application.exception.UnauthorizedReviewAccessException
+     *         리뷰 작성자가 아닌 사용자가 삭제 요청을 한 경우 발생
+     */
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<Void>> deleteReview(
+            @PathVariable UUID reviewId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        reviewServiceV1.deleteReview(userDetails.getUser(), reviewId);
+        return ApiResponse.noContent(); // 204
+    }
+
 }
