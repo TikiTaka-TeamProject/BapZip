@@ -53,4 +53,9 @@ public class ShopRepositoryImpl implements ShopRepository {
     public Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId) {
         return shopJpaRepository.findByIdAndIsDeletedFalse(shopId);
     }
+
+    @Override
+    public Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable) {
+        return shopJpaRepository.findByCategoryId(categoryId, pageable);
+    }
 }
