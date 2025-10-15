@@ -31,8 +31,6 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.UUID;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ShopServiceV1 {
@@ -269,6 +267,18 @@ public class ShopServiceV1 {
             "name", "createdAt", "updatedAt", "category.name"
     );
 
+    /**
+     * Shop 검색
+     *
+     * @param name 가게 이름
+     * @param categoryId 카테고리 ID
+     * @param areaPolygon 검색 영역
+     * @param page 페이지
+     * @param size 페이지 크기
+     * @param sortBy 정렬 기준
+     * @param isAsc 오름차순 여부
+     * @return Page<ShopEntity>
+     */
     public Page<ShopEntity> searchShops(
             String name,
             UUID categoryId,

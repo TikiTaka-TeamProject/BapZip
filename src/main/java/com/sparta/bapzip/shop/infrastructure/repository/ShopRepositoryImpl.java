@@ -12,6 +12,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * ShopRepository 구현체
+ * <p>
+ * ShopJpaRepository를 사용하여 실제 DB 접근을 수행하며, ShopRepository 인터페이스를 구현함.
+ * CRUD 및 상태, 카테고리, 위치 기반 검색 기능 제공.
+ */
 @RequiredArgsConstructor
 @Repository
 public class ShopRepositoryImpl implements ShopRepository {

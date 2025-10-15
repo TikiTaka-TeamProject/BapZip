@@ -13,24 +13,73 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Shop 엔티티 JPA Repository
+ * <p>
+ * 기본 CRUD, 상태 조회, 카테고리 조회, 위치 기반 검색, 평균 평점 조회 기능 제공
+ */
 public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
+
+    /**
+     * 특정 Owner가 이미 가게를 보유하고 있는지 확인
+     *
+     * @param ownerId Owner ID
+     * @return 존재 여부
+     */
     boolean existsByOwnerId(Long ownerId);
 
+    /**
+     * UUID로 Shop 조회
+     *
+     * @param shopId Shop UUID
+     * @return ShopEntity Optional
+     */
     @NonNull
     Optional<ShopEntity> findById(@NonNull UUID shopId);
 
+    /**
+     * 상태별 가게 조회
+     *
+     * @param shopStatusEnum 상태
+     * @param pageable       페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     Page<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum, Pageable pageable);
 
+    /**
+     * 카테고리 ID 기준 삭제되지 않은 가게 조회
+     *
+     * @param categoryId 카테고리 UUID
+     * @param pageable   페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
+
+    /**
+     * 삭제되지 않은 가게 UUID 기준 조회
+     *
+     * @param shopId Shop UUID
+     * @return ShopEntity Optional
+     */
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 
+    /**
+     * 카테고리 ID 기준 가게 조회
+     *
+     * @param categoryId 카테고리 UUID
+     * @param pageable   페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);
 
     /**
-     * 이름, 카테고리, 영역 Polygon으로 검색
-     * - name: 부분 일치 (ILIKE)
-     * - categoryId: 일치
-     * - areaPolygon: 위치가 폴리곤 내부인지 확인
+     * 이름, 카테고리, 영역 Polygon 기준 필터링된 가게 조회
+     *
+     * @param name        가게 이름 (부분 일치)
+     * @param categoryId  카테고리 UUID
+     * @param areaPolygon 검색 영역
+     * @param pageable    페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
      */
     @Query(value = """
             SELECT * 
@@ -56,6 +105,14 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             Pageable pageable
     );
 
+    /**
+     * Polygon 없이 이름, 카테고리 기준 가게 조회
+     *
+     * @param name       가게 이름 (부분 일치)
+     * @param categoryId 카테고리 UUID
+     * @param pageable   페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     @Query(value = """
         SELECT * 
         FROM p_shops s
@@ -77,6 +134,12 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             Pageable pageable
     );
 
+    /**
+     * 평균 평점 포함 가게 조회
+     *
+     * @param shopId Shop UUID
+     * @return ShopEntity Optional
+     */
     @Query(value = """
         SELECT s.*, COALESCE(AVG(r.score), 0) AS avg_score
         FROM p_shops s
@@ -86,10 +149,14 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
     """, nativeQuery = true)
     Optional<ShopEntity> findShopWithAvgScore(@Param("shopId") UUID shopId);
 
-
-    // -----------------------------
-    // 1. 일반 검색 (JPQL, Pageable + Sort 자동)
-    // -----------------------------
+    /**
+     * 일반 검색: 이름, 카테고리 기준 JPQL 검색
+     *
+     * @param name       가게 이름
+     * @param categoryId 카테고리 UUID
+     * @param pageable   페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     @Query("""
        SELECT s 
        FROM ShopEntity s
@@ -103,9 +170,15 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             Pageable pageable
     );
 
-    // -----------------------------
-    // 2. Polygon 검색 (NativeQuery)
-    // -----------------------------
+    /**
+     * Polygon 포함 검색: 이름, 카테고리 기준 NativeQuery
+     *
+     * @param name        가게 이름
+     * @param categoryId  카테고리 UUID
+     * @param areaPolygon 검색 영역
+     * @param pageable    페이지 정보
+     * @return 페이지 처리된 ShopEntity 리스트
+     */
     @Query(value = """
             SELECT * 
             FROM p_shops s

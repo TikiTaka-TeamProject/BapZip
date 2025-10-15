@@ -66,6 +66,7 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity category;
 
+    /** 가게 평균 평점 (Transient, DB 컬럼 아님) */
     @Transient
     private double avgScore;
 
@@ -133,6 +134,7 @@ public class ShopEntity extends BaseEntity {
         markDeleted(userId);
     }
 
+    /** 평균 평점 설정 (DTO용) */
     public void setAvgScore(double avgScore) {
         this.avgScore = avgScore;
     }
