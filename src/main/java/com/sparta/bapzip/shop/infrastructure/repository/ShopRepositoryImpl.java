@@ -40,7 +40,7 @@ public class ShopRepositoryImpl implements ShopRepository {
     }
 
     @Override
-    public List<ShopEntity> findAll() {
+    public Page<ShopEntity> findAll(Pageable pageable) {
         return shopJpaRepository.findAll();
     }
 
