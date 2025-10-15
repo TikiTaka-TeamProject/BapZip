@@ -3,6 +3,7 @@ package com.sparta.bapzip.review.domain.repository;
 import com.sparta.bapzip.review.domain.entity.ReviewEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -52,4 +53,6 @@ public interface ReviewRepository {
      * @return 조회된 {@link ReviewEntity} 리스트
      */
     List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId);
+
+    Optional<ReviewEntity> findById(UUID reviewId);
 }

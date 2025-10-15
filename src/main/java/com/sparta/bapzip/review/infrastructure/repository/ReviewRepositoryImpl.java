@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -73,5 +74,10 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId) {
         return reviewJpaRepository.findAllByUserIdAndShopId(userId, shopId);
+    }
+
+    @Override
+    public Optional<ReviewEntity> findById(UUID reviewId) {
+        return reviewJpaRepository.findById(reviewId);
     }
 }

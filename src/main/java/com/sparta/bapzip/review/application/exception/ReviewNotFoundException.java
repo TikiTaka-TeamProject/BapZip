@@ -4,21 +4,21 @@ import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 
 /**
- * 동일 주문에 대해 사용자가 이미 작성한 리뷰가 존재할 경우 발생하는 커스텀 예외 클래스입니다.
+ * 리뷰를 찾을 수 없을 때 발생하는 커스텀 예외 클래스입니다.
  *
  * <p>
- * 리뷰 생성 시, 같은 주문에 대해 중복 리뷰 작성이 시도될 때 사용됩니다.
+ * 존재하지 않는 리뷰 ID로 접근 시 사용됩니다.
  * {@link ErrorCode}를 기반으로 예외 메시지와 상태 코드를 제공합니다.
  * </p>
  */
-public class DuplicateReviewException extends GlobalException {
+public class ReviewNotFoundException extends GlobalException {
 
     /**
      * 생성자
      *
      * @param errorCode 발생할 에러 코드
      */
-    public DuplicateReviewException(ErrorCode errorCode) {
+    public ReviewNotFoundException(ErrorCode errorCode) {
         super(errorCode);
     }
 }
