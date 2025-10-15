@@ -12,14 +12,20 @@ public interface MenuRepository {
 
     MenuEntity save(MenuEntity menu);
 
-    Optional<MenuEntity> findById(UUID id);
+    /**
+     * soft delete 처리 되지 않은 메뉴 조회 관련
+     * + IsDeletedFalse
+     */
+    Optional<MenuEntity> findByIdAndIsDeletedFalse(UUID id);
+    List<MenuEntity> findAllByShopIdAndIsDeletedFalse(UUID shopId);
+    Page<MenuEntity> findByNameContainingAndIsDeletedFalse(String keyword, Pageable pageable);
 
-    List<MenuEntity> findAll();
-
-    List<MenuEntity> findAllByShopId(UUID shopId);
-
-    Page<MenuEntity> findByNameContaining(String keyword, Pageable pageable);
-
+    // 메뉴 List 반환 메서드 - order 도메인
     List<MenuEntity> findAllByIdIn(List<UUID> ids);
+
+    /**
+     * soft delete 처리 된 메뉴 포함 조회
+     */
+    List<MenuEntity> findAll();
 
 }

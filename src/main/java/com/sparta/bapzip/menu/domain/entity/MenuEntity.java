@@ -2,8 +2,10 @@ package com.sparta.bapzip.menu.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.bapzip.global.common.BaseEntity;
+import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.menu.application.dto.request.MenuCreateRequest;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
-import com.sparta.bapzip.menu.presentation.dto.request.MenuCreateRequest;
+import com.sparta.bapzip.menu.domain.exception.MenuAlreadyDeletedException;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import jakarta.persistence.*;
@@ -82,5 +84,15 @@ public class MenuEntity extends BaseEntity {
     public void updateStatus(MenuStatus status) {
         this.status = status;
     }
-  
+
+    /**
+     * menu soft delete
+     */
+    public void deleteMenu(Long userId){
+        if (this.getIsDeleted()) {
+            throw new MenuAlreadyDeletedException(ErrorCode.MENU_ALREADY_DELETED);
+        }
+        markDeleted(userId);
+    }
+
 }

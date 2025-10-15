@@ -1,4 +1,4 @@
-package com.sparta.bapzip.menu.presentation.dto.request;
+package com.sparta.bapzip.menu.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
