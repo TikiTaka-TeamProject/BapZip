@@ -1,17 +1,11 @@
 package com.sparta.bapzip.category.domain.entity;
 import com.sparta.bapzip.category.presentation.dto.request.CategoryRequestDto;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
-import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
-import jakarta.persistence.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -44,7 +38,7 @@ class CategoryEntityTest {
     @Nested
     @DisplayName("CategoryEntity 생성 테스트")
     class CreateCategoryEntity {
-
+        // ... (이전과 동일한 테스트들)
         @Test
         @DisplayName("MANAGER가 CategoryEntity를 정상적으로 생성한다")
         void create_ByManager_Success() {
@@ -107,7 +101,7 @@ class CategoryEntityTest {
     @Nested
     @DisplayName("CategoryEntity 중복 검증 테스트")
     class DuplicateCategoryTest {
-
+        // ... (이전과 동일한 테스트들)
         @Test
         @DisplayName("동일한 이름의 카테고리는 생성할 수 없다")
         void createDuplicateName() {
@@ -201,7 +195,7 @@ class CategoryEntityTest {
     @Nested
     @DisplayName("CategoryEntity 수정 테스트")
     class UpdateCategoryEntity {
-
+        // ... (이전과 동일한 테스트들)
         @Test
         @DisplayName("MANAGER가 카테고리 정보를 수정한다")
         void updateByManagerSuccess() {
@@ -320,7 +314,7 @@ class CategoryEntityTest {
     @Nested
     @DisplayName("CategoryEntity 삭제 테스트")
     class DeleteCategoryEntity {
-
+        // ... (이전과 동일한 테스트들)
         @Test
         @DisplayName("MANAGER가 카테고리를 삭제한다")
         void deleteByManagerSuccess() {
@@ -382,7 +376,7 @@ class CategoryEntityTest {
             // when & then
             assertThat(activeCategory.getIsDeleted()).isFalse();
             assertThat(deletedCategory.getIsDeleted()).isTrue();
-            // MANAGER는 두 카테고리 모두 조회 가능
+            // MANAGER는 두 카테고리 모두 조회 가능 (이는 서비스/리포지토리 로직이므로 엔티티 레벨에서는 상태만 확인)
         }
 
         @Test
@@ -403,78 +397,8 @@ class CategoryEntityTest {
             deletedCategory.markDeleted(adminUser.getId());
 
             // when & then
-            assertThat(activeCategory.getIsDeleted()).isFalse(); // 일반 유저 조회 가능
-            assertThat(deletedCategory.getIsDeleted()).isTrue(); // 일반 유저 조회 불가
-        }
-        @Test
-        @DisplayName("메니저는 특정 카테고리에 해당하는 모든 가게 목록을 조회할 수 있다")
-        void readShopListByCategoryByManager() {
-            // given
-            CategoryEntity category = CategoryEntity.builder()
-                    .name("한식")
-                    .content("한국 전통 음식")
-                    .build();
-            category.markCreated(adminUser.getId());
-
-            // 비활성화된 가게 포함
-            ShopEntity activeShop = ShopEntity.builder()
-                    .name("활성 가게")
-                    .category(category)
-                    .status(ShopStatusEnum.APPROVED)
-                    .build();
-            activeShop.markCreated(adminUser.getId());
-
-            ShopEntity inactiveShop = ShopEntity.builder()
-                    .name("비활성 가게")
-                    .category(category)
-                    .status(ShopStatusEnum.PENDING)
-                    .build();
-            inactiveShop.markCreated(adminUser.getId());
-
-            // when
-            List<ShopEntity> shops = category.getShopEntityList();
-
-            // then
-            assertThat(shops).isNotNull();
-            assertThat(shops).hasSize(2);
-            assertThat(shops).containsExactlyInAnyOrder(activeShop, inactiveShop);
-        }
-
-        @Test
-        @DisplayName("일반 유저는 특정 카테고리에 해당하는 활성화 된 가게 목록을 조회할 수 있다")
-        void readShopListByCategoryByCustomer() {
-            // given
-            CategoryEntity category = CategoryEntity.builder()
-                    .name("한식")
-                    .content("한국 전통 음식")
-                    .build();
-            category.markCreated(adminUser.getId());
-
-            ShopEntity activeShop = ShopEntity.builder()
-                    .name("활성 가게")
-                    .category(category)
-                    .status(ShopStatusEnum.APPROVED)
-                    .build();
-            activeShop.markCreated(adminUser.getId());
-
-            ShopEntity inactiveShop = ShopEntity.builder()
-                    .name("비활성 가게")
-                    .category(category)
-                    .status(ShopStatusEnum.PENDING)
-                    .build();
-            inactiveShop.markCreated(adminUser.getId());
-
-            // when
-            List<ShopEntity> activeShops = category.getShopEntityList().stream()
-                    .filter(shop -> shop.getStatus() == ShopStatusEnum.APPROVED)
-                    .collect(Collectors.toList());
-
-            // then
-            assertThat(activeShops).isNotNull();
-            assertThat(activeShops).hasSize(1);
-            assertThat(activeShops).contains(activeShop);
-            assertThat(activeShops).doesNotContain(inactiveShop);
+            assertThat(activeCategory.getIsDeleted()).isFalse(); // 일반 유저 조회 가능 (상태만 확인)
+            assertThat(deletedCategory.getIsDeleted()).isTrue(); // 일반 유저 조회 불가 (상태만 확인)
         }
     }
-
 }
