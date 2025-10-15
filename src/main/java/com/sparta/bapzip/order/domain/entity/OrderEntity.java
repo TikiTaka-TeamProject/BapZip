@@ -167,6 +167,17 @@ public class OrderEntity extends BaseEntity {
         }
     }
 
+    /**
+     * 배달 완료된 주문인지 검증
+     *
+     * @throws OrderNotCompletedException 주문이 배달 완료 상태가 아닌 경우
+     */
+    public void validateCompleted() {
+        if (this.status != OrderStatus.DELIVERED) {
+            throw new OrderNotCompletedException(ORDER_NOT_COMPLETED);
+        }
+    }
+
     // ========== 상태 변경 비즈니스 로직 ==========
 
     /**

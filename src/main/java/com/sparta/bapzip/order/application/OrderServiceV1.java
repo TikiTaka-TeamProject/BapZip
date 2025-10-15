@@ -129,6 +129,22 @@ public class OrderServiceV1 {
         order.delete(user.getId());
     }
 
+    /**
+     * 리뷰 작성 권한 검증을 포함한 주문 조회
+     *
+     * @param orderId 리뷰를 작성할 주문 ID
+     * @param user 현재 로그인한 사용자
+     */
+    @Transactional(readOnly = true)
+    public OrderEntity getOrderByIdForReview(UUID orderId, UserEntity user) {
+        OrderEntity order = getById(orderId);
+
+        order.validateCustomer(user.getId());
+        order.validateCompleted();
+
+        return order;
+    }
+
     // ========== 주문 상태 변경 (OWNER) ==========
 
     /**
