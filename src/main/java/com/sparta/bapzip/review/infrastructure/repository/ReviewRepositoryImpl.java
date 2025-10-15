@@ -41,7 +41,6 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     public boolean existsByOrderIdAndUserId(UUID orderId, Long userId) {
         return reviewJpaRepository.existsByOrderIdAndUserId(orderId, userId);
     }
-
     /**
      * 특정 가게에 작성된 모든 리뷰를 조회합니다.
      *
@@ -49,8 +48,8 @@ public class ReviewRepositoryImpl implements ReviewRepository {
      * @return 조회된 {@link ReviewEntity} 리스트
      */
     @Override
-    public List<ReviewEntity> findAllByShopId(UUID shopId) {
-        return reviewJpaRepository.findAllByShopId(shopId);
+    public List<ReviewEntity> findAllByShopIdAndIsDeletedFalse(UUID shopId) {
+        return reviewJpaRepository.findAllByShopIdAndIsDeletedFalse(shopId);
     }
 
     /**
@@ -60,8 +59,8 @@ public class ReviewRepositoryImpl implements ReviewRepository {
      * @return 조회된 {@link ReviewEntity} 리스트
      */
     @Override
-    public List<ReviewEntity> findAllByUserId(Long userId) {
-        return reviewJpaRepository.findAllByUserId(userId);
+    public List<ReviewEntity> findAllByUserIdAndIsDeletedFalse(Long userId) {
+        return reviewJpaRepository.findAllByUserIdAndIsDeletedFalse(userId);
     }
 
     /**
@@ -72,8 +71,8 @@ public class ReviewRepositoryImpl implements ReviewRepository {
      * @return 조회된 {@link ReviewEntity} 리스트
      */
     @Override
-    public List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId) {
-        return reviewJpaRepository.findAllByUserIdAndShopId(userId, shopId);
+    public List<ReviewEntity> findAllByUserIdAndShopIdAndIsDeletedFalse(Long userId, UUID shopId) {
+        return reviewJpaRepository.findAllByUserIdAndShopIdAndIsDeletedFalse(userId, shopId);
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.sparta.bapzip.category.application;
 
 import com.sparta.bapzip.category.application.exception.CategoryNotFoundException;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
-import com.sparta.bapzip.category.domain.exception.CategoryException;
 import com.sparta.bapzip.category.domain.repository.CategoryRepository;
 import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.category.domain.exception.CategoryException;
 import com.sparta.bapzip.category.presentation.dto.response.CategoryDetailResponse;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -106,7 +106,7 @@ public class CategoryServiceV1 {
         categoryRepository.save(category);
         return CategoryDetailResponse.toDto(category);
     }
-
+    @Transactional(readOnly = true)
     public List<CategoryDetailResponse> getAllCategories() {
         List<CategoryEntity> categories = categoryRepository.findAllForAdmin();
 

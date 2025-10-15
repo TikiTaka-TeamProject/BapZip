@@ -2,6 +2,7 @@ package com.sparta.bapzip.review.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
  * 클라이언트로부터 리뷰 점수, 내용, 주문 및 매장 정보를 전달받습니다.
  */
 @Getter
+@Builder
 public class CreateReviewRequest {
 
     /**
