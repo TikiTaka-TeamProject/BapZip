@@ -12,7 +12,8 @@ public record MenuAdminResponse(
         int price,
         MenuStatus status,
         boolean isDeleted,
-        UUID shopId
+        UUID shopId,
+        String shopName
 ) {
     public static MenuAdminResponse from(MenuEntity menu) {
         return new MenuAdminResponse(
@@ -22,7 +23,8 @@ public record MenuAdminResponse(
                 menu.getPrice(),
                 menu.getStatus(),
                 menu.getIsDeleted(),
-                menu.getShop().getId()
+                menu.getShop().getId(),
+                menu.getShop().getName()
         );
     }
 }
