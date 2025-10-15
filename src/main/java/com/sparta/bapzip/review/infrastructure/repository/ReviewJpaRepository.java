@@ -27,7 +27,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
      * @param shopId 조회할 가게 ID
      * @return 조회된 {@link ReviewEntity} 리스트
      */
-    List<ReviewEntity> findAllByShopId(UUID shopId);
+    List<ReviewEntity> findAllByShopIdAndIsDeletedFalse(UUID shopId);
 
     /**
      * 특정 사용자가 작성한 모든 리뷰를 조회합니다.
@@ -35,7 +35,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
      * @param userId 조회할 사용자 ID
      * @return 조회된 {@link ReviewEntity} 리스트
      */
-    List<ReviewEntity> findAllByUserId(Long userId);
+    List<ReviewEntity> findAllByUserIdAndIsDeletedFalse(Long userId);
 
     /**
      * 특정 사용자가 작성한 특정 가게 리뷰를 조회합니다.
@@ -44,5 +44,5 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, UUID> {
      * @param shopId 조회할 가게 ID
      * @return 조회된 {@link ReviewEntity} 리스트
      */
-    List<ReviewEntity> findAllByUserIdAndShopId(Long userId, UUID shopId);
+    List<ReviewEntity> findAllByUserIdAndShopIdAndIsDeletedFalse(Long userId, UUID shopId);
 }

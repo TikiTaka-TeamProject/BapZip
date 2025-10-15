@@ -27,6 +27,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -221,7 +222,7 @@ class ReviewServiceV1Test {
         void getReviewsByShopSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
@@ -230,7 +231,7 @@ class ReviewServiceV1Test {
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
-            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
         }
 
         @Test
@@ -238,7 +239,7 @@ class ReviewServiceV1Test {
         void getMyReviewsSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByUserId(customer1.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByUserIdAndIsDeletedFalse(customer1.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getMyReviews(customer1);
@@ -247,37 +248,37 @@ class ReviewServiceV1Test {
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
-            verify(reviewRepository, times(1)).findAllByUserId(customer1.getId());
+            verify(reviewRepository, times(1)).findAllByUserIdAndIsDeletedFalse(customer1.getId());
         }
         @Test
         @DisplayName("사용자의 특정 가게 리뷰 조회 성공")
         void getMyReviewsByShopSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByUserIdAndShopId(customer1.getId(), shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByUserIdAndShopIdAndIsDeletedFalse(customer1.getId(), shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getMyReviewsByShop(customer1, shop.getId().toString());
-
             // then
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
-            verify(reviewRepository, times(1)).findAllByUserIdAndShopId(customer1.getId(), shop.getId());
+            verify(reviewRepository, times(1)).findAllByUserIdAndShopIdAndIsDeletedFalse(customer1.getId(), shop.getId());
+
         }
 
         @Test
         @DisplayName("가게에 리뷰가 없는 경우 빈 리스트 반환")
         void getReviewsByShopEmptyList() {
             // given
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(Collections.emptyList());
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(Collections.emptyList());
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
 
             // then
             assertThat(result).isEmpty();
-            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
         }
     }
 
@@ -352,7 +353,7 @@ class ReviewServiceV1Test {
         void convertToDtoSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByUserId(customer1.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByUserIdAndIsDeletedFalse(customer1.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getMyReviews(customer1);
@@ -379,7 +380,7 @@ class ReviewServiceV1Test {
                     .build();
 
             List<ReviewEntity> reviews = Arrays.asList(review, review2);
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());

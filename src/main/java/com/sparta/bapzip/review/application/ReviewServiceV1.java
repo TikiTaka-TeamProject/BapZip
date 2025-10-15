@@ -87,7 +87,7 @@ public class ReviewServiceV1 {
      * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
      */
     public List<ReviewDto> getReviewsByShop(String shopId) {
-        List<ReviewEntity> reviews = reviewRepository.findAllByShopId(UUID.fromString(shopId));
+        List<ReviewEntity> reviews = reviewRepository.findAllByShopIdAndIsDeletedFalse(UUID.fromString(shopId));
         return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
     }
 
@@ -98,7 +98,7 @@ public class ReviewServiceV1 {
      * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
      */
     public List<ReviewDto> getMyReviews(UserEntity user) {
-        List<ReviewEntity> reviews = reviewRepository.findAllByUserId(user.getId());
+        List<ReviewEntity> reviews = reviewRepository.findAllByUserIdAndIsDeletedFalse(user.getId());
         return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
     }
 
@@ -110,7 +110,7 @@ public class ReviewServiceV1 {
      * @return 조회된 리뷰 리스트를 {@link ReviewDto} 형태로 반환
      */
     public List<ReviewDto> getMyReviewsByShop(UserEntity user, String shopId) {
-        List<ReviewEntity> reviews = reviewRepository.findAllByUserIdAndShopId(user.getId(), UUID.fromString(shopId));
+        List<ReviewEntity> reviews = reviewRepository.findAllByUserIdAndShopIdAndIsDeletedFalse(user.getId(), UUID.fromString(shopId));
         return reviews.stream().map(ReviewDto::from).collect(Collectors.toList());
     }
 
