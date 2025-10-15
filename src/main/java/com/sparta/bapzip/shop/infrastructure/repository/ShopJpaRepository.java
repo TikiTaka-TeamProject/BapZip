@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,4 +69,13 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             @Param("categoryId") UUID categoryId,
             Pageable pageable
     );
+
+    @Query(value = """
+        SELECT s.*, COALESCE(AVG(r.score), 0) AS avg_score
+        FROM p_shops s
+        LEFT JOIN p_reviews r ON s.id = r.shop_id
+        WHERE s.id = :shopId
+        GROUP BY s.id
+    """, nativeQuery = true)
+    Optional<ShopEntity> findShopWithAvgScore(@Param("shopId") UUID shopId);
 }

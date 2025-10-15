@@ -132,7 +132,8 @@ public class ShopServiceV1 {
      * @return ShopDetailResponse 가게 상세 정보 DTO
      */
     public ShopDetailResponse getShopDetail(UUID shopId) {
-        ShopEntity shop = getShopById(shopId);
+        ShopEntity shop = shopRepository.findShopWithAvgScore(shopId)
+                .orElseThrow(() -> new ShopNotFoundException(ErrorCode.SHOP_NOT_FOUND));
 
         return ShopDetailResponse.from(shop);
     }
@@ -149,7 +150,7 @@ public class ShopServiceV1 {
 
         // 권한 체크
         if (!shop.getOwner().getId().equals(ownerId)) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
+            throw new UnauthorizedShopAccessException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
         }
     }
 

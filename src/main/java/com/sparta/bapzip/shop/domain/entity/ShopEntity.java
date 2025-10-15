@@ -66,6 +66,9 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity category;
 
+    @Transient
+    private double avgScore;
+
     // ===========================
     // Update Methods (Domain Logic)
     // ===========================
@@ -128,6 +131,10 @@ public class ShopEntity extends BaseEntity {
             throw new ShopAlreadyDeletedException(ErrorCode.SHOP_ALREADY_DELETED);
         }
         markDeleted(userId);
+    }
+
+    public void setAvgScore(double avgScore) {
+        this.avgScore = avgScore;
     }
 
 

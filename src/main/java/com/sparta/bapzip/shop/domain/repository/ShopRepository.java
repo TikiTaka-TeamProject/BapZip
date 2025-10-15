@@ -27,4 +27,6 @@ public interface ShopRepository {
     Page<ShopEntity> findShopsByFilters(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable);
 
     Page<ShopEntity> findShopsWithoutPolygon(String name, UUID categoryId, Pageable pageable);
+
+    Optional<ShopEntity> findShopWithAvgScore(UUID shopId);
 }

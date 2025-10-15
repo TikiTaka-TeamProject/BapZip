@@ -26,7 +26,7 @@ public class PageableUtils {
      */
     public static Pageable createDefaultPageable(int page, int size) {
         int pageSize = validatePageSize(size);
-        return PageRequest.of(Math.max(page - 1, 0), pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return PageRequest.of(Math.max(page - 1, 0), pageSize, Sort.by(Sort.Direction.DESC, "created_at"));
     }
 
     /**

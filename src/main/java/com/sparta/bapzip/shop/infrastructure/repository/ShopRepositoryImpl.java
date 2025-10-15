@@ -2,16 +2,13 @@ package com.sparta.bapzip.shop.infrastructure.repository;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -68,6 +65,11 @@ public class ShopRepositoryImpl implements ShopRepository {
     @Override
     public Page<ShopEntity> findShopsWithoutPolygon(String name, UUID categoryId, Pageable pageable) {
         return shopJpaRepository.findShopsWithoutPolygon(name, categoryId, pageable);
+    }
+
+    @Override
+    public Optional<ShopEntity> findShopWithAvgScore(UUID shopId) {
+        return shopJpaRepository.findShopWithAvgScore(shopId);
     }
 
 }
