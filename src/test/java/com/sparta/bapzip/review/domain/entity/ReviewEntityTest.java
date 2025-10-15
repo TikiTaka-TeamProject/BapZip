@@ -260,5 +260,70 @@ class ReviewEntityTest {
             assertThat(reviews.get(0).getScore()).isEqualTo(5);
             assertThat(reviews.get(1).getScore()).isEqualTo(4);
         }
+
+        @Test
+        @DisplayName("특정 유저가 작성한 모든 리뷰를 조회한다")
+        void readAllReviewsBySpecificUserSuccess() {
+            // given
+            ReviewEntity review1 = ReviewEntity.builder()
+                    .id(UUID.randomUUID())
+                    .user(customer1)
+                    .shop(shop)
+                    .content("좋아요!")
+                    .score(4)
+                    .build();
+
+            ReviewEntity review2 = ReviewEntity.builder()
+                    .id(UUID.randomUUID())
+                    .user(customer2)
+                    .shop(shop)
+                    .content("별로예요.")
+                    .score(2)
+                    .build();
+
+            List<ReviewEntity> allReviews = List.of(review1, review2);
+
+            // when
+            List<ReviewEntity> userReviews = allReviews.stream()
+                    .filter(r -> r.getUser().equals(customer1))
+                    .toList();
+
+            // then
+            assertThat(userReviews).hasSize(1);
+            assertThat(userReviews.get(0).getContent()).isEqualTo("좋아요!");
+        }
+
+        @Test
+        @DisplayName("삭제되지 않은 리뷰만 조회 가능하다")
+        void readOnlyActiveReviewsSuccess() {
+            // given
+            ReviewEntity activeReview = ReviewEntity.builder()
+                    .id(UUID.randomUUID())
+                    .user(customer1)
+                    .shop(shop)
+                    .content("좋아요!")
+                    .score(5)
+                    .build();
+
+            ReviewEntity deletedReview = ReviewEntity.builder()
+                    .id(UUID.randomUUID())
+                    .user(customer1)
+                    .shop(shop)
+                    .content("삭제된 리뷰")
+                    .score(1)
+                    .build();
+            deletedReview.markDeleted(customer1.getId());
+
+            List<ReviewEntity> allReviews = List.of(activeReview, deletedReview);
+
+            // when
+            List<ReviewEntity> activeReviews = allReviews.stream()
+                    .filter(r -> !r.getIsDeleted())
+                    .toList();
+
+            // then
+            assertThat(activeReviews).hasSize(1);
+            assertThat(activeReviews.get(0).getContent()).isEqualTo("좋아요!");
+        }
     }
 }

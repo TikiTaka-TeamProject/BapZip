@@ -142,7 +142,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("리뷰 생성 성공")
-        void createReview_Success() {
+        void createReviewSuccess() {
             // given
             when(reviewRepository.existsByOrderIdAndUserId(deliveredOrder.getId(), customer1.getId())).thenReturn(false);
             when(shopServiceV1.getShopById(shop.getId())).thenReturn(shop);
@@ -164,7 +164,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("중복 리뷰 생성 실패")
-        void createReview_DuplicateReview() {
+        void createReviewDuplicateReview() {
             // given
             when(reviewRepository.existsByOrderIdAndUserId(deliveredOrder.getId(), customer1.getId())).thenReturn(true);
 
@@ -179,7 +179,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("가게 조회 후 리뷰 생성")
-        void createReview_WithShopValidation() {
+        void createReviewWithShopValidation() {
             // given
             when(reviewRepository.existsByOrderIdAndUserId(deliveredOrder.getId(), customer1.getId())).thenReturn(false);
             when(shopServiceV1.getShopById(shop.getId())).thenReturn(shop);
@@ -196,7 +196,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("주문 조회 및 권한 체크 후 리뷰 생성")
-        void createReview_WithOrderValidation() {
+        void createReviewWithOrderValidation() {
             // given
             when(reviewRepository.existsByOrderIdAndUserId(deliveredOrder.getId(), customer1.getId())).thenReturn(false);
             when(shopServiceV1.getShopById(shop.getId())).thenReturn(shop);
@@ -218,10 +218,10 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("가게의 모든 리뷰 조회 성공")
-        void getReviewsByShop_Success() {
+        void getReviewsByShopSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
@@ -230,12 +230,12 @@ class ReviewServiceV1Test {
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
-            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
         }
 
         @Test
         @DisplayName("사용자의 모든 리뷰 조회 성공")
-        void getMyReviews_Success() {
+        void getMyReviewsSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
             when(reviewRepository.findAllByUserId(customer1.getId())).thenReturn(reviews);
@@ -249,10 +249,9 @@ class ReviewServiceV1Test {
             assertThat(result.get(0).getContent()).isEqualTo(review.getContent());
             verify(reviewRepository, times(1)).findAllByUserId(customer1.getId());
         }
-
         @Test
         @DisplayName("사용자의 특정 가게 리뷰 조회 성공")
-        void getMyReviewsByShop_Success() {
+        void getMyReviewsByShopSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
             when(reviewRepository.findAllByUserIdAndShopId(customer1.getId(), shop.getId())).thenReturn(reviews);
@@ -269,16 +268,16 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("가게에 리뷰가 없는 경우 빈 리스트 반환")
-        void getReviewsByShop_EmptyList() {
+        void getReviewsByShopEmptyList() {
             // given
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(Collections.emptyList());
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(Collections.emptyList());
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
 
             // then
             assertThat(result).isEmpty();
-            verify(reviewRepository, times(1)).findAllByShopId(shop.getId());
+            verify(reviewRepository, times(1)).findAllByShopIdAndIsDeletedFalse(shop.getId());
         }
     }
 
@@ -288,7 +287,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("리뷰 수정 성공")
-        void updateReview_Success() {
+        void updateReviewSuccess() {
             // given
             String reviewId = review.getId().toString();
             when(reviewRepository.findById(UUID.fromString(reviewId))).thenReturn(Optional.of(review));
@@ -303,7 +302,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("존재하지 않는 리뷰 수정 실패")
-        void updateReview_NotFound() {
+        void updateReviewNotFound() {
             // given
             String reviewId = UUID.randomUUID().toString();
             when(reviewRepository.findById(UUID.fromString(reviewId))).thenReturn(Optional.empty());
@@ -316,7 +315,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("다른 사용자의 리뷰 수정 실패 - 권한 없음")
-        void updateReview_UnauthorizedAccess() {
+        void updateReviewUnauthorizedAccess() {
             // given
             String reviewId = review.getId().toString();
             when(reviewRepository.findById(UUID.fromString(reviewId))).thenReturn(Optional.of(review));
@@ -329,7 +328,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("리뷰 수정 시 작성자 검증")
-        void updateReview_ValidateAuthor() {
+        void updateReviewValidateAuthor() {
             // given
             String reviewId = review.getId().toString();
             when(reviewRepository.findById(UUID.fromString(reviewId))).thenReturn(Optional.of(review));
@@ -350,7 +349,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("ReviewEntity를 ReviewDto로 변환")
-        void convertToDto_Success() {
+        void convertToDtoSuccess() {
             // given
             List<ReviewEntity> reviews = Arrays.asList(review);
             when(reviewRepository.findAllByUserId(customer1.getId())).thenReturn(reviews);
@@ -368,7 +367,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("여러 ReviewEntity를 ReviewDto 리스트로 변환")
-        void convertToDtoList_Success() {
+        void convertToDtoListSuccess() {
             // given
             ReviewEntity review2 = ReviewEntity.builder()
                     .id(UUID.randomUUID())
@@ -380,7 +379,7 @@ class ReviewServiceV1Test {
                     .build();
 
             List<ReviewEntity> reviews = Arrays.asList(review, review2);
-            when(reviewRepository.findAllByShopId(shop.getId())).thenReturn(reviews);
+            when(reviewRepository.findAllByShopIdAndIsDeletedFalse(shop.getId())).thenReturn(reviews);
 
             // when
             List<ReviewDto> result = reviewService.getReviewsByShop(shop.getId().toString());
@@ -398,7 +397,7 @@ class ReviewServiceV1Test {
 
         @Test
         @DisplayName("리뷰 생성 전체 플로우 검증")
-        void createReview_FullFlow() {
+        void createReviewFullFlow() {
             // given
             when(reviewRepository.existsByOrderIdAndUserId(deliveredOrder.getId(), customer1.getId())).thenReturn(false);
             when(shopServiceV1.getShopById(shop.getId())).thenReturn(shop);
