@@ -54,8 +54,11 @@ public class ShopControllerV1 {
      * @return ShopDetailResponse: 가게 상세 정보 DTO
      */
     @GetMapping("/{shopId}")
-    public ShopDetailResponse getShopDetail(@PathVariable UUID shopId) {
-        return shopServiceV1.getShopDetail(shopId);
+    public ResponseEntity<ApiResponse<ShopDetailResponse>> getShopDetail(
+            @PathVariable UUID shopId
+    ) {
+        ShopDetailResponse shopDetailResponse = shopServiceV1.getShopDetail(shopId);
+        return ApiResponse.ok(shopDetailResponse);
     }
 
     /**
