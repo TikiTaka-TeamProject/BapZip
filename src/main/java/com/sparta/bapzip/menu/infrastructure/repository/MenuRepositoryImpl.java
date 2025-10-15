@@ -25,31 +25,34 @@ public class MenuRepositoryImpl implements MenuRepository {
 
     // 메뉴 단일 조회
     @Override
-    public Optional<MenuEntity> findById(UUID id) {
-        return menuJpaRepository.findById(id);
+    public Optional<MenuEntity> findByIdAndIsDeletedFalse(UUID id) {
+        return menuJpaRepository.findByIdAndIsDeletedFalse(id);
     }
 
     // 메뉴 이름 기반 검색 조회
     @Override
-    public Page<MenuEntity> findByNameContaining(String keyword, Pageable pageable) {
-        return menuJpaRepository.findByNameContaining(keyword, pageable);
-    }
-
-    // 메뉴 전체 조회 todo 내부용 구분
-    @Override
-    public List<MenuEntity> findAll(){
-        return menuJpaRepository.findAll();
+    public Page<MenuEntity> findByNameContainingAndIsDeletedFalse(String keyword, Pageable pageable) {
+        return menuJpaRepository.findByNameContainingAndIsDeletedFalse(keyword, pageable);
     }
 
     // 가게 ID로 모든 메뉴 조회
     @Override
-    public List<MenuEntity> findAllByShopId(UUID shopId) {
-        return menuJpaRepository.findAllByShopId(shopId);
+    public List<MenuEntity> findAllByShopIdAndIsDeletedFalse(UUID shopId) {
+        return menuJpaRepository.findAllByShopIdAndIsDeletedFalse(shopId);
     }
 
-    // 메뉴 List 반환 메서드
+    // 메뉴 List 반환 메서드 - order 도메인
     @Override
     public List<MenuEntity> findAllByIdIn(List<UUID> ids) {
         return menuJpaRepository.findAllByIdIn(ids);
+    }
+
+    /**
+     * soft delete 포함 조회 - 관리자용
+     * 메뉴 전체 조회
+     */
+    @Override
+    public List<MenuEntity> findAll() {
+        return menuJpaRepository.findAll();
     }
 }
