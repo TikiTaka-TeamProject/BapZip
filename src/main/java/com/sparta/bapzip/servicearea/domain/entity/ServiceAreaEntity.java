@@ -36,11 +36,6 @@ public class ServiceAreaEntity extends BaseEntity {
     @Column(columnDefinition = "boolean default true")
     private boolean isService = true;
 
-    @OneToMany(mappedBy = "serviceArea")
-    @JsonIgnore
-    @Builder. Default
-    private List<ShopEntity> shopList = new ArrayList<>();
-
     public static ServiceAreaEntity create(AreaSaveDto request){
         return ServiceAreaEntity.builder()
                 .name(request.getName())

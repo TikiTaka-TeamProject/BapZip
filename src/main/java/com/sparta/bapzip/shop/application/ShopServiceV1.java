@@ -8,6 +8,7 @@ import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.user.application.UserServiceV1;
+import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
@@ -43,14 +44,16 @@ public class ShopServiceV1 {
      * 신규 가게 생성
      *
      * @param request   가게 생성 정보 DTO
-     * @param ownerId   가게 소유자 ID
+     * @param user      user Entity
      * @return 생성된 가게 정보 DTO
      * @throws ShopAlreadyExistsException 이미 해당 Owner가 가게를 가지고 있는 경우
      * @throws GlobalException 좌표 범위 오류 발생 시
      */
-    public CreateShopResponse createShop(ShopCreationRequest request, Long ownerId) {
+    @Transactional
+    public ShopEntity createShop(ShopCreationRequest request, UserEntity user) {
+
         // 1. Owner 조회
-        UserEntity owner = userServiceV1.findUser(ownerId);
+        UserEntity owner = userServiceV1.findUser(user.getId());
 
         // 2. 이미 Shop을 가진 Owner인지 체크
         if (shopRepository.existsByOwnerId(owner.getId())) {
@@ -68,9 +71,6 @@ public class ShopServiceV1 {
         double latitude = Double.parseDouble(kakaoData.getLatitude());
         validateCoordinates(longitude, latitude);
 
-        // 5. Service Area 조회 (좌표 기반)
-        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
-
         // 6. 위치(Point) 생성
         Point location = createPoint(longitude, latitude);
 
@@ -80,14 +80,10 @@ public class ShopServiceV1 {
                 request.getAddress(),
                 owner,
                 category,
-                serviceArea,
                 location
         );
 
-        // 8.저장
-        ShopEntity saved = shopRepository.save(shop);
-
-        return CreateShopResponse.from(saved);
+        return shopRepository.save(shop);
     }
 
     /**
@@ -194,7 +190,7 @@ public class ShopServiceV1 {
 
             // ServiceArea 자동 업데이트
             ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
-            shop.updateServiceArea(serviceArea);
+//            shop.updateServiceArea(serviceArea);
         }
 
         // 5. 카테고리 수정

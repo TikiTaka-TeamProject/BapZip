@@ -1,12 +1,15 @@
 package com.sparta.bapzip.shop.presentation.controller;
 
+import com.sparta.bapzip.global.response.ApiResponse;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.domain.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
@@ -32,14 +35,15 @@ public class ShopControllerV1 {
     private final ShopServiceV1 shopServiceV1;
 
     @PostMapping
-//    @PreAuthorize("hasRole('OWNER')")
-    public CreateShopResponse createShop(
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<CreateShopResponse>> createShop(
             @RequestBody ShopCreationRequest shopCreationRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        Long ownerId = userDetails.getUser().getId();
-        return shopServiceV1.createShop(shopCreationRequest, ownerId);
+        ShopEntity savedShop = shopServiceV1.createShop(shopCreationRequest, userDetails.getUser());
+        CreateShopResponse response = CreateShopResponse.from(savedShop);
 
+        return ApiResponse.created(response);
     }
 
     /**
@@ -55,6 +59,7 @@ public class ShopControllerV1 {
     }
 
 
+    @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("/{shopId}")
     public ResponseEntity<ShopDetailResponse> updateShop(
             @PathVariable("shopId") UUID shopId,
@@ -94,7 +99,7 @@ public class ShopControllerV1 {
      * @return List<ShopDetailResponse> 해당 상태(또는 전체)의 가게 상세 정보 리스트
      */
     @GetMapping("/status")
-//    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
+    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
     public List<ShopDetailResponse> getShopsByStatus(
             @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
             ) {
@@ -117,6 +122,7 @@ public class ShopControllerV1 {
      * @return ResponseEntity<Void> 상태 코드 204 반환
      */
     @DeleteMapping("/{shopId}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Void> deleteShop(
             @PathVariable UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails

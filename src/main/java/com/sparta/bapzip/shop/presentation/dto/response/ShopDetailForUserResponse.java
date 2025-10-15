@@ -15,7 +15,6 @@ public class ShopDetailForUserResponse {
     private String address;
     private String ownerName;
     private String categoryName;
-    private String serviceAreaName;
 
     public static ShopDetailForUserResponse from(ShopEntity shop) {
         return ShopDetailForUserResponse.builder()
@@ -24,7 +23,6 @@ public class ShopDetailForUserResponse {
                 .address(shop.getAddress())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
-                .serviceAreaName(shop.getServiceArea().getName())
                 .build();
     }
 }
