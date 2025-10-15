@@ -131,16 +131,17 @@ public class ShopControllerV1 {
      *                       - null일 경우 모든 상태의 가게를 조회
      * @return List<ShopDetailResponse> 해당 상태(또는 전체)의 가게 상세 정보 리스트
      */
-//    @GetMapping("/status")
-//    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
-//    public List<ShopDetailResponse> getShopsByStatus(
-//            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum
-//            ) {
-//        return shopServiceV1.getShopsByStatus(shopStatusEnum)
-//                .stream()
-//                .map(ShopDetailResponse::from)
-//                .toList();
-//    }
+    @GetMapping("/status")
+    @PreAuthorize("hasAnyRole('MANAGER','MASTER')")
+    public ResponseEntity<ApiResponse<Page<ShopDetailResponse>>> getShopsByStatus(
+            @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum,
+            Pageable pageable
+            ) {
+        Page<ShopDetailResponse> pageResponse = shopServiceV1.getShopsByStatus(shopStatusEnum, pageable)
+                .map(ShopDetailResponse::from);
+
+        return ApiResponse.ok(pageResponse);
+    }
 
     /**
      * 가게 삭제 API (soft delete)

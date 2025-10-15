@@ -18,7 +18,7 @@ public interface ShopRepository {
 
     // 카테고리 ID로 조회
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
-    List<ShopEntity> findAll();
+    Page<ShopEntity> findAll(Pageable pageable);
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 
     Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);

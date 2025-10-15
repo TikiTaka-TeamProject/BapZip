@@ -227,12 +227,12 @@ public class ShopServiceV1 {
      * @param shopStatusEnum 조회할 상태 (null이면 전체 조회)
      * @return List<ShopEntity> 조회된 가게 리스트
      */
-//    public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
-//        if (shopStatusEnum == null) {
-//            return shopRepository.findAll();
-//        }
-//        return shopRepository.findByStatus(shopStatusEnum);
-//    }
+    public Page<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum, Pageable pageable) {
+        if (shopStatusEnum == null) {
+            return shopRepository.findAll(pageable);
+        }
+        return shopRepository.findByStatus(shopStatusEnum, pageable);
+    }
 
     /**
      * 가게 삭제 처리 (Soft Delete)
