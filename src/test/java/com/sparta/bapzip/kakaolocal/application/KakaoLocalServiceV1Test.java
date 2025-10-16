@@ -50,7 +50,12 @@ class KakaoLocalServiceV1Test {
     @Test
     void test3(){
         String query = "돌곶이로";
-        KakaoLocalResponseNotFoundException exception = assertThrows(KakaoLocalResponseNotFoundException.class,()->serviceV1.getResponse(query));
+
+        KakaoLocalResponseNotFoundException exception =
+                assertThrows(KakaoLocalResponseNotFoundException.class,
+                        ()->serviceV1.getResponse(query)
+                );
+
         assertEquals(ErrorCode.KAKAO_MAP_ADDRESS_NOT_FOUND,exception.getErrorCode());
     }
 
