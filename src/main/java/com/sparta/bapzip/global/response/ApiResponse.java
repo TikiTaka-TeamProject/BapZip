@@ -1,16 +1,24 @@
 package com.sparta.bapzip.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
  * success 응답
  */
+@Schema(description = "공통 API 응답 DTO")
 @JsonInclude(JsonInclude.Include.NON_NULL) // null 데이터 응답에서 제외
 public record ApiResponse<T>(
+
+        @Schema(description = "응답 성공 여부", example = "true")
         boolean success,
+
+        @Schema(description = "HTTP 상태 코드", example = "200")
         int code,
+
+        @Schema(description = "응답 데이터")
         T data
 ) {
 
