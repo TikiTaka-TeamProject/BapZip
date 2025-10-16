@@ -144,8 +144,6 @@ public class PaymentServiceV1 {
         PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(
                 payment.getOrder().getId(),
                 payment.getPaymentKey(),
-                null,
-                null,
                 cancelReason
         );
 

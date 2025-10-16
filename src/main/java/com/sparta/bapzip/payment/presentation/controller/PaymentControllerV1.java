@@ -29,7 +29,7 @@ public class PaymentControllerV1 {
     @Operation(summary = "결제 승인 요청 등록", description = "결제 승인 요청 등록 메서드 입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "201",
+                    responseCode = "200",
                     description = "결제 승인 요청 등록 성공",
                     content = @Content(
                             schema = @Schema(implementation = PaymentResponseDto.class),
@@ -41,6 +41,12 @@ public class PaymentControllerV1 {
                                                        "success": true,
                                                        "code": 200,
                                                        "data": {
+                                                           "paymentKey": "tviva20251016154506lYT22",
+                                                           "orderId": "e98daf86-bb2e-48b4-b217-050107a705a2",
+                                                           "status": "SUCCESS",
+                                                           "totalPrice": 12000,
+                                                           "approvedAt": "2025-10-16T15:45:06",
+                                                           "canceledAt": null
                                                        }
                                                      }
                                                     """
@@ -59,7 +65,7 @@ public class PaymentControllerV1 {
     @Operation(summary = "결제 취소 요청 등록", description = "결제 취소 요청 등록 메서드 입니다.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "201",
+                    responseCode = "200",
                     description = "결제 취소 요청 등록 성공",
                     content = @Content(
                             schema = @Schema(implementation = PaymentResponseDto.class),
@@ -71,7 +77,13 @@ public class PaymentControllerV1 {
                                                        "success": true,
                                                        "code": 200,
                                                        "data": {
-                                                       }
+                                                            "paymentKey": "tviva20251016154506lYT22",
+                                                            "orderId": "e98daf86-bb2e-48b4-b217-050107a705a2",
+                                                            "status": "CANCELED",
+                                                            "totalPrice": 12000,
+                                                            "approvedAt": "2025-10-16T15:45:06",
+                                                            "canceledAt": "2025-10-16T15:50:06"
+                                                        }
                                                      }
                                                     """
                                     )
