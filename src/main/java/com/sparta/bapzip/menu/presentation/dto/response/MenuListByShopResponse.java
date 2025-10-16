@@ -1,5 +1,6 @@
 package com.sparta.bapzip.menu.presentation.dto.response;
 
+import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 
 import java.util.List;
@@ -21,5 +22,15 @@ public record MenuListByShopResponse(
             String content,
             int price,
             MenuStatus status
-    ) {}
+    ) {
+        public static MenuItemDto from(MenuEntity menu) {
+            return new MenuItemDto(
+                    menu.getId(),
+                    menu.getName(),
+                    menu.getContent(),
+                    menu.getPrice(),
+                    menu.getStatus()
+            );
+        }
+    }
 }
