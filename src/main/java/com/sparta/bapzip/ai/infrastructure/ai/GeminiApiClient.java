@@ -15,7 +15,7 @@ public class GeminiApiClient implements AiCallable {
     public static final String GEMINI_MODEL = "gemini-2.5-flash";
     public static final String CHARACTER_LIMIT = "\n 답변을 최대한 간결하게 50자 이하로";
 
-    @Value("${GOOGLEAI_API_KEY}")
+    @Value("${google.api.key}")
     private String apiKey;
 
     private final AiLogRepository repository;
