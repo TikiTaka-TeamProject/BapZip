@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+
+  web:
+    resources:
+      add-mappings: false
+
+# 테스트용 더미 값들 (실제 키값이랑 다르고, 에러 발생 방지용으로 넣어놨습니다!)
+payment:
+  toss:
+    client:
+      key: test_ck_dummy_key_for_testing
+    secret:
+      key: test_sk_dummy_key_for_testing
+    success-url: http://localhost:8080/payments/success
+    fail-url: http://localhost:8080/payments/fail
+
+jwt:
+  secret:
+    key: dGVzdF9qd3Rfc2VjcmV0X2tleV9mb3JfdGVzdGluZ19wdXJwb3Nl
+
+kakao:
+  rest:
+    api:
+      key: test_kakao_rest_api_key_dummy
+
+google:
+  api:
+    key: test_google_api_key_dummy
+
+# Swagger 비활성화 (테스트에 불필요)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
