@@ -66,9 +66,6 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity category;
 
-    @Transient
-    private double avgScore;
-
     // ===========================
     // Update Methods (Domain Logic)
     // ===========================
@@ -132,11 +129,6 @@ public class ShopEntity extends BaseEntity {
         }
         markDeleted(userId);
     }
-
-    public void setAvgScore(double avgScore) {
-        this.avgScore = avgScore;
-    }
-
 
     // ===========================
     // Factory Method

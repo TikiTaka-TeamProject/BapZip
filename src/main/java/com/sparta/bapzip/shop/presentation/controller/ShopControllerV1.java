@@ -131,8 +131,7 @@ public class ShopControllerV1 {
             @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc
     ) {
-        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(page, size, sortBy, isAsc)
-                .map(ShopDetailForUserResponse::from);
+        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(page, size, sortBy, isAsc);
 
         return ApiResponse.ok(PageResponseDto.fromPage(pageResult, sortBy, isAsc));
     }

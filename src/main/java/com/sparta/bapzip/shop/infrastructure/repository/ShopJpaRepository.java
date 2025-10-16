@@ -1,5 +1,6 @@
 package com.sparta.bapzip.shop.infrastructure.repository;
 
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import lombok.NonNull;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -129,4 +131,14 @@ public interface ShopJpaRepository extends JpaRepository<ShopEntity, UUID> {
             @Param("areaPolygon") Polygon areaPolygon,
             Pageable pageable
     );
+
+    @Query(value = """
+        SELECT s.id AS shopId,
+               COALESCE(AVG(r.score), 0) AS avgScore
+        FROM p_shops s
+        LEFT JOIN p_reviews r ON s.id = r.shop_id AND r.is_deleted = false
+        WHERE s.is_deleted = false
+        GROUP BY s.id
+        """, nativeQuery = true)
+    List<ShopWithAvgScoreDto> findAllWithAvgScore();
 }

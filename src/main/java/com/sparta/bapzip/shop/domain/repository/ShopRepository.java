@@ -1,5 +1,6 @@
 package com.sparta.bapzip.shop.domain.repository;
 
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.locationtech.jts.geom.Polygon;
@@ -33,4 +34,6 @@ public interface ShopRepository {
     Page<ShopEntity> findShopsByPolygon(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable);
 
     Page<ShopEntity> findShops(String name, UUID categoryId, Pageable pageable);
+
+    List<ShopWithAvgScoreDto> findAllWithAvgScore();
 }
