@@ -15,6 +15,7 @@ import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
 import com.sparta.bapzip.ordermenu.domain.entity.OrderMenuEntity;
 import com.sparta.bapzip.payment.application.PaymentServiceV1;
+import com.sparta.bapzip.payment.presentation.dto.request.PaymentCreateRequest;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
@@ -66,7 +67,9 @@ public class OrderServiceV1 {
         orderMenuList.forEach(savedOrder::addOrderMenu);
 
         orderMenuService.saveAll(orderMenuList);
-        paymentServiceV1.createPayment(savedOrder.getId());
+        PaymentCreateRequest requestDto = new PaymentCreateRequest();
+        requestDto.setOrderId(savedOrder.getId());
+        paymentServiceV1.createPayment(requestDto);
         return OrderCreationDto.from(savedOrder, orderMenuList, shop, user.getId());
     }
 

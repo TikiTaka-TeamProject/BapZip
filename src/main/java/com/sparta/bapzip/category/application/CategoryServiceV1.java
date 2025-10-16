@@ -80,7 +80,7 @@ public class CategoryServiceV1 {
         CategoryEntity category = new CategoryEntity(name, content);
         category.markCreated(userDetails.getUser().getId());
         categoryRepository.save(category);
-        return CategoryDetailResponse.toDto(category);
+        return CategoryDetailResponse.toDtoForAdmin(category);
     }
 
     @Transactional
@@ -89,7 +89,7 @@ public class CategoryServiceV1 {
         category.update(name, content);
         category.markUpdated(userDetails.getUser().getId());
         categoryRepository.save(category);
-        return CategoryDetailResponse.toDto(category);
+        return CategoryDetailResponse.toDtoForAdmin(category);
     }
 
     // 카테고리 삭제
@@ -102,7 +102,9 @@ public class CategoryServiceV1 {
         }
         category.markDeleted(userDetails.getUser().getId());
         categoryRepository.save(category);
-        return CategoryDetailResponse.toDto(category);
+        category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(ErrorCode.CATEGORY_NOT_FOUND));
+        return CategoryDetailResponse.toDtoForAdmin(category);
     }
     @Transactional(readOnly = true)
     public List<CategoryDetailResponse> getAllCategories() {
