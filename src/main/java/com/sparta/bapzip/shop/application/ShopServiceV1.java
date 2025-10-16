@@ -2,11 +2,13 @@ package com.sparta.bapzip.shop.application;
 
 import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
@@ -27,10 +29,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShopServiceV1 {
@@ -220,15 +228,43 @@ public class ShopServiceV1 {
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
-    public Page<ShopEntity> getApprovedShops(int page, int size, String sortBy, boolean isAsc) {
+    public Page<ShopDetailForUserResponse> getApprovedShops(int page, int size, String sortBy, boolean isAsc) {
         // 허용된 정렬 필드만 체크
-        Set<String> allowedSortFields = Set.of("name", "createdAt", "updatedAt");
-        sortBy = allowedSortFields.contains(sortBy) ? sortBy : "createdAt";
+        Pageable pageable = PageRequest.of(
+                Math.max(page - 1, 0),
+                size,
+                isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortBy
+        );
 
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(direction, sortBy));
+        // 1. 승인된 샵 조회
+        Page<ShopEntity> shops = shopRepository.findByStatus(ShopStatusEnum.APPROVED, pageable);
 
-        return shopRepository.findByStatus(ShopStatusEnum.APPROVED, pageable);
+
+        if (shops.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // 2. 승인된 샵 ID 추출
+        Set<UUID> shopIds = shops.stream()
+                .map(ShopEntity::getId)
+                .collect(Collectors.toSet());
+
+        // 3. 평균 점수 조회 후 Map으로 변환 (shopId -> avgScore)
+        Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
+                .filter(dto -> shopIds.contains(dto.getShopId()))
+                .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
+
+
+        // 4. DTO 변환
+        return shops.map(shop -> ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScoreMap.getOrDefault(shop.getId(), 0.0))
+                .build());
     }
 
     /**
@@ -267,19 +303,7 @@ public class ShopServiceV1 {
             "name", "createdAt", "updatedAt", "category.name"
     );
 
-    /**
-     * Shop 검색
-     *
-     * @param name 가게 이름
-     * @param categoryId 카테고리 ID
-     * @param areaPolygon 검색 영역
-     * @param page 페이지
-     * @param size 페이지 크기
-     * @param sortBy 정렬 기준
-     * @param isAsc 오름차순 여부
-     * @return Page<ShopEntity>
-     */
-    public Page<ShopEntity> searchShops(
+    public Page<ShopDetailForUserResponse> searchShops(
             String name,
             UUID categoryId,
             Polygon areaPolygon,
@@ -291,14 +315,40 @@ public class ShopServiceV1 {
         if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
             sortBy = "createdAt";
         }
+
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(direction, sortBy));
 
+        // ✅ 샵 조회
+        Page<ShopEntity> shops;
         if (areaPolygon != null) {
-            return shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
+            shops = shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
         } else {
-            return shopRepository.findShops(name, categoryId, pageable);
+            shops = shopRepository.findShops(name, categoryId, pageable);
         }
-    }
 
+        if (shops.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // ✅ 샵 ID 추출
+        Set<UUID> shopIds = shops.stream()
+                .map(ShopEntity::getId)
+                .collect(Collectors.toSet());
+
+        // ✅ 평균 점수 Map 조회
+        Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
+                .filter(dto -> shopIds.contains(dto.getShopId()))
+                .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
+
+        // ✅ DTO 변환 후 반환
+        return shops.map(shop -> ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScoreMap.getOrDefault(shop.getId(), 0.0))
+                .build());
+    }
 }

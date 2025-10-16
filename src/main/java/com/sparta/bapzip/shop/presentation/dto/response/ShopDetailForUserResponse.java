@@ -47,7 +47,7 @@ public class ShopDetailForUserResponse {
                 .address(shop.getAddress())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
-                .avgScore(shop.getAvgScore())
+                .avgScore(0.0)
                 .build();
     }
 }

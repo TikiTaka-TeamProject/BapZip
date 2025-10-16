@@ -131,8 +131,7 @@ public class ShopControllerV1 {
             @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc
     ) {
-        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(page, size, sortBy, isAsc)
-                .map(ShopDetailForUserResponse::from);
+        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(page, size, sortBy, isAsc);
 
         return ApiResponse.ok(PageResponseDto.fromPage(pageResult, sortBy, isAsc));
     }
@@ -224,8 +223,7 @@ public class ShopControllerV1 {
             areaPolygon = serviceAreaServiceV1.getServiceAreaPolygonByName(serviceAreaName);
         }
 
-        Page<ShopEntity> shopPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, page, size, sortBy, isAsc);
-        Page<ShopDetailForUserResponse> dtoPage = shopPage.map(ShopDetailForUserResponse::from);
+        Page<ShopDetailForUserResponse> dtoPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, page, size, sortBy, isAsc);
 
         return ApiResponse.ok(PageResponseDto.fromPage(dtoPage, sortBy, isAsc));
     }

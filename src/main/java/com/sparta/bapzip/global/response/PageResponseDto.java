@@ -1,25 +1,32 @@
 package com.sparta.bapzip.global.response;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Page;
+
 import java.util.List;
 
-/**
- *
- * @param currentPage 현재 페이지 번호 (1부터 시작)
- * @param pageSize 페이지 데이터 수 (10,30,50 check)
- * @param totalPages 전체 페이지 수
- * @param totalElements 전체 데이터 수
- * @param sortBy 현재 정렬 기준 필드
- * @param isAsc 오름차순(true), false(내림차순 = default)
- * @param items 페이지에 포함되는 실제 데이터
- * @param <T> 페이지에 포함될 데이터 제네릭 타입
- */
+@Schema(description = "페이징된 리스트 응답 DTO")
 public record PageResponseDto<T>(
+
+        @Schema(description = "현재 페이지 번호 (1부터 시작)", example = "1")
         int currentPage,
+
+        @Schema(description = "페이지당 항목 수", example = "10")
         int pageSize,
+
+        @Schema(description = "전체 페이지 수", example = "5")
         int totalPages,
+
+        @Schema(description = "전체 데이터 수", example = "50")
         long totalElements,
+
+        @Schema(description = "정렬 기준 필드", example = "createdAt")
         String sortBy,
+
+        @Schema(description = "오름차순 여부(default=false)", example = "false")
         boolean isAsc,
+
+        @Schema(description = "페이지에 포함된 실제 데이터 리스트")
         List<T> items
 ) {
     public static <T> PageResponseDto<T> fromPage(Page<T> page, String sortBy, boolean isAsc) {

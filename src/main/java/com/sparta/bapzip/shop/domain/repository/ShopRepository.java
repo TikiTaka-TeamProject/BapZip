@@ -1,11 +1,13 @@
 package com.sparta.bapzip.shop.domain.repository;
 
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -132,4 +134,6 @@ public interface ShopRepository {
      * @return 페이지 처리된 ShopEntity 리스트
      */
     Page<ShopEntity> findShops(String name, UUID categoryId, Pageable pageable);
+
+    List<ShopWithAvgScoreDto> findAllWithAvgScore();
 }

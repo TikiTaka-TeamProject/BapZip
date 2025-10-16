@@ -4,11 +4,13 @@ import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
 import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
@@ -183,8 +185,19 @@ class ShopServiceV1Test {
     void getApprovedShops_paging() {
         Page<ShopEntity> page = new PageImpl<>(Collections.singletonList(shop));
         when(shopRepository.findByStatus(eq(ShopStatusEnum.APPROVED), any(Pageable.class))).thenReturn(page);
+        when(shopRepository.findAllWithAvgScore()).thenReturn(Collections.singletonList(new ShopWithAvgScoreDto() {
+            @Override
+            public UUID getShopId() {
+                return null;
+            }
 
-        Page<ShopEntity> result = shopServiceV1.getApprovedShops(1, 10, "name", true);
+            @Override
+            public double getAvgScore() {
+                return 0;
+            }
+        }));
+
+        Page<ShopDetailForUserResponse> result = shopServiceV1.getApprovedShops(1, 10, "name", true);
         assertThat(result.getContent()).hasSize(1);
     }
 
@@ -231,8 +244,19 @@ class ShopServiceV1Test {
         Polygon polygon = mock(Polygon.class);
         Page<ShopEntity> page = new PageImpl<>(Collections.singletonList(shop));
         when(shopRepository.findShopsByPolygon(anyString(), any(), any(), any(Pageable.class))).thenReturn(page);
+        when(shopRepository.findAllWithAvgScore()).thenReturn(Collections.singletonList(new ShopWithAvgScoreDto() {
+            @Override
+            public UUID getShopId() {
+                return null;
+            }
 
-        Page<ShopEntity> result = shopServiceV1.searchShops("Test", null, polygon, 1, 10, "name", true);
+            @Override
+            public double getAvgScore() {
+                return 0;
+            }
+        }));
+
+        Page<ShopDetailForUserResponse> result = shopServiceV1.searchShops("Test", null, polygon, 1, 10, "name", true);
         assertThat(result.getContent()).hasSize(1);
     }
 
@@ -241,8 +265,19 @@ class ShopServiceV1Test {
     void searchShops_withoutPolygon() {
         Page<ShopEntity> page = new PageImpl<>(Collections.singletonList(shop));
         when(shopRepository.findShops(anyString(), any(), any(Pageable.class))).thenReturn(page);
+        when(shopRepository.findAllWithAvgScore()).thenReturn(Collections.singletonList(new ShopWithAvgScoreDto() {
+            @Override
+            public UUID getShopId() {
+                return null;
+            }
 
-        Page<ShopEntity> result = shopServiceV1.searchShops("Test", null, null, 1, 10, "name", true);
+            @Override
+            public double getAvgScore() {
+                return 0;
+            }
+        }));
+
+        Page<ShopDetailForUserResponse> result = shopServiceV1.searchShops("Test", null, null, 1, 10, "name", true);
         assertThat(result.getContent()).hasSize(1);
     }
 

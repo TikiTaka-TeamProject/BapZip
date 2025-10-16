@@ -12,6 +12,8 @@ import com.sparta.bapzip.order.domain.enums.OrderStatus;
 import com.sparta.bapzip.order.domain.exception.*;
 import com.sparta.bapzip.order.domain.repository.OrderRepository;
 import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
+import com.sparta.bapzip.payment.application.PaymentServiceV1;
+import com.sparta.bapzip.payment.presentation.dto.response.PaymentResponseDto; // 💡 PaymentResponseDto 임포트 추가
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
@@ -53,6 +55,9 @@ class OrderServiceV1Test {
 
     @Mock
     private OrderMenuServiceV1 orderMenuService;
+
+    @Mock
+    private PaymentServiceV1 paymentServiceV1;
 
     private UserEntity customer;
     private UserEntity owner;
@@ -143,6 +148,15 @@ class OrderServiceV1Test {
             when(orderRepository.save(any(OrderEntity.class))).thenReturn(order);
             when(orderMenuService.saveAll(anyList())).thenReturn(Collections.emptyList());
 
+            PaymentResponseDto mockPaymentResponse = PaymentResponseDto.builder()
+                    .paymentKey(UUID.randomUUID().toString())
+                    .status("SUCCESS")
+                    .totalPrice(order.getTotalPrice())
+                    .orderId(order.getId().toString())
+                    .build();
+
+            when(paymentServiceV1.createPayment(any(UUID.class))).thenReturn(mockPaymentResponse);
+
             // when
             OrderCreationDto result = orderService.createOrder(createOrderRequest, customer);
 
@@ -152,6 +166,8 @@ class OrderServiceV1Test {
             assertThat(result.getTotalPrice()).isEqualTo(35000);
             verify(orderRepository, times(1)).save(any(OrderEntity.class));
             verify(orderMenuService, times(1)).saveAll(anyList());
+
+            verify(paymentServiceV1, times(1)).createPayment(any(UUID.class));
         }
 
         @Test

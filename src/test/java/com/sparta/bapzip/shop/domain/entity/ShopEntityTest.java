@@ -1,8 +1,8 @@
 package com.sparta.bapzip.shop.domain.entity;
 
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
-import com.sparta.bapzip.shop.domain.exception.ShopAlreadyDeletedException;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import com.sparta.bapzip.shop.domain.exception.ShopAlreadyDeletedException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -101,13 +101,6 @@ class ShopEntityTest {
         shop.softDelete(owner.getId());
         assertThatThrownBy(() -> shop.softDelete(owner.getId()))
                 .isInstanceOf(ShopAlreadyDeletedException.class);
-    }
-
-    @Test
-    @DisplayName("평균 점수 설정 테스트")
-    void setAvgScore() {
-        shop.setAvgScore(4.5);
-        assertThat(shop.getAvgScore()).isEqualTo(4.5);
     }
 
     @Test

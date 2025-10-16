@@ -2,6 +2,9 @@ HELP.md
 .gradle
 application-db.properties
 application.properties
+secrets.yml
+application-dev.yml
+
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
