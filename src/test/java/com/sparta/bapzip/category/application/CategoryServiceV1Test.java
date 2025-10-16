@@ -474,7 +474,6 @@ class CategoryServiceV1Test {
                     .name(name)
                     .status(status)
                     .category(category)
-                    .serviceArea(serviceArea)
                     .owner(owner)
                     .build();
             entity.markCreated(createdBy);
