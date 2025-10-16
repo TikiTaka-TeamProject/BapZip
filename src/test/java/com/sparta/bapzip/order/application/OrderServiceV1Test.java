@@ -13,6 +13,7 @@ import com.sparta.bapzip.order.domain.exception.*;
 import com.sparta.bapzip.order.domain.repository.OrderRepository;
 import com.sparta.bapzip.ordermenu.application.OrderMenuServiceV1;
 import com.sparta.bapzip.payment.application.PaymentServiceV1;
+import com.sparta.bapzip.payment.presentation.dto.request.PaymentCreateRequest;
 import com.sparta.bapzip.payment.presentation.dto.response.PaymentResponseDto; // 💡 PaymentResponseDto 임포트 추가
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -154,8 +155,10 @@ class OrderServiceV1Test {
                     .totalPrice(order.getTotalPrice())
                     .orderId(order.getId().toString())
                     .build();
+            PaymentCreateRequest mockPaymentRequest = new PaymentCreateRequest();
+            mockPaymentRequest.setOrderId(UUID.randomUUID());
 
-            when(paymentServiceV1.createPayment(any(UUID.class))).thenReturn(mockPaymentResponse);
+            when(paymentServiceV1.createPayment(any(PaymentCreateRequest.class))).thenReturn(mockPaymentResponse);
 
             // when
             OrderCreationDto result = orderService.createOrder(createOrderRequest, customer);
@@ -167,7 +170,7 @@ class OrderServiceV1Test {
             verify(orderRepository, times(1)).save(any(OrderEntity.class));
             verify(orderMenuService, times(1)).saveAll(anyList());
 
-            verify(paymentServiceV1, times(1)).createPayment(any(UUID.class));
+            verify(paymentServiceV1, times(1)).createPayment(any(PaymentCreateRequest.class));
         }
 
         @Test

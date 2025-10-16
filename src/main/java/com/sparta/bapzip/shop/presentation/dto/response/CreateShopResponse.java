@@ -6,17 +6,38 @@ import lombok.*;
 
 import java.util.UUID;
 
+/**
+ * Shop 생성 API 응답 DTO
+ * <p>
+ * 새로운 Shop 생성 시 반환되는 정보
+ */
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class CreateShopResponse {
-    private UUID shopId;            // 샵 고유 ID
-    private String categoryName;    // 샵 카테고리
-    private String name;            // 샵 이름
-    private String address;         // 샵 주소
-    private ShopStatusEnum status;      // 현재 상태 (PENDING 등)
 
+    /** Shop 고유 ID */
+    private UUID shopId;
+
+    /** Shop 카테고리 이름 */
+    private String categoryName;
+
+    /** Shop 이름 */
+    private String name;
+
+    /** Shop 주소 */
+    private String address;
+
+    /** Shop 상태 (PENDING, APPROVED 등) */
+    private ShopStatusEnum status;
+
+    /**
+     * ShopEntity로부터 CreateShopResponse DTO 생성
+     *
+     * @param shop ShopEntity
+     * @return CreateShopResponse DTO
+     */
     public static CreateShopResponse from(ShopEntity shop) {
         return CreateShopResponse.builder()
                 .shopId(shop.getId())
