@@ -190,6 +190,19 @@ public class ShopControllerV1 {
         return ApiResponse.noContent();
     }
 
+    /**
+     * Shop 검색 API
+     * GET /v1/shops/search
+     *
+     * @param name Shop 이름 (부분 검색)
+     * @param categoryName 카테고리 이름
+     * @param serviceAreaName 서비스 지역 이름
+     * @param size 페이지 사이즈
+     * @param page 페이지 번호
+     * @param sortBy 정렬 기준
+     * @param isAsc 오름차순 여부
+     * @return PageResponseDto<ShopDetailForUserResponse>
+     */
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailForUserResponse>>> searchShops(
             @RequestParam(value = "name", required = false) String name,
