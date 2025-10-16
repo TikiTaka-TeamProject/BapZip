@@ -6,6 +6,10 @@ on:
   push:
     branches: ["dev"]
 
+permissions:
+  checks: write
+  contents: read
+
 jobs:
   test:
     name: 테스트 실행
