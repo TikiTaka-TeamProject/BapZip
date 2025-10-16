@@ -210,8 +210,7 @@ public class ShopControllerV1 {
             areaPolygon = serviceAreaServiceV1.getServiceAreaPolygonByName(serviceAreaName);
         }
 
-        Page<ShopEntity> shopPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, page, size, sortBy, isAsc);
-        Page<ShopDetailForUserResponse> dtoPage = shopPage.map(ShopDetailForUserResponse::from);
+        Page<ShopDetailForUserResponse> dtoPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, page, size, sortBy, isAsc);
 
         return ApiResponse.ok(PageResponseDto.fromPage(dtoPage, sortBy, isAsc));
     }

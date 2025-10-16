@@ -242,7 +242,6 @@ public class ShopServiceV1 {
 
 
         if (shops.isEmpty()) {
-            log.info("승인된 샵이 없음");
             return Page.empty(pageable);
         }
 
@@ -250,13 +249,11 @@ public class ShopServiceV1 {
         Set<UUID> shopIds = shops.stream()
                 .map(ShopEntity::getId)
                 .collect(Collectors.toSet());
-        log.info("승인된 Shop ID 목록: {}", shopIds);
 
         // 3. 평균 점수 조회 후 Map으로 변환 (shopId -> avgScore)
         Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
                 .filter(dto -> shopIds.contains(dto.getShopId()))
                 .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
-        log.info("평균 점수 Map: {}", avgScoreMap);
 
 
         // 4. DTO 변환
@@ -306,7 +303,7 @@ public class ShopServiceV1 {
             "name", "createdAt", "updatedAt", "category.name"
     );
 
-    public Page<ShopEntity> searchShops(
+    public Page<ShopDetailForUserResponse> searchShops(
             String name,
             UUID categoryId,
             Polygon areaPolygon,
@@ -318,14 +315,40 @@ public class ShopServiceV1 {
         if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
             sortBy = "createdAt";
         }
+
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(direction, sortBy));
 
+        // ✅ 샵 조회
+        Page<ShopEntity> shops;
         if (areaPolygon != null) {
-            return shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
+            shops = shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
         } else {
-            return shopRepository.findShops(name, categoryId, pageable);
+            shops = shopRepository.findShops(name, categoryId, pageable);
         }
-    }
 
+        if (shops.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // ✅ 샵 ID 추출
+        Set<UUID> shopIds = shops.stream()
+                .map(ShopEntity::getId)
+                .collect(Collectors.toSet());
+
+        // ✅ 평균 점수 Map 조회
+        Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
+                .filter(dto -> shopIds.contains(dto.getShopId()))
+                .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
+
+        // ✅ DTO 변환 후 반환
+        return shops.map(shop -> ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScoreMap.getOrDefault(shop.getId(), 0.0))
+                .build());
+    }
 }
