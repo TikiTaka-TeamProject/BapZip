@@ -15,6 +15,7 @@ public class ShopDetailForUserResponse {
     private String address;
     private String ownerName;
     private String categoryName;
+    private double avgScore;
 
     public static ShopDetailForUserResponse from(ShopEntity shop) {
         return ShopDetailForUserResponse.builder()
@@ -23,6 +24,7 @@ public class ShopDetailForUserResponse {
                 .address(shop.getAddress())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
+                .avgScore(0.0)
                 .build();
     }
 }

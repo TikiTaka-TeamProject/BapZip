@@ -17,6 +17,7 @@ public class ShopDetailResponse {
     private ShopStatusEnum status;
     private String ownerName;
     private String categoryName;
+    private double avgScore;
 
     public static ShopDetailResponse from(ShopEntity shop) {
         return ShopDetailResponse.builder()
@@ -26,6 +27,19 @@ public class ShopDetailResponse {
                 .status(shop.getStatus())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
+                .avgScore(0.0)
+                .build();
+    }
+
+    public static ShopDetailResponse from(ShopEntity shop, double avgScore) {
+        return ShopDetailResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .status(shop.getStatus())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScore)
                 .build();
     }
 }

@@ -130,7 +130,6 @@ public class ShopEntity extends BaseEntity {
         markDeleted(userId);
     }
 
-
     // ===========================
     // Factory Method
     // ===========================

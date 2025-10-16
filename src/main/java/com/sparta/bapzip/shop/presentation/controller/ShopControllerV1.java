@@ -3,7 +3,6 @@ package com.sparta.bapzip.shop.presentation.controller;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
 import com.sparta.bapzip.global.response.ApiResponse;
 import com.sparta.bapzip.global.response.PageResponseDto;
-import com.sparta.bapzip.global.util.PageableUtils;
 import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
 import com.sparta.bapzip.shop.application.ShopServiceV1;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +33,7 @@ import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -127,12 +127,13 @@ public class ShopControllerV1 {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailForUserResponse>>> getApprovedShops(
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc
     ) {
-        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
-        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(pageable)
-                .map(ShopDetailForUserResponse::from);
-        return ApiResponse.ok(PageResponseDto.fromPage(pageResult));
+        Page<ShopDetailForUserResponse> pageResult = shopServiceV1.getApprovedShops(page, size, sortBy, isAsc);
+
+        return ApiResponse.ok(PageResponseDto.fromPage(pageResult, sortBy, isAsc));
     }
 
     /**
@@ -148,12 +149,19 @@ public class ShopControllerV1 {
     public ResponseEntity<ApiResponse<PageResponseDto<ShopDetailResponse>>> getShopsByStatus(
             @RequestParam(value = "status", required = false) ShopStatusEnum shopStatusEnum,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc
     ) {
-        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
+        Set<String> allowedSortFields = Set.of("name", "createdAt", "updatedAt");
+        sortBy = allowedSortFields.contains(sortBy) ? sortBy : "createdAt";
+
+        Pageable pageable = PageRequest.of(page - 1, size, isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
         Page<ShopDetailResponse> pageResult = shopServiceV1.getShopsByStatus(shopStatusEnum, pageable)
                 .map(ShopDetailResponse::from);
-        return ApiResponse.ok(PageResponseDto.fromPage(pageResult));
+
+        return ApiResponse.ok(PageResponseDto.fromPage(pageResult, sortBy, isAsc));
     }
 
     /**
@@ -188,10 +196,10 @@ public class ShopControllerV1 {
             @RequestParam(value = "categoryName", required = false) String categoryName,
             @RequestParam(value = "serviceAreaName", required = false) String serviceAreaName,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc
     ) {
-        Pageable pageable = PageableUtils.createDefaultPageable(page, size);
-
         UUID categoryId = null;
         if (categoryName != null) {
             categoryId = categoryServiceV1.getCategoryIdByName(categoryName);
@@ -202,10 +210,9 @@ public class ShopControllerV1 {
             areaPolygon = serviceAreaServiceV1.getServiceAreaPolygonByName(serviceAreaName);
         }
 
-        Page<ShopEntity> shopPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, pageable);
-        Page<ShopDetailForUserResponse> dtoPage = shopPage.map(ShopDetailForUserResponse::from);
+        Page<ShopDetailForUserResponse> dtoPage = shopServiceV1.searchShops(name, categoryId, areaPolygon, page, size, sortBy, isAsc);
 
-        return ApiResponse.ok(PageResponseDto.fromPage(dtoPage));
+        return ApiResponse.ok(PageResponseDto.fromPage(dtoPage, sortBy, isAsc));
     }
 }
 
