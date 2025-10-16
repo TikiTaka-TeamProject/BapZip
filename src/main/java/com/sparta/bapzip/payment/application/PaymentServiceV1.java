@@ -41,24 +41,20 @@ public class PaymentServiceV1 {
     /**
      * PaymentEntity 생성
      *
-     * @param orderId 주문자의 카드 정보가 담긴 PaymentCreateRequest
+     * @param requestDto 주문자의 카드 정보가 담긴 PaymentCreateRequest
      * @return toss 결제 승인 응답이 담긴 PaymentResponseDto
      * @throws PaymentException ORDER_NOT_FOUND
      */
-    private PaymentCreateRequest createRequestWithCard(UUID orderId) {
-        PaymentCreateRequest requestDto = new PaymentCreateRequest();
-        requestDto.setOrderId(orderId);
+    private void testCardInfo(PaymentCreateRequest requestDto) {
         requestDto.setCardNumber("4111111111111111");
         requestDto.setCardExpirationYear("28");
         requestDto.setCardExpirationMonth("12");
         requestDto.setCardPassword("01");
         requestDto.setCustomerIdentityNumber("860824");
-        return requestDto;
     }
     @Transactional
-    public PaymentResponseDto createPayment(UUID orderId) {
-        // orderId, 주문 가게, 주문 메뉴, 총 금액 필요
-        OrderEntity order = orderRepository.findById(orderId).orElseThrow(() -> new PaymentException(ErrorCode.ORDER_NOT_FOUND));
+    public PaymentResponseDto createPayment(PaymentCreateRequest paymentCreateRequest) {
+        OrderEntity order = orderRepository.findById(paymentCreateRequest.getOrderId()).orElseThrow(() -> new PaymentException(ErrorCode.ORDER_NOT_FOUND));
         PaymentEntity payment = PaymentEntity.builder()
                 .order(order)
                 .totalAmount(order.getTotalPrice())
@@ -76,12 +72,12 @@ public class PaymentServiceV1 {
                 sb.append(" 외 "+(order.getOrderMenuList().size()-1)+"건");
             }
         }
-        PaymentCreateRequest paymentCreateRequest =createRequestWithCard(orderId);
-
-        paymentCreateRequest.setOrderId(order.getId());
+        if(haveCardInfo(paymentCreateRequest)){
+            testCardInfo(paymentCreateRequest);
+        }
         paymentCreateRequest.setOrderName(sb.toString());
         paymentCreateRequest.setAmount(order.getTotalPrice());
-        PaymentResponseDto response = createPayment(paymentCreateRequest);
+        PaymentResponseDto response = createTossCardPayment(paymentCreateRequest);
         if (response != null && response.getPaymentKey() != null) {
             payment.updatePaymentConfirmResult(
                     response.getPaymentKey(),
@@ -96,10 +92,19 @@ public class PaymentServiceV1 {
         return response;
     }
 
+
+    private boolean haveCardInfo(PaymentCreateRequest requestDto) {
+        return requestDto.getCardNumber() != null && !requestDto.getCardNumber().isBlank()
+                && requestDto.getCardExpirationYear() != null && !requestDto.getCardExpirationYear().isBlank()
+                && requestDto.getCardExpirationMonth() != null && !requestDto.getCardExpirationMonth().isBlank()
+                && requestDto.getCardPassword() != null && !requestDto.getCardPassword().isBlank()
+                && requestDto.getCustomerIdentityNumber() != null && !requestDto.getCustomerIdentityNumber().isBlank();
+    }
+
     /**
      * Toss 결제 승인 요청
      */
-    public PaymentResponseDto createPayment(PaymentCreateRequest paymentCreateRequest) {
+    public PaymentResponseDto createTossCardPayment(PaymentCreateRequest paymentCreateRequest) {
         WebClient client = buildTossClient();
 
         JsonNode response = client.post()
@@ -139,8 +144,6 @@ public class PaymentServiceV1 {
         PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(
                 payment.getOrder().getId(),
                 payment.getPaymentKey(),
-                null,
-                null,
                 cancelReason
         );
 
