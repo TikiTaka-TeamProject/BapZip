@@ -1,6 +1,7 @@
 package com.sparta.bapzip.category.application;
 
 import com.sparta.bapzip.category.domain.entity.CategoryEntity;
+import com.sparta.bapzip.category.domain.exception.CategoryException;
 import com.sparta.bapzip.category.domain.repository.CategoryRepository;
 import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
@@ -118,7 +119,7 @@ class CategoryServiceV1Test {
 
         @Test
         @DisplayName("일반 사용자는 삭제되지 않은 활성 가게만 조회할 수 있다")
-        void getShopsByCategory_WithCustomer_ReturnsOnlyActiveShops() {
+        void getShopsByCategoryWithCustomerReturnsOnlyActiveShops() {
             // Given
             List<ShopEntity> activeShops = List.of(activeShop);
             Pageable expectedPageable = PageRequest.of(PAGE - 1, SIZE, Sort.by(Sort.Direction.DESC, SORT_BY));
@@ -144,7 +145,7 @@ class CategoryServiceV1Test {
 
         @Test
         @DisplayName("관리자는 삭제된 가게를 포함한 모든 가게를 조회할 수 있다")
-        void getAllShopsByCategory_WithManager_ReturnsAllShops() {
+        void getAllShopsByCategoryWithManagerReturnsAllShops() {
             // Given
             List<ShopEntity> allShops = Arrays.asList(activeShop, deletedShop);
             Pageable expectedPageable = PageRequest.of(PAGE - 1, SIZE, Sort.by(Sort.Direction.DESC, SORT_BY));
@@ -172,27 +173,28 @@ class CategoryServiceV1Test {
 
         @Test
         @DisplayName("조회 결과가 없을 경우 예외가 발생한다")
-        void getShopsByCategory_WithNoResults_ThrowsException() {
+        void getShopsByCategoryWithNoResultsThrowsException() {
             // Given
             Page<ShopEntity> emptyPage = Page.empty();
-
             when(shopRepository.findByCategoryIdAndIsDeletedFalse(eq(CATEGORY_ID), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            // When & Then
-            assertThatThrownBy(() -> categoryServiceV1.getShopsByCategory(
+            // When
+            Throwable thrown = catchThrowable(() -> categoryServiceV1.getShopsByCategory(
                     CATEGORY_ID, PAGE, SIZE, SORT_BY, IS_ASC
-            ))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("카테고리에 해당하는 가게가 존재하지 않습니다.");
+            ));
 
-            verify(shopRepository, times(1))
-                    .findByCategoryIdAndIsDeletedFalse(eq(CATEGORY_ID), any(Pageable.class));
+            // Then
+            assertThat(thrown)
+                    .isInstanceOf(CategoryException.class);
+
+            verify(shopRepository).findByCategoryIdAndIsDeletedFalse(eq(CATEGORY_ID), any(Pageable.class));
+            verifyNoMoreInteractions(shopRepository);
         }
 
         @Test
         @DisplayName("정렬 조건이 올바르게 적용된다 - 오름차순")
-        void getShopsByCategory_WithAscendingSort_AppliesCorrectSort() {
+        void getShopsByCategoryWithAscendingSortAppliesCorrectSort() {
             // Given
             List<ShopEntity> shops = List.of(activeShop);
             Pageable expectedPageable = PageRequest.of(PAGE - 1, SIZE, Sort.by(Sort.Direction.ASC, SORT_BY));
@@ -218,7 +220,7 @@ class CategoryServiceV1Test {
 
         @Test
         @DisplayName("페이징이 올바르게 적용된다")
-        void getShopsByCategory_WithPagination_ReturnsCorrectPage() {
+        void getShopsByCategoryWithPaginationReturnsCorrectPage() {
             // Given
             int requestedPage = 2;
             int requestedSize = 5;
@@ -242,7 +244,7 @@ class CategoryServiceV1Test {
 
         @Test
         @DisplayName("null 카테고리 ID로 조회 시 예외가 발생한다")
-        void getShopsByCategory_WithNullCategoryId_ThrowsException() {
+        void getShopsByCategoryWithNullCategoryIdThrowsException() {
             // When & Then
             assertThatThrownBy(() -> categoryServiceV1.getShopsByCategory(
                     null, PAGE, SIZE, SORT_BY, IS_ASC
@@ -251,8 +253,8 @@ class CategoryServiceV1Test {
         }
 
         @Test
-        @DisplayName("특정 조건의 가게만 조회 - 빌더 활용 예시")
-        void getShopsByCategory_WithCustomConditions_UsingBuilder() {
+        @DisplayName("특정 조건의 가게만 조회")
+        void getShopsByCategoryWithCustomConditionsUsingBuilder() {
             // Given - 빌더를 사용해 특정 조건의 가게 생성
             ShopEntity customShop = ShopEntityBuilder.builder()
                     .id(UUID.randomUUID())
