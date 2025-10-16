@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+payment:
+  toss:
+    client:
+      key: ${PAYMENT_CLIENT_KEY}
+    secret:
+      key: ${PAYMENT_SECRET_KEY}
+    success-url: https://yourdomain.com/payments/success
+    fail-url: https://yourdomain.com/payments/fail
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+
+google:
+  api:
+    key: ${GOOGLEAI_API_KEY}
