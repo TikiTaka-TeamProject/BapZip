@@ -2,6 +2,7 @@ package com.sparta.bapzip.shop.domain.repository;
 
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,12 +15,16 @@ public interface ShopRepository {
     boolean existsByOwnerId(Long ownerId);
     // 가게 ID로 조회
     Optional<ShopEntity> findById(UUID shopId);
-    List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum);
+    Page<ShopEntity> findByStatus(ShopStatusEnum status, Pageable pageable);
 
     // 카테고리 ID로 조회
     Page<ShopEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId, Pageable pageable);
-    List<ShopEntity> findAll();
+    Page<ShopEntity> findAll(Pageable pageable);
     Optional<ShopEntity> findByIdAndIsDeletedFalse(UUID shopId);
 
     Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable);
+
+    Page<ShopEntity> findShopsByFilters(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable);
+
+    Page<ShopEntity> findShopsWithoutPolygon(String name, UUID categoryId, Pageable pageable);
 }

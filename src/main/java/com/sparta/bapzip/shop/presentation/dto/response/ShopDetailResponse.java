@@ -17,7 +17,6 @@ public class ShopDetailResponse {
     private ShopStatusEnum status;
     private String ownerName;
     private String categoryName;
-    private String serviceAreaName;
 
     public static ShopDetailResponse from(ShopEntity shop) {
         return ShopDetailResponse.builder()
@@ -27,7 +26,6 @@ public class ShopDetailResponse {
                 .status(shop.getStatus())
                 .ownerName(shop.getOwner().getName())
                 .categoryName(shop.getCategory().getName())
-                .serviceAreaName(shop.getServiceArea().getName())
                 .build();
     }
 }

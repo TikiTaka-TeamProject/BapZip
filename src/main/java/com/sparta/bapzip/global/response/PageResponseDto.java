@@ -33,4 +33,17 @@ public record PageResponseDto<T>(
                 page.getContent()
         );
     }
+
+    // 기본 fromPage (기본 정렬: createdAt DESC)
+    public static <T> PageResponseDto<T> fromPage(Page<T> page) {
+        return new PageResponseDto<>(
+                page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                "created_at",
+                false,
+                page.getContent()
+        );
+    }
 }
