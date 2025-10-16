@@ -79,14 +79,16 @@
 </details>
 
 <details>
+
 <summary><strong>컨벤션</strong></summary>
+
 
 - **Branch**
     - **전략**
 
-      | Branch Type | Description                                               |
-            |-------------|-----------------------------------------------------------|
-      | `dev`       | 주요 개발 branch, `main`으로 merge 전 거치는 branch                 |
+      | Branch Type | Description |
+      |-------------|-------------|
+      | `dev`       | 주요 개발 branch, `main`으로 merge 전 거치는 branch |
       | `feature`   | 각자 개발할 branch, 기능 단위로 생성하기, 할 일 issue 등록 후 branch 생성 및 작업 |
 
     - **네이밍**
