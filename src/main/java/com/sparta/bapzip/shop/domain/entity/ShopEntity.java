@@ -66,11 +66,6 @@ public class ShopEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity category;
 
-    /** 가게 서비스 지역 */
-    @JoinColumn(name = "service_area_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ServiceAreaEntity serviceArea;
-
     // ===========================
     // Update Methods (Domain Logic)
     // ===========================
@@ -112,15 +107,6 @@ public class ShopEntity extends BaseEntity {
     }
 
     /**
-     * 가게 서비스 지역 수정
-     *
-     * @param serviceArea 새로운 서비스 지역 엔티티
-     */
-    public void updateServiceArea(ServiceAreaEntity serviceArea) {
-        this.serviceArea = serviceArea;
-    }
-
-    /**
      * 가게 상태 업데이트
      *
      * @param status 새로운 상태
@@ -144,7 +130,6 @@ public class ShopEntity extends BaseEntity {
         markDeleted(userId);
     }
 
-
     // ===========================
     // Factory Method
     // ===========================
@@ -158,7 +143,6 @@ public class ShopEntity extends BaseEntity {
      * @param address       가게 주소
      * @param owner         소유자 UserEntity
      * @param category      카테고리 CategoryEntity
-     * @param serviceArea   서비스 지역 ServiceAreaEntity
      * @param location      위치 좌표(Point)
      * @return ShopEntity
      */
@@ -167,7 +151,6 @@ public class ShopEntity extends BaseEntity {
             String address,
             UserEntity owner,
             CategoryEntity category,
-            ServiceAreaEntity serviceArea,
             Point location
     ) {
         return ShopEntity.builder()
@@ -175,7 +158,6 @@ public class ShopEntity extends BaseEntity {
                 .address(address)
                 .owner(owner)
                 .category(category)
-                .serviceArea(serviceArea)
                 .location(location)
                 .status(ShopStatusEnum.PENDING)
                 .build();

@@ -2,11 +2,13 @@ package com.sparta.bapzip.shop.application;
 
 import com.sparta.bapzip.kakaolocal.application.KakaoLocalServiceV1;
 import com.sparta.bapzip.kakaolocal.application.dto.KakaoLocalResponseDto;
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.application.exception.*;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import com.sparta.bapzip.shop.application.dto.request.ShopCreationRequest;
+import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailForUserResponse;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import lombok.RequiredArgsConstructor;
 import com.sparta.bapzip.category.application.CategoryServiceV1;
@@ -14,8 +16,6 @@ import com.sparta.bapzip.category.domain.entity.CategoryEntity;
 import com.sparta.bapzip.global.exception.ErrorCode;
 import com.sparta.bapzip.global.exception.GlobalException;
 import com.sparta.bapzip.servicearea.application.ServiceAreaServiceV1;
-import com.sparta.bapzip.servicearea.domain.entity.ServiceAreaEntity;
-import com.sparta.bapzip.shop.presentation.dto.response.CreateShopResponse;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.shop.application.dto.request.ShopUpdateRequest;
 import com.sparta.bapzip.shop.presentation.dto.response.ShopDetailResponse;
@@ -23,12 +23,22 @@ import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShopServiceV1 {
@@ -43,14 +53,16 @@ public class ShopServiceV1 {
      * 신규 가게 생성
      *
      * @param request   가게 생성 정보 DTO
-     * @param ownerId   가게 소유자 ID
+     * @param user      user Entity
      * @return 생성된 가게 정보 DTO
      * @throws ShopAlreadyExistsException 이미 해당 Owner가 가게를 가지고 있는 경우
      * @throws GlobalException 좌표 범위 오류 발생 시
      */
-    public CreateShopResponse createShop(ShopCreationRequest request, Long ownerId) {
+    @Transactional
+    public ShopEntity createShop(ShopCreationRequest request, UserEntity user) {
+
         // 1. Owner 조회
-        UserEntity owner = userServiceV1.findUser(ownerId);
+        UserEntity owner = userServiceV1.findUser(user.getId());
 
         // 2. 이미 Shop을 가진 Owner인지 체크
         if (shopRepository.existsByOwnerId(owner.getId())) {
@@ -68,9 +80,6 @@ public class ShopServiceV1 {
         double latitude = Double.parseDouble(kakaoData.getLatitude());
         validateCoordinates(longitude, latitude);
 
-        // 5. Service Area 조회 (좌표 기반)
-        ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
-
         // 6. 위치(Point) 생성
         Point location = createPoint(longitude, latitude);
 
@@ -80,14 +89,10 @@ public class ShopServiceV1 {
                 request.getAddress(),
                 owner,
                 category,
-                serviceArea,
                 location
         );
 
-        // 8.저장
-        ShopEntity saved = shopRepository.save(shop);
-
-        return CreateShopResponse.from(saved);
+        return shopRepository.save(shop);
     }
 
     /**
@@ -134,7 +139,8 @@ public class ShopServiceV1 {
      * @return ShopDetailResponse 가게 상세 정보 DTO
      */
     public ShopDetailResponse getShopDetail(UUID shopId) {
-        ShopEntity shop = getShopById(shopId);
+        ShopEntity shop = shopRepository.findShopWithAvgScore(shopId)
+                .orElseThrow(() -> new ShopNotFoundException(ErrorCode.SHOP_NOT_FOUND));
 
         return ShopDetailResponse.from(shop);
     }
@@ -151,7 +157,7 @@ public class ShopServiceV1 {
 
         // 권한 체크
         if (!shop.getOwner().getId().equals(ownerId)) {
-            throw new GlobalException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
+            throw new UnauthorizedShopAccessException(ErrorCode.UNAUTHORIZED_SHOP_ACCESS);
         }
     }
 
@@ -161,17 +167,17 @@ public class ShopServiceV1 {
      * - 주소 변경 시 좌표 및 서비스 지역 자동 갱신
      *
      * @param shopId           수정할 가게 UUID
-     * @param ownerId          요청자 ID (소유자 권한 체크)
+     * @param user          요청자 ID (소유자 권한 체크)
      * @param shopUpdateRequest 수정 정보 DTO
      * @return 수정된 ShopDetailResponse
      */
     @Transactional
-    public ShopDetailResponse updateShop(UUID shopId, Long ownerId, ShopUpdateRequest shopUpdateRequest) {
+    public ShopDetailResponse updateShop(UUID shopId, UserEntity user, ShopUpdateRequest shopUpdateRequest) {
         // 1. shop 체크
         ShopEntity shop = getShopById(shopId);
 
         // 2. 권한 검증
-        validateShopOwner(shopId, ownerId);
+        validateShopOwner(shopId, user.getId());
 
         // 3. 이름 수정
         if (shopUpdateRequest.getName() != null) {
@@ -191,10 +197,6 @@ public class ShopServiceV1 {
             // Point 생성
             Point newLocation = createPoint(longitude, latitude);
             shop.updateLocation(newLocation);
-
-            // ServiceArea 자동 업데이트
-            ServiceAreaEntity serviceArea = serviceAreaServiceV1.getServiceAreaByPoint(longitude, latitude);
-            shop.updateServiceArea(serviceArea);
         }
 
         // 5. 카테고리 수정
@@ -226,8 +228,43 @@ public class ShopServiceV1 {
      *
      * @return List<ShopEntity> 승인된 가게 리스트
      */
-    public List<ShopEntity> getApprovedShops() {
-        return shopRepository.findByStatus(ShopStatusEnum.APPROVED);
+    public Page<ShopDetailForUserResponse> getApprovedShops(int page, int size, String sortBy, boolean isAsc) {
+        // 허용된 정렬 필드만 체크
+        Pageable pageable = PageRequest.of(
+                Math.max(page - 1, 0),
+                size,
+                isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortBy
+        );
+
+        // 1. 승인된 샵 조회
+        Page<ShopEntity> shops = shopRepository.findByStatus(ShopStatusEnum.APPROVED, pageable);
+
+
+        if (shops.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // 2. 승인된 샵 ID 추출
+        Set<UUID> shopIds = shops.stream()
+                .map(ShopEntity::getId)
+                .collect(Collectors.toSet());
+
+        // 3. 평균 점수 조회 후 Map으로 변환 (shopId -> avgScore)
+        Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
+                .filter(dto -> shopIds.contains(dto.getShopId()))
+                .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
+
+
+        // 4. DTO 변환
+        return shops.map(shop -> ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScoreMap.getOrDefault(shop.getId(), 0.0))
+                .build());
     }
 
     /**
@@ -236,11 +273,11 @@ public class ShopServiceV1 {
      * @param shopStatusEnum 조회할 상태 (null이면 전체 조회)
      * @return List<ShopEntity> 조회된 가게 리스트
      */
-    public List<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum) {
+    public Page<ShopEntity> getShopsByStatus(ShopStatusEnum shopStatusEnum, Pageable pageable) {
         if (shopStatusEnum == null) {
-            return shopRepository.findAll();
+            return shopRepository.findAll(pageable);
         }
-        return shopRepository.findByStatus(shopStatusEnum);
+        return shopRepository.findByStatus(shopStatusEnum, pageable);
     }
 
     /**
@@ -260,5 +297,58 @@ public class ShopServiceV1 {
         validateShopOwner(shopId, ownerId);
 
         shop.softDelete(ownerId);
+    }
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
+            "name", "createdAt", "updatedAt", "category.name"
+    );
+
+    public Page<ShopDetailForUserResponse> searchShops(
+            String name,
+            UUID categoryId,
+            Polygon areaPolygon,
+            int page,
+            int size,
+            String sortBy,
+            boolean isAsc
+    ) {
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(direction, sortBy));
+
+        // ✅ 샵 조회
+        Page<ShopEntity> shops;
+        if (areaPolygon != null) {
+            shops = shopRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
+        } else {
+            shops = shopRepository.findShops(name, categoryId, pageable);
+        }
+
+        if (shops.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        // ✅ 샵 ID 추출
+        Set<UUID> shopIds = shops.stream()
+                .map(ShopEntity::getId)
+                .collect(Collectors.toSet());
+
+        // ✅ 평균 점수 Map 조회
+        Map<UUID, Double> avgScoreMap = shopRepository.findAllWithAvgScore().stream()
+                .filter(dto -> shopIds.contains(dto.getShopId()))
+                .collect(Collectors.toMap(ShopWithAvgScoreDto::getShopId, ShopWithAvgScoreDto::getAvgScore));
+
+        // ✅ DTO 변환 후 반환
+        return shops.map(shop -> ShopDetailForUserResponse.builder()
+                .shopId(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .ownerName(shop.getOwner().getName())
+                .categoryName(shop.getCategory().getName())
+                .avgScore(avgScoreMap.getOrDefault(shop.getId(), 0.0))
+                .build());
     }
 }

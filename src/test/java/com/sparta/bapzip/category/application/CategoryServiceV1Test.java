@@ -95,7 +95,6 @@ class CategoryServiceV1Test {
                 .name("활성 가게")
                 .status(ShopStatusEnum.APPROVED)
                 .category(category)
-                .serviceArea(serviceArea)
                 .owner(adminUser)
                 .createdBy(adminUser.getId())
                 .build();
@@ -105,7 +104,6 @@ class CategoryServiceV1Test {
                 .name("삭제된 가게")
                 .status(ShopStatusEnum.PENDING)
                 .category(category)
-                .serviceArea(serviceArea)
                 .owner(adminUser)
                 .createdBy(adminUser.getId())
                 .isDeleted(true)
@@ -261,7 +259,6 @@ class CategoryServiceV1Test {
                     .name("커스텀 가게")
                     .status(ShopStatusEnum.APPROVED)
                     .category(category)
-                    .serviceArea(serviceArea)
                     .owner(customerUser)
                     .createdBy(customerUser.getId())
                     .build();
@@ -474,7 +471,6 @@ class CategoryServiceV1Test {
                     .name(name)
                     .status(status)
                     .category(category)
-                    .serviceArea(serviceArea)
                     .owner(owner)
                     .build();
             entity.markCreated(createdBy);

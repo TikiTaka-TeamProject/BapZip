@@ -75,6 +75,10 @@ public class SecurityConfig {
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/users").hasAnyRole("MASTER", "MANAGER")
                         .requestMatchers("/v1/categories/admin/**").hasAnyRole("MASTER", "MANAGER")
+                        .requestMatchers(HttpMethod.POST,"/v1/shops").hasAnyRole("OWNER")
+                        .requestMatchers(HttpMethod.GET,"/v1/shops/status").hasAnyRole("MASTER", "MANAGER")
+                        .requestMatchers(HttpMethod.PATCH,"/v1/shops/**").hasAnyRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE,"/v1/shops/**").hasAnyRole("OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/v1/users/{userId}/role").hasAnyRole("MASTER")
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );

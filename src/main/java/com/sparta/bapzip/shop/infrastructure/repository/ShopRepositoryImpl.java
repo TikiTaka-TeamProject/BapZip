@@ -1,10 +1,11 @@
 package com.sparta.bapzip.shop.infrastructure.repository;
 
+import com.sparta.bapzip.shop.application.dto.ShopWithAvgScoreDto;
 import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.enums.ShopStatusEnum;
-import com.sparta.bapzip.shop.domain.entity.ShopEntity;
 import com.sparta.bapzip.shop.domain.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -35,13 +36,13 @@ public class ShopRepositoryImpl implements ShopRepository {
     }
 
     @Override
-    public List<ShopEntity> findByStatus(ShopStatusEnum shopStatusEnum) {
-        return shopJpaRepository.findByStatus(shopStatusEnum);
+    public Page<ShopEntity> findByStatus(ShopStatusEnum status, Pageable pageable) {
+        return shopJpaRepository.findByStatus(status, pageable);
     }
 
     @Override
-    public List<ShopEntity> findAll() {
-        return shopJpaRepository.findAll();
+    public Page<ShopEntity> findAll(Pageable pageable) {
+        return shopJpaRepository.findAll(pageable);
     }
 
     @Override
@@ -57,4 +58,35 @@ public class ShopRepositoryImpl implements ShopRepository {
     public Page<ShopEntity> findByCategoryId(UUID categoryId, Pageable pageable) {
         return shopJpaRepository.findByCategoryId(categoryId, pageable);
     }
+
+    @Override
+    public Page<ShopEntity> findShopsByFilters(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable) {
+        return shopJpaRepository.findShopsByFilters(name, categoryId, areaPolygon, pageable);
+    }
+
+    @Override
+    public Page<ShopEntity> findShopsWithoutPolygon(String name, UUID categoryId, Pageable pageable) {
+        return shopJpaRepository.findShopsWithoutPolygon(name, categoryId, pageable);
+    }
+
+    @Override
+    public Optional<ShopEntity> findShopWithAvgScore(UUID shopId) {
+        return shopJpaRepository.findShopWithAvgScore(shopId);
+    }
+
+    @Override
+    public Page<ShopEntity> findShopsByPolygon(String name, UUID categoryId, Polygon areaPolygon, Pageable pageable) {
+        return shopJpaRepository.findShopsByPolygon(name, categoryId, areaPolygon, pageable);
+    }
+
+    @Override
+    public Page<ShopEntity> findShops(String name, UUID categoryId, Pageable pageable) {
+        return shopJpaRepository.findShops(name, categoryId, pageable);
+    }
+
+    @Override
+    public List<ShopWithAvgScoreDto> findAllWithAvgScore(){
+        return shopJpaRepository.findAllWithAvgScore();
+    }
+
 }
