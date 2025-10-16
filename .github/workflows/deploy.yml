@@ -126,4 +126,4 @@ jobs:
             echo "이전 이미지 정리"
             docker image prune -af
             
-            echo "배포 성공"
+            echo "배포 완료"
