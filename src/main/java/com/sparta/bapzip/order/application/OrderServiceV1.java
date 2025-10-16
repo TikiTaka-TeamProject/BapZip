@@ -66,7 +66,7 @@ public class OrderServiceV1 {
         orderMenuList.forEach(savedOrder::addOrderMenu);
 
         orderMenuService.saveAll(orderMenuList);
-        paymentServiceV1.createPayment(order.getId());
+        paymentServiceV1.createPayment(savedOrder.getId());
         return OrderCreationDto.from(savedOrder, orderMenuList, shop, user.getId());
     }
 

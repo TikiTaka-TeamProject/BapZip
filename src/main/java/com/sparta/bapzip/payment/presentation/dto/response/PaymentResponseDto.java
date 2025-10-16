@@ -3,9 +3,12 @@ package com.sparta.bapzip.payment.presentation.dto.response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Builder
 @ToString
 public class PaymentResponseDto {
 
