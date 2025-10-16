@@ -1,13 +1,13 @@
 package com.sparta.bapzip.menu.presentation.dto.response;
 
+import com.sparta.bapzip.menu.domain.entity.MenuEntity;
 import com.sparta.bapzip.menu.domain.enums.MenuStatus;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * 특정 가게 별 메뉴 목록 DTO -> 사용자 관점 설계
- * 가게, 메뉴 이름, 설명, 가격, 상태
+ * 특정 가게 별 메뉴 조회
  */
 public record MenuListByShopResponse(
         UUID shopId,
@@ -21,5 +21,15 @@ public record MenuListByShopResponse(
             String content,
             int price,
             MenuStatus status
-    ) {}
+    ) {
+        public static MenuItemDto from(MenuEntity menu) {
+            return new MenuItemDto(
+                    menu.getId(),
+                    menu.getName(),
+                    menu.getContent(),
+                    menu.getPrice(),
+                    menu.getStatus()
+            );
+        }
+    }
 }

@@ -18,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -70,22 +69,28 @@ public class MenuControllerV1 {
 
     /**
      * 가게 별 메뉴 조회
+     * v1/menus?shopId=
      */
-    @GetMapping("/shops/{shopId}")
-    public ResponseEntity<ApiResponse<MenuListByShopResponse>> getMenusByShop(@PathVariable UUID shopId){
+    @GetMapping
+    public ResponseEntity<ApiResponse<MenuListByShopResponse>> getMenusByShop(@RequestParam UUID shopId){
         MenuListByShopResponse menuListByShop = menuService.getMenusByShop(shopId);
         return ApiResponse.ok(menuListByShop);
     }
 
     /**
      * 메뉴 전체 조회 - MANAGER, MASTER (관리자용)
-     * todo: Security Config @EnableMethodSecurity(prePostEnabled = true) 추가 시 활성화 => PreAuthorize
+     * soft delete 처리 된 메뉴까지 조회 가능
      */
     @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<MenuAdminResponse>>> getAllMenus(){
-        List<MenuAdminResponse> menuList = menuService.getAllMenus();
-        return ApiResponse.ok(menuList);
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<PageResponseDto<MenuAdminResponse>>> getAllMenus(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
+
+        Page<MenuAdminResponse> menuPage = menuService.getAllMenus(page, size, sortBy, isAsc);
+        return ApiResponse.ok(PageResponseDto.fromPage(menuPage, sortBy, isAsc));
     }
 
     /**
@@ -97,7 +102,6 @@ public class MenuControllerV1 {
                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Long ownerId = userDetails.getUser().getId();
-        log.info("updateMenu MenuController - 사용자 ID: {}, 이름 {}", ownerId, userDetails.getUser().getName());
         MenuDetailResponse menuDetailResponse = menuService.updateMenu(menuId, request, ownerId);
         return ApiResponse.ok(menuDetailResponse);
     }

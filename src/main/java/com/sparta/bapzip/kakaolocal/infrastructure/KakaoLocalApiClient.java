@@ -19,7 +19,7 @@ public class KakaoLocalApiClient implements KakaoLocalCallable {
     private final String API_URL = "https://dapi.kakao.com/v2/local/search/address.json?query=";
     private final String API_URL_COORD = "https://dapi.kakao.com/v2/local/geo/coord2address.json?";
 
-    @Value("${KAKAO_REST_API_KEY}")
+    @Value("${kakao.rest.api.key}")
     private String apiKey;
 
     public JsonObject getDocuments(String query){

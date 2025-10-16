@@ -1,37 +1,20 @@
 spring:
   profiles:
-    active: db
+    active: dev
+
+  config:
+    import:
+      - optional:classpath:application-${spring.profiles.active}.yml
+
   web:
     resources:
       add-mappings: false
 
-
-  datasource:
-    url: ${DB_URL}
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
   jpa:
-    hibernate:
-      #      ddl-auto: create-drop #테스트용
-      ddl-auto: update #테스트용
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-payment:
-  toss:
-    client:
-      key: ${PAYMENT_CLIENT_KEY}
-    secret:
-      key: ${PAYMENT_SECRET_KEY}
-    success-url: http://localhost:${server.port}/payments/success
-    fail-url: http://localhost:${server.port}/payments/fail
-
-jwt:
-  secret:
-    key: c3BhcnRhX3Rpa2l0YWthX2JhcHppcF8xMjM0NTY3ODk=
 
 springdoc:
   swagger-ui:
