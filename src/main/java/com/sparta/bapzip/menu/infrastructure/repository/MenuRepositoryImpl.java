@@ -52,7 +52,7 @@ public class MenuRepositoryImpl implements MenuRepository {
      * 메뉴 전체 조회
      */
     @Override
-    public List<MenuEntity> findAll() {
-        return menuJpaRepository.findAll();
+    public Page<MenuEntity> findAll(Pageable pageable) {
+        return menuJpaRepository.findAll(pageable);
     }
 }
