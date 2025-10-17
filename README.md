@@ -51,7 +51,7 @@
 | 박용재  |  리더  | INTP |       | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
 | 권용은  |  멤버  | ENTP |       |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 | 권재원  |  멤버  | ISTP |       |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP |       |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |메뉴 API |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
 | 오상경  |  멤버  | ISTJ |       |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
 | 정인호  |  멤버  | ISTP |       |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
@@ -75,21 +75,21 @@
 
 <details>
 <summary><strong>이슈 관리</strong></summary>
-<img src="https://github.com/user-attachments/assets/8ff5e58f-5673-4d93-afde-f9e98831a6b4" />
-
-
+<img width="1336" height="913" alt="issue" src="https://github.com/user-attachments/assets/625277bb-d1ae-4a6e-9c14-7efa9d10521a" />
 </details>
 
 <details>
+
 <summary><strong>컨벤션</strong></summary>
+
 
 - **Branch**
     - **전략**
 
       | Branch Type | Description |
-            | --- | --- |
-      | `dev` | 주요 개발 branch, `main`으로 merge 전 거치는 branch |
-      | `feature` | 각자 개발할 branch, 기능 단위로 생성하기, 할 일 issue 등록 후 branch 생성 및 작업 |
+      |-------------|-------------|
+      | `dev`       | 주요 개발 branch, `main`으로 merge 전 거치는 branch |
+      | `feature`   | 각자 개발할 branch, 기능 단위로 생성하기, 할 일 issue 등록 후 branch 생성 및 작업 |
 
     - **네이밍**
         - `{header}/#{issue number}`
@@ -137,15 +137,18 @@
 
     - **Template**
       ```bash
+      📒 Issue Number
+      <!-- 작업한 이슈 번호를 명시해주세요 -->
+      
       📒 Description
-      <!-- 진행할 작업을 설명해주세요 -->
+      <!-- 작업 내용에 대한 설명을 적어주세요 -->
       
-      📒 To-do
-      <!-- 작업을 수행하기 위해 해야할 태스크를 작성해주세요 -->
-      [ ] todo1
+      📒 Test Result
+      <!-- local에서 postman으로 요청한 결과를 첨부합니다 -->
       
-      📒 ETC
-      <!-- 특이사항 및 예정 개발 일정을 작성해주세요 -->
+      📒 To Reviewer
+      <!-- 리뷰 받고 싶은 포인트를 작성합니다 -->
+      
       ```
 </details>
 
