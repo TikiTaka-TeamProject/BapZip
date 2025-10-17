@@ -172,15 +172,18 @@ class UserControllerV1Test {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value(true))
                     .andExpect(jsonPath("$.code").value(200))
-                    .andExpect(jsonPath("$.data.content[0].id").value(1))
-                    .andExpect(jsonPath("$.data.content[0].email").value("user1@naver.com"))
-                    .andExpect(jsonPath("$.data.content[0].name").value("홍길동1"))
-                    .andExpect(jsonPath("$.data.content[0].role").value("CUSTOMER"))
-                    .andExpect(jsonPath("$.data.content[1].id").value(2))
-                    .andExpect(jsonPath("$.data.content[1].email").value("user2@naver.com"))
-                    .andExpect(jsonPath("$.data.content[1].name").value("홍길동2"))
-                    .andExpect(jsonPath("$.data.content[1].role").value("CUSTOMER"))
-                    .andExpect(jsonPath("$.data.totalElements").value(2));
+                    .andExpect(jsonPath("$.data.items[0].id").value(1))
+                    .andExpect(jsonPath("$.data.items[0].email").value("user1@naver.com"))
+                    .andExpect(jsonPath("$.data.items[0].name").value("홍길동1"))
+                    .andExpect(jsonPath("$.data.items[0].role").value("CUSTOMER"))
+                    .andExpect(jsonPath("$.data.items[1].id").value(2))
+                    .andExpect(jsonPath("$.data.items[1].email").value("user2@naver.com"))
+                    .andExpect(jsonPath("$.data.items[1].name").value("홍길동2"))
+                    .andExpect(jsonPath("$.data.items[1].role").value("CUSTOMER"))
+                    .andExpect(jsonPath("$.data.totalElements").value(2))
+                    .andExpect(jsonPath("$.data.currentPage").value(1))
+                    .andExpect(jsonPath("$.data.pageSize").value(2))
+                    .andExpect(jsonPath("$.data.sortBy").value("created_at"));
         }
 
         @Test
@@ -199,8 +202,10 @@ class UserControllerV1Test {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value(true))
                     .andExpect(jsonPath("$.code").value(200))
-                    .andExpect(jsonPath("$.data.content").isEmpty())
-                    .andExpect(jsonPath("$.data.totalElements").value(0));
+                    .andExpect(jsonPath("$.data.items").isEmpty())
+                    .andExpect(jsonPath("$.data.totalElements").value(0))
+                    .andExpect(jsonPath("$.data.currentPage").value(1))
+                    .andExpect(jsonPath("$.data.pageSize").value(0));
         }
     }
 
