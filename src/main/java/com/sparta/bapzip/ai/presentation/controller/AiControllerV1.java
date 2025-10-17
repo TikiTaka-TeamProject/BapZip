@@ -42,6 +42,7 @@ public class AiControllerV1 {
         return ApiResponse.ok(PageResponseDto.fromPage(page,pageable.getSort().toString(),isAsc));
     }
 
+    @Operation(summary = "Ai 응답 생성", description = "Ai 응답 생성 메서드 입니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<String>> getResponse(
             @RequestParam(value = "prompt") String prompt,
