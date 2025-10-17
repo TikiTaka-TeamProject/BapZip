@@ -46,14 +46,14 @@
 
 감정보단 논리로 움직이는 6인의 T키타카 조입니다.
 
-| name | role | mbti |    담당 파트     |                                                                       Github                                                                        |
-|:----:|:----:|:----:|:------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 박용재  |  리더  | INTP |              | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |              |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-| 권재원  |  멤버  | ISTP |              |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP |    메뉴 API    |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 오상경  |  멤버  | ISTJ | 결제, 카테고리 API |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
-| 정인호  |  멤버  | ISTP |    유저 API    |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| name | role | mbti |                담당 파트                 |                                                                       Github                                                                        |
+|:----:|:----:|:----:|:------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 박용재  |  리더  | INTP | Ai API, Kakao Local 연동, Google Ai 연동 | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
+| 권용은  |  멤버  | ENTP |                                      |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권재원  |  멤버  | ISTP |                                      |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |                메뉴 API                |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 오상경  |  멤버  | ISTJ |             결제, 카테고리 API             |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
+| 정인호  |  멤버  | ISTP |                유저 API                |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
 <br>
 
@@ -293,10 +293,24 @@
     * 삭제 시 deletedAt, deletedBy 기록
     * 이미 삭제된 카테고리를 다시 삭제하려 할 경우 예외 발생
 
-### **✨ 주소**
+### **✨ 서비스 지역**
+* 서비스 지역 생성
+  * 서비스 지역 이름과 POLYGON geometry로 서비스 지역 data 생성
+    * POLYGON geometry 로 특정 geometry가 속해있는지 판별하여 서비스 활성화 상태 결정
 
 ### **✨ AI**
-
+* Ai-log 단건 조회
+  * 특정 Ai-log Id 로 상세정보 조회
+  * 조회 정보
+    * ID
+    * 유저 ID
+    * 메뉴 ID
+    * 질문한 내용
+    * 답변 내용
+    * 생성일
+* Ai-log 전체 조회(로그인 유저)
+  * 로그인한 유저의 Ai-log 전체 조회
+  * 조회 정보는 단건 조회 정보의 list
 
 
 <br>
