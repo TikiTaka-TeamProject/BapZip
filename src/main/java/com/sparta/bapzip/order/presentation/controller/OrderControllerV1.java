@@ -1,6 +1,7 @@
 package com.sparta.bapzip.order.presentation.controller;
 
 import com.sparta.bapzip.global.response.ApiResponse;
+import com.sparta.bapzip.global.response.PageResponseDto;
 import com.sparta.bapzip.order.application.OrderServiceV1;
 import com.sparta.bapzip.order.application.dto.request.CreateOrderRequest;
 import com.sparta.bapzip.order.presentation.dto.response.OrderDetailResponse;
@@ -30,12 +31,12 @@ public class OrderControllerV1 {
 
     @Operation(summary = "사용자 주문 전체 조회", description = "특정 사용자의 모든 주문 내역을 페이징하여 조회합니다.")
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<OrderResponse>>> getAllOrders(
+    public ResponseEntity<ApiResponse<PageResponseDto<OrderResponse>>> getAllOrders(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable) {
         Page<OrderResponse> orders = orderServiceV1.getOrdersByUser(userDetails.getUser(), pageable)
                 .map(OrderResponse::from);
-        return ApiResponse.ok(orders);
+        return ApiResponse.ok(PageResponseDto.fromPage(orders));
     }
 
     @Operation(summary = "주문 상세 조회", description = "특정 주문의 상세 내역을 조회합니다.")
@@ -50,13 +51,13 @@ public class OrderControllerV1 {
 
     @Operation(summary = "가게별 주문 조회", description = "특정 가게의 모든 주문 내역을 페이징하여 조회합니다.")
     @GetMapping(params = "shopId")
-    public ResponseEntity<ApiResponse<Page<ShopOrderResponse>>> getOrderByShopId(
+    public ResponseEntity<ApiResponse<PageResponseDto<ShopOrderResponse>>> getOrderByShopId(
             @RequestParam UUID shopId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable) {
         Page<ShopOrderResponse> shopOrders = orderServiceV1.getOrderByShopId(shopId, userDetails.getUser(), pageable)
                 .map(ShopOrderResponse::from);
-        return ApiResponse.ok(shopOrders);
+        return ApiResponse.ok(PageResponseDto.fromPage(shopOrders));
     }
 
     @Operation(summary = "주문 생성", description = "새로운 주문을 생성합니다.")
