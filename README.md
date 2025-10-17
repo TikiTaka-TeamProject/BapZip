@@ -6,7 +6,7 @@
 - [1. 프로젝트 개요](#1-프로젝트-개요)
 - [2. 프로젝트 관리](#2-프로젝트-관리)
 - [3. 프로젝트 구상도](#3-프로젝트-구상도)
-- [4. 기능 구현](#4-기능-구현)
+- [4. 구현 기능](#4-구현-기능)
 - [5. 기술 문서](#5-기술-문서)
 
 <br>
@@ -46,15 +46,14 @@
 
 감정보단 논리로 움직이는 6인의 T키타카 조입니다.
 
-| name | role | mbti |                담당 파트                 |                                                                       Github                                                                        |
-|:----:|:----:|:----:|:------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 박용재  |  리더  | INTP | Ai API, Kakao Local 연동, Google Ai 연동 | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |            가게, 리뷰 API                |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-| 권재원  |  멤버  | ISTP |                                      |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP |                메뉴 API                |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 오상경  |  멤버  | ISTJ |             결제, 카테고리 API             |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
-| 정인호  |  멤버  | ISTP |                유저 API                |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-
+| name | role | mbti | 담당 파트 |                                                                       Github                                                                        |
+|:----:|:----:|:----:|:-----:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 박용재  |  리더  | INTP |Ai API, Kakao Local 연동, Google Ai 연동  | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
+| 권용은  |  멤버  | ENTP |가게, 리뷰 API |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권재원  |  멤버  | ISTP |주문API, CI/CD |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |메뉴 API |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 오상경  |  멤버  | ISTJ |결제, 카테고리 API |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
+| 정인호  |  멤버  | ISTP |유저 API    |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
 <br>
 
@@ -87,8 +86,8 @@
 - **Branch**
     - **전략**
 
-      | Branch Type | Description |
-      |-------------|-------------|
+      | Branch Type | Description                                        |
+            |-------------|----------------------------------------------------|
       | `dev`       | 주요 개발 branch, `main`으로 merge 전 거치는 branch |
       | `feature`   | 각자 개발할 branch, 기능 단위로 생성하기, 할 일 issue 등록 후 branch 생성 및 작업 |
 
@@ -112,7 +111,7 @@
       - style: 코드가 아닌 스타일 변경을 하는 경우
       - init: Initial commit을 하는 경우
       - refactor: 로직은 변경 없는 클린 코드를 위한 코드 수정
-      
+
       ex) feat: 게시글 목록 조회 API 구현
     ```
 
@@ -168,240 +167,83 @@
 
 
 
-## 4. 기능 구현
+## 4. 구현 기능
 
 ### **✨ 유저**
-- 회원가입
-  - 회원 정보를 토대로 회원가입을 할 수 있음
-  - MANAGER와 MASTER로 회원가입은 불가
-  - 이메일 중복 해서 가입 불가
-- 로그인
-  - 이메일과 비밀번호를 이용한 로그인 기능
-  - 로그인 성공 시 JWT 토큰 발급
-  - 로그인 실패 시 401 Unauthorized 반환
-- 전체 유저 조회
-  - 회원 전체 목록을 조회할 수 있음
-  - 페이지네이션 적용(page, size, sortBy, isAsc 지원)
-  - MANAGER와 MASTER 권한만 접근 가능
-- 단건 유저 조회
-  - 유저 ID를 기반으로 단일 회원 정보 조회
-  - 자기 자신의 정보는 누구나 확인 가능
-  - 다른 회원 정보를 보려면 MANAGER와 MASTER 권한 필요
-- 회원 정보 수정
-  - 회원 본인만 수정 가능
-  - 이름 및 비밀번호 변경 가능
-  - 기존 비밀번호 확인 필요
-- 회원 삭제
-  - 회원 본인만 삭제 가능
-  - 기존 비밀번호 확인 필요
-  - soft delete 방식으로 처리
-- 유저 권한 변경
-  - MASTER 권한만 실행 가능
-  - 다른 유저의 권한을 CUSTOMER, OWNER, MANAGER로 변경 가능
-  - MASTER로는 변경 불가
+- 사용자는 회원 정보를 토대로 회원가입을 진행할 수 있습니다. (`CUSTOMER`)
+    - 이메일 중복 가입 불가, 관리자 권한으로는 회원가입 불가
+- 회원가입 성공 시 이메일, 비밀번호를 이용해 로그인을 하면 토큰이 발급됩니다.
+- 사용자는 자신의 정보만을, 관리자는 전체 회원을 조회할 수 있습니다.
+- 사용자는 자신의 정보를 관리할 수 있습니다.
+    - 이름 및 비밀번호 변경 (기존 비밀번호 체크 후 변경 가능)
+- 사용자는 회원 탈퇴를 진행할 수 있습니다.
+- 관리자(`MASTER`)는 다른 유저의 권한을 `CUSTOMER, OWNER, MANAGER`로 변경할 수 있습니다.
+
+
+### **✨ 가게**
+- 가게의 `OWNER`로 등록된 사용자는 자신의 가게의 위치 정보(Point)와 함께 가게를 등록하고 관리할 수 있습니다.
+    - 가게 정보(위치, 카테고리, 주소, 이름) 수정, 삭제(진행 중인 주문이 있는 가게는 삭제 불가)
+    - 가게 등록 후 관리자의 승인을 받으면 (`PENDING → APPROVED`) 상태로 전환이 되어 사용자에게 조회됩니다.
+- 사용자는 가게 검색을 통해 승인 상태인 가게를 가게의 평점과 함께 조회할 수 있습니다. (조회 시점 가게 좌표가 특정 서비스 지역에 포함되는 경우 검색 결과에 포함)
+- 관리자(MASTER/MANAGER)는 가게 상태값(`PENDING,APPROVED,REJECTED`)을 선택 지정해 모든 가게를 조회할 수 있습니다.
+    - 검색 시 서비스 지역을 기준으로 필터링할 수 있습니다.
+
 
 ### **✨ 메뉴**
 - 가게의 `OWNER`로 등록된 사용자는 자신의 가게의 메뉴를 관리할 수 있습니다.
-    - 메뉴 등록, 정보 수정, 상태(SOLD_OUT, AVAILABLE) 수정, 메뉴 삭제
+    - 메뉴 등록, 정보 수정, 상태(`SOLD_OUT, AVAILABLE`) 수정, 메뉴 삭제
 - 사용자는 `메뉴 이름 검색`을 통해 원하는 메뉴를 판매하고 있는 가게 정보를 함께 조회할 수 있습니다.
 - 관리자는 SOFT DELETE로 삭제 처리 된 메뉴까지 함께 조회가 가능합니다.
 
 
-### **✨ 가게**
-- 가게 정보 관리
-    * 사용자가 가게를 등록할 수 있음
-    * 가게 정보: 이름, 주소, 카테고리, 서비스 지역, 위치 정보(Point) 포함
-* 가게 상세 조회
-    * 특정 가게 ID 기준으로 상세 정보 조회 가능
-    * 조회 가능한 정보
-        * 가게 ID
-        * 가게 이름
-        * 주소
-        * 현재 상태(PENDING, APPROVED, REJECTED)
-        * 가게 소유자 이름
-        * 카테고리 이름
-        * 서비스 지역 이름
-* 가게 정보 수정
-    * Owner 권한이 있는 경우 수정 가능
-    * 수정 가능한 정보
-        * 이름
-        * 주소
-        * 카테고리
-        * 위치(Point)
-        * 서비스 지역은 좌표에 따라 자동으로 계산되며, Owner가 직접 수정 불가
-* 승인(APPROVED) 된 가게 조회
-    * Customer는 상태가 APPROVED인 가게만 조회 가능
-* 상태별 가게 조회
-    * 특정 상태에 따라 가게 목록을 조회할 수 있음
-    * 상태를 지정하지 않으면 전체 가게 목록 조회 가능
-    * 상태별 조회 가능한 값: PENDING, APPROVED, REJECTED
-    * 반환 정보:
-        * 가게 ID
-        * 가게 이름
-        * 주소
-        * 현재 상태
-        * 가게 소유자 이름
-        * 카테고리 이름
-        * 서비스 지역 이름
-* 가게 삭제 (Soft Delete)
-    * Owner 권한이 있는 경우 삭제 가능
-    * 삭제 시 isDeleted 플래그가 true로 변경되며, 데이터는 실제로 DB에서 제거되지 않음
-    * 삭제 시 deletedAt과 deletedBy가 기록됨
-    * 이미 삭제된 가게를 삭제하려고 할 경우 예외 발생
-    * 진행 중인 주문이 있는 가게는 삭제 불가
+### **✨ 주문**
+- 사용자는 자신이 장바구니에 담은 메뉴를 기반으로 주문을 진행할 수 있습니다. (주문 생성 시 `PENDING` 설정)
+- 주문 조회를 통해 정보를 조회할 수 있습니다.
+    - (주문 상태, 총 금액, 배달 주소, 주문 생성/수락/거절/조리/배달/취소 시각)
+- 특정 사용자의 주문 이력을 전체 조회할 수 있습니다.
+    - 각 주문에는 주문 상태와 가게 정보, 총 금액 등이 포함됩니다.
+- 가게의 `OWNER`는 들어온 모든 주문을 조회하고 관리할 수 있습니다.
+    - 주문 진행 상태 변경
+    -   * `PENDING → ACCEPTED` : 주문 수락
+    * `PENDING → REJECTED` : 주문 거절
+    * `ACCEPTED → COOKING` : 조리 시작
+    * `COOKING → COOK_COMPLETED` : 조리 완료
+    * `COOK_COMPLETED → DELIVERING` : 배달 시작
+    * `DELIVERING → DELIVERED` : 배달 완료
+    * `PENDING/ACCEPTED → CANCELED` : 주문 취소
+- 사용자는 배달이 시작되기 전 상태에서만 주문 취소가 가능하며, 이미 배달중이거나 배달 완료가 된 주문은 취소가 불가능합니다.
 
 
-#### **✨ 주문**
-- 주문 생성
-    * 사용자가 장바구니에 담은 메뉴를 기반으로 주문을 생성할 수 있음
-    * 주문 생성 시 포함되는 정보
-        * 주문 ID
-        * 사용자 정보
-        * 가게 정보
-        * 주문 메뉴 목록
-        * 총 금액
-        * 배달 주소
-    * 주문 생성 시 상태는 기본적으로 `PENDING(주문요청)`으로 설정됨
+### **✨ 결제**
+- 사용자는 주문 결제 시 Toss Payments PG사를 통해 결제할 수 있습니다.
+    - 결제 요청 시 주문 정보와 결제 정보를 함께 전송합니다. (성공시 `'SUCCEESS'`, 실패 시 `'FAILED'`로 결제 상태 업데이트하고 사용자에게 전달)
+- 결제 취소
+    - 사용자가 결제 취소 요청 시, Toss Payments API를 통해 결제 취소 처리를 합니다. (취소 성공 시 결제 상태를 `'CANCELED'`로 업데이트)
 
-- 주문 상세 조회
-    * 주문 ID를 기준으로 상세 정보를 조회할 수 있음
-    * 조회 가능한 정보
-        * 주문 ID
-        * 주문자 이름
-        * 가게 이름
-        * 주문 상태 (`PENDING`, `ACCEPTED`, `REJECTED`, `COOKING`, `COOK_COMPLETED`, `DELIVERING`, `DELIVERED`, `CANCELED`)
-        * 총 금액
-        * 배달 주소
-        * 주문 생성/수락/거절/조리/배달/취소 시각
-
-- 사용자 주문 목록 조회
-    * 특정 사용자의 주문 이력을 전체 조회할 수 있음
-    * 최신 주문 순으로 정렬되어 반환됨
-    * 각 주문에는 주문 상태, 가게 정보, 총 금액 등이 포함됨
-
-- 가게 주문 목록 조회
-    * 특정 가게에 들어온 모든 주문을 조회할 수 있음
-    * 점주가 주문을 관리하거나 상태를 변경할 때 활용
-    * 조회 가능한 정보
-        * 주문 ID
-        * 주문자 이름
-        * 총 금액
-        * 주문 상태
-        * 주문 시간
-
-- 주문 상태 변경
-    * 점주(Owner)가 주문의 진행 상태를 변경할 수 있음
-    * 변경 가능한 상태 전이
-        * `PENDING → ACCEPTED` : 주문 수락
-        * `PENDING → REJECTED` : 주문 거절
-        * `ACCEPTED → COOKING` : 조리 시작
-        * `COOKING → COOK_COMPLETED` : 조리 완료
-        * `COOK_COMPLETED → DELIVERING` : 배달 시작
-        * `DELIVERING → DELIVERED` : 배달 완료
-        * `PENDING/ACCEPTED → CANCELED` : 주문 취소
-    * 상태 변경 시각(`acceptedAt`, `rejectedAt`, `cookingAt`, `cookCompletedAt`, `deliveringAt`, `deliveredAt`, `canceledAt`)이 자동 기록됨
-
-- 주문 취소
-    * 배달이 시작되기 전(`PENDING`, `ACCEPTED`) 상태에서만 주문 취소 가능
-    * 취소 시 상태가 `CANCELED(주문 취소)`로 변경되며 `canceledAt` 기록됨
-    * 이미 `DELIVERING` 또는 `DELIVERED` 상태인 주문은 취소 불가
-
-
-* 결제
-    * Toss Payments API를 활용한 결제 기능 구현
-    * 결제 요청 시 주문 정보와 결제 정보를 함께 전송
-    * 결제 성공 시 결제 상태를 'SUCCESS'로 업데이트
-    * 결제 실패 시 결제 상태를 'FAILED'로 업데이트하고, 사용자에게 실패 사실 전달.
-    * 결제 내역 저장
-        * 결제 완료 후 결제 내역을 데이터베이스에 업데이트
-        * 저장 정보: 결제 ID, 주문 ID, 결제 금액, 결제 상태, 결제 일시
-* 결제 취소
-    * 사용자가 결제 취소 요청 시, Toss Payments API를 통해 결제 취소 처리
-    * 결제 취소 성공 시 결제 상태를 'CANCELLED'로 업데이트
-    * 결제 취소 내역 저장
-        * 결제 취소 후 취소 내역을 데이터베이스에 업데이트
-        * 저장 정보: 결제 ID, 주문 ID, 취소 금액, 취소 일시
 
 ### **✨ 리뷰**
-* 리뷰 작성
-  * Customer 권한 사용자는 주문 완료 후 리뷰를 작성할 수 있음
-  * 리뷰 정보: 점수(별점), 내용, 주문 ID, 가게 ID를 포함 
-  * 리뷰 작성 시 다음과 같은 유효성 검증 수행 
-    * 동일한 주문에 대해 중복 리뷰 작성 불가 
-    * 존재하지 않는 주문 또는 가게 ID 전달 시 예외 발생 
-  * 작성 완료 후 생성된 리뷰 ID, 작성 내용, 점수 등의 정보를 반환 
-* 리뷰 조회 (가게 기준)
-  * 특정 가게 ID 기준으로 해당 가게에 작성된 모든 리뷰를 조회 가능 
-  * 반환 정보:
-    * 리뷰 ID 
-    * 작성자 이름 
-    * 점수(별점)
-    * 내용 
-    * 작성일시
-* 리뷰 조회 (내 리뷰)
-  * 인증된 사용자는 자신이 작성한 모든 리뷰를 조회할 수 있음 
-  * 특정 가게에 대해 자신이 작성한 리뷰만 별도로 조회하는 것도 가능 
-  * 반환 정보:
-    * 리뷰 ID 
-    * 가게 이름 
-    * 점수(별점)
-    * 내용 
-    * 작성일시
-* 리뷰 수정 
-  * Customer 권한 사용자는 자신이 작성한 리뷰만 수정 가능 
-  * 부분 수정 가능 (예: 점수만 수정, 내용만 수정 등)
-  * 존재하지 않는 리뷰 ID 또는 권한 없는 사용자가 요청 시 예외 발생 
-  * 수정 후 최신 리뷰 정보 반환
-* 리뷰 삭제 (Soft Delete)
-  * Customer 권한 사용자는 자신이 작성한 리뷰만 삭제 가능 
-  * 삭제 시 isDeleted 플래그가 true로 변경되고, deletedAt, deletedBy가 기록됨 
-  * 실제 DB에서 데이터는 제거되지 않음 
-  * 이미 삭제된 리뷰에 대해 재삭제 시 예외 발생
+- 사용자는 `주문 완료`된 주문 건에 한해서 별점을 포함한 리뷰를 작성하고 관리할 수 있습니다.
+    - 리뷰 수정, 삭제, 본인이 작성한 리뷰 조회 포함
+    - 동일한 주문에 대해서는 중복 리뷰 작성이 불가능합니다.
+- 사용자는 특정 가게 별 리뷰를 조회할 수 있고, 특정 가게에 대해 자신이 작성한 리뷰만을 별도로도 조회할 수 있습니다.
 
-#### **✨ 카테고리**
-* 카테고리 등록
-    * MASTER 또는 MANAGER 권한이 있는 사용자는 새 카테고리를 등록할 수 있음
-    * 등록 정보: 카테고리 이름(name), 설명(description), 등록일(createdAt), 등록자(createdBy)
-    * 카테고리 이름과 설명은 필수 입력 항목이며 중복 불가
 
-* 카테고리 목록 조회
-    * 모든 사용자는 삭제되지 않은 카테고리 목록을 조회할 수 있음
+### **✨ 카테고리**
+- 관리자(MASTER/MANAGER)는 새 카테고리를 등록하고 관리할 수 있습니다.
+    - 카테고리 수정, 삭제 포함
+- 모든 사용자는 카테고리 목록을 조회할 수 있습니다.
+- 관리자는 SOFT DELETE로 처리된 카테고리까지 함께 조회가 가능합니다.
 
-* 전체 카테고리 조회(관리자용)
-    * MASTER 또는 MANAGER 권한자는 삭제된 카테고리를 포함한 전체 목록 조회 가능
-
-* 특정 카테고리 상세 조회
-
-    * 카테고리 ID 기준으로 상세 정보 조회 가능
-
-* 카테고리 수정
-    * MASTER 또는 MANAGER 권한자가 수정 가능
-    * 수정 가능한 정보: 이름(name), 설명(description)
-
-* 카테고리 삭제 (Soft Delete)
-    * MASTER 또는 MANAGER 권한자가 삭제 가능
-    * 삭제 시 isDeleted 플래그가 true로 변경되고, 실제 데이터는 DB에서 제거되지 않음
-    * 삭제 시 deletedAt, deletedBy 기록
-    * 이미 삭제된 카테고리를 다시 삭제하려 할 경우 예외 발생
 
 ### **✨ 서비스 지역**
-* 서비스 지역 생성
-  * 서비스 지역 이름과 POLYGON geometry로 서비스 지역 data 생성
-    * POLYGON geometry 로 특정 geometry가 속해있는지 판별하여 서비스 활성화 상태 결정
+- 서비스 지역 이름과 POLYGON geometry로 서비스 지역 데이터를 생성할 수 있습니다.
+    - POLYGON geometry로 특정 geometry가 속해있는지 판별하여 서비스 활성화 상태 결정
+
 
 ### **✨ AI**
-* Ai-log 단건 조회
-  * 특정 Ai-log Id 로 상세정보 조회
-  * 조회 정보
-    * ID
-    * 유저 ID
-    * 메뉴 ID
-    * 질문한 내용
-    * 답변 내용
-    * 생성일
-* Ai-log 전체 조회(로그인 유저)
-  * 로그인한 유저의 Ai-log 전체 조회
-  * 조회 정보는 단건 조회 정보의 list
+- 사용자는 프롬프트를 AI에게 전달해 응답을 받을 수 있습니다.
+    - 추후 다른 도메인에서도 AI프롬프트를 선택 사용해 내용 생산성을 높일 수 있는 방향으로 확장성 고려
+- Ai-log 전체 조회 및 상세 조회(질문한 내용과 답변 내용등의 로그를 확인할 수 있습니다)
 
 
 <br>
@@ -419,527 +261,219 @@
     <summary><strong>디렉토리 구조</strong></summary>
 
 ```
-    ├─main
+
+├─main
 │  ├─generated
 │  ├─java
 │  │  └─com
 │  │      └─sparta
 │  │          └─bapzip
-│  │              │  BapzipApplication.java
-│  │              │  
 │  │              ├─ai
 │  │              │  ├─application
-│  │              │  │  │  AiCallable.java
-│  │              │  │  │  AiServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
-│  │              │  │  │      AiLogResponseDto.java
-│  │              │  │  │      
 │  │              │  │  └─exception
-│  │              │  │          AiLogNotFoundException.java
-│  │              │  │          
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      AiEntity.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          AiLogRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  ├─ai
-│  │              │  │  │      GeminiApiClient.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          AiLogJpaRepository.java
-│  │              │  │          AiLogRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      AiControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          ├─request
-│  │              │          │      RequestDto.java
-│  │              │          │      
 │  │              │          └─response
-│  │              │                  ResponseDto.java
-│  │              │                  
 │  │              ├─category
 │  │              │  ├─application
-│  │              │  │      CategoryServiceV1.java
-│  │              │  │      
+│  │              │  │  └─exception
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      CategoryEntity.java
-│  │              │  │  │      
 │  │              │  │  ├─exception
-│  │              │  │  │      CategoryException.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          CategoryRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          CategoryJpaRepository.java
-│  │              │  │          CategoryRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      CategoryControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          ├─request
-│  │              │          │      CategoryRequestDto.java
-│  │              │          │      
 │  │              │          └─response
-│  │              │                  CategoryDetailResponse.java
-│  │              │                  
 │  │              ├─global
 │  │              │  ├─common
-│  │              │  │      BaseEntity.java
-│  │              │  │      
 │  │              │  ├─exception
-│  │              │  │      ErrorCode.java
-│  │              │  │      ExceptionResponse.java
-│  │              │  │      GlobalException.java
-│  │              │  │      GlobalizedResponseException.java
-│  │              │  │      
 │  │              │  ├─infrastructure
 │  │              │  │  └─config
 │  │              │  │      ├─security
-│  │              │  │      │      SecurityConfig.java
-│  │              │  │      │      
 │  │              │  │      └─swagger
-│  │              │  │              SwaggerConfig.java
-│  │              │  │              
 │  │              │  └─response
-│  │              │          ApiResponse.java
-│  │              │          PageResponseDto.java
-│  │              │          
 │  │              ├─kakaolocal
 │  │              │  ├─application
-│  │              │  │  │  KakaoLocalCallable.java
-│  │              │  │  │  KakaoLocalServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
-│  │              │  │  │      KakaoLocalResponseDto.java
-│  │              │  │  │      
 │  │              │  │  └─exception
-│  │              │  │          KakaoLocalResponseNotFoundException.java
-│  │              │  │          
 │  │              │  ├─infrastructure
-│  │              │  │      KakaoLocalApiClient.java
-│  │              │  │      
 │  │              │  └─presentation
-│  │              │          KakaoLocalApiController.java
-│  │              │          
 │  │              ├─menu
 │  │              │  ├─application
-│  │              │  │  │  MenuServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
 │  │              │  │  │  └─request
-│  │              │  │  │          MenuCreateRequest.java
-│  │              │  │  │          MenuSearchRequest.java
-│  │              │  │  │          MenuStatusUpdateRequest.java
-│  │              │  │  │          MenuUpdateRequest.java
-│  │              │  │  │          
 │  │              │  │  └─exception
-│  │              │  │          InvalidMenuIdException.java
-│  │              │  │          MenuNotFoundException.java
-│  │              │  │          
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      MenuEntity.java
-│  │              │  │  │      
 │  │              │  │  ├─enums
-│  │              │  │  │      MenuStatus.java
-│  │              │  │  │      
 │  │              │  │  ├─exception
-│  │              │  │  │      InvalidMenuStatusException.java
-│  │              │  │  │      MenuAlreadyDeletedException.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          MenuRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          MenuJpaRepository.java
-│  │              │  │          MenuRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      MenuControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          └─response
-│  │              │                  MenuAdminResponse.java
-│  │              │                  MenuCreateResponse.java
-│  │              │                  MenuDetailResponse.java
-│  │              │                  MenuListByShopResponse.java
-│  │              │                  MenuSearchResponse.java
-│  │              │                  
 │  │              ├─order
 │  │              │  ├─application
-│  │              │  │  │  OrderServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
-│  │              │  │  │  │  OrderCreationDto.java
-│  │              │  │  │  │  OrderDetailDto.java
-│  │              │  │  │  │  OrderDto.java
-│  │              │  │  │  │  OrderMenuInfo.java
-│  │              │  │  │  │  ShopOrderDto.java
-│  │              │  │  │  │  
 │  │              │  │  │  └─request
-│  │              │  │  │          CreateOrderRequest.java
-│  │              │  │  │          
 │  │              │  │  └─exception
-│  │              │  │          MenusNotFoundInOrderException.java
-│  │              │  │          OrderNotFoundException.java
-│  │              │  │          
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      OrderEntity.java
-│  │              │  │  │      
 │  │              │  │  ├─enums
-│  │              │  │  │      OrderStatus.java
-│  │              │  │  │      
 │  │              │  │  ├─exception
-│  │              │  │  │      ForbiddenOrderAccessException.java
-│  │              │  │  │      MenuNotInShopException.java
-│  │              │  │  │      OrderNotAcceptedException.java
-│  │              │  │  │      OrderNotCancellableException.java
-│  │              │  │  │      OrderNotCompletedException.java
-│  │              │  │  │      OrderNotCookCompletedException.java
-│  │              │  │  │      OrderNotCookingException.java
-│  │              │  │  │      OrderNotDeliveredException.java
-│  │              │  │  │      OrderNotDeliveringException.java
-│  │              │  │  │      OrderNotPendingException.java
-│  │              │  │  │      SoldOutMenuException.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          OrderRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          OrderJpaRepository.java
-│  │              │  │          OrderRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      OrderControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          └─response
-│  │              │                  CreateOrderResponse.java
-│  │              │                  OrderDetailResponse.java
-│  │              │                  OrderResponse.java
-│  │              │                  ShopOrderResponse.java
-│  │              │                  
 │  │              ├─ordermenu
 │  │              │  ├─application
-│  │              │  │      OrderMenuServiceV1.java
-│  │              │  │      
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      OrderMenuEntity.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          OrderMenuRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          OrderMenuJpaRepository.java
-│  │              │  │          OrderMenuRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      OrderMenuControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          ├─request
-│  │              │          │      RequestDto.java
-│  │              │          │      
 │  │              │          └─response
-│  │              │                  ResponseDto.java
-│  │              │                  
 │  │              ├─payment
 │  │              │  ├─application
-│  │              │  │      PaymentServiceV1.java
-│  │              │  │      
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      PaymentEntity.java
-│  │              │  │  │      PaymentStatusEnum.java
-│  │              │  │  │      
 │  │              │  │  ├─exception
-│  │              │  │  │      PaymentException.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          PaymentRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  ├─config
 │  │              │  │  │  └─payment
-│  │              │  │  │          TossPaymentsConfig.java
-│  │              │  │  │          
 │  │              │  │  └─repository
-│  │              │  │          PaymentJpaRepository.java
-│  │              │  │          PaymentRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      PaymentControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          ├─request
-│  │              │          │      PaymentCancelRequest.java
-│  │              │          │      PaymentCreateRequest.java
-│  │              │          │      
 │  │              │          └─response
-│  │              │                  PaymentResponseDto.java
-│  │              │                  
 │  │              ├─review
 │  │              │  ├─application
-│  │              │  │  │  ReviewServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
-│  │              │  │  │  │  ReviewDto.java
-│  │              │  │  │  │  
 │  │              │  │  │  └─request
-│  │              │  │  │          CreateReviewRequest.java
-│  │              │  │  │          UpdateReviewRequest.java
-│  │              │  │  │          
 │  │              │  │  └─exception
-│  │              │  │          DuplicateReviewException.java
-│  │              │  │          ReviewNotFoundException.java
-│  │              │  │          UnauthorizedReviewAccessException.java
-│  │              │  │          
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      ReviewEntity.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          ReviewRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          ReviewJpaRepository.java
-│  │              │  │          ReviewRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      ReviewControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          └─response
-│  │              │                  ReviewCreateResponse.java
-│  │              │                  
 │  │              ├─servicearea
 │  │              │  ├─application
-│  │              │  │  │  ServiceAreaServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
-│  │              │  │  │  │  AreaReturnDto.java
-│  │              │  │  │  │  AreaSaveDto.java
-│  │              │  │  │  │  
 │  │              │  │  │  └─request
-│  │              │  │  │          AreaSaveRequest.java
-│  │              │  │  │          
 │  │              │  │  └─exception
-│  │              │  │          ServiceAreaNotFoundException.java
-│  │              │  │          
 │  │              │  ├─domain
-│  │              │  │  │  Point.java
-│  │              │  │  │  
 │  │              │  │  ├─entity
-│  │              │  │  │      ServiceAreaEntity.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          ServiceAreaRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          ServiceAreaJpaRepository.java
-│  │              │  │          ServiceAreaRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      ServiceAreaControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          └─response
-│  │              │                  AreaSaveResponse.java
-│  │              │                  ResponseDto.java
-│  │              │                  
 │  │              ├─shop
 │  │              │  ├─application
-│  │              │  │  │  ShopServiceV1.java
-│  │              │  │  │  
 │  │              │  │  ├─dto
 │  │              │  │  │  └─request
-│  │              │  │  │          ShopCreationRequest.java
-│  │              │  │  │          ShopUpdateRequest.java
-│  │              │  │  │          
 │  │              │  │  └─exception
-│  │              │  │          CoordinateOutOfRangeException.java
-│  │              │  │          OwnerNotFoundException.java
-│  │              │  │          ShopAlreadyExistsException.java
-│  │              │  │          ShopDeleteForbidden.java
-│  │              │  │          ShopNotFoundException.java
-│  │              │  │          UnauthorizedShopAccessException.java
-│  │              │  │          
 │  │              │  ├─domain
 │  │              │  │  ├─entity
-│  │              │  │  │      ShopEntity.java
-│  │              │  │  │      
 │  │              │  │  ├─enums
-│  │              │  │  │      ShopStatusEnum.java
-│  │              │  │  │      
 │  │              │  │  ├─exception
-│  │              │  │  │      ShopAlreadyDeletedException.java
-│  │              │  │  │      
 │  │              │  │  └─repository
-│  │              │  │          ShopRepository.java
-│  │              │  │          
 │  │              │  ├─infrastructure
 │  │              │  │  └─repository
-│  │              │  │          ShopJpaRepository.java
-│  │              │  │          ShopRepositoryImpl.java
-│  │              │  │          
 │  │              │  └─presentation
 │  │              │      ├─controller
-│  │              │      │      ShopControllerV1.java
-│  │              │      │      
 │  │              │      └─dto
 │  │              │          └─response
-│  │              │                  CreateShopResponse.java
-│  │              │                  ShopDetailForUserResponse.java
-│  │              │                  ShopDetailResponse.java
-│  │              │                  
 │  │              └─user
 │  │                  ├─application
-│  │                  │  │  UserDetailsServiceImpl.java
-│  │                  │  │  UserServiceV1.java
-│  │                  │  │  
 │  │                  │  ├─dto
 │  │                  │  │  └─request
-│  │                  │  │          LoginRequestDto.java
-│  │                  │  │          SignupRequestDto.java
-│  │                  │  │          UserDeleteRequestDto.java
-│  │                  │  │          UserRoleChangeRequestDto.java
-│  │                  │  │          UserUpdateRequestDto.java
-│  │                  │  │          
 │  │                  │  └─excpetion
-│  │                  │          DuplicateUserException.java
-│  │                  │          PasswordNotMatchException.java
-│  │                  │          UnauthorizedUserException.java
-│  │                  │          UserNotFoundException.java
-│  │                  │          
 │  │                  ├─domain
 │  │                  │  ├─entity
-│  │                  │  │      UserDetailsImpl.java
-│  │                  │  │      UserEntity.java
-│  │                  │  │      
 │  │                  │  ├─enums
-│  │                  │  │      UserRoleEnum.java
-│  │                  │  │      
 │  │                  │  └─repository
-│  │                  │          UserRepository.java
-│  │                  │          
 │  │                  ├─infrastructure
 │  │                  │  └─repository
-│  │                  │          UserJpaRepository.java
-│  │                  │          UserRepositoryImpl.java
-│  │                  │          
 │  │                  ├─jwt
-│  │                  │      JwtAuthenticationFilter.java
-│  │                  │      JwtAuthorizationFilter.java
-│  │                  │      JwtUtil.java
-│  │                  │      
 │  │                  └─presentation
 │  │                      ├─controller
-│  │                      │      UserControllerV1.java
-│  │                      │      
 │  │                      └─dto
 │  │                          └─response
-│  │                                  SignupResponseDto.java
-│  │                                  UserDeleteResponseDto.java
-│  │                                  UserResponseDto.java
-│  │                                  UserRoleChangeResponseDto.java
-│  │                                  UserUpdateResponseDto.java
-│  │                                  
 │  └─resources
-│          application-dev.yml
-│          application-prod.yml
-│          application.yml
-│          secrets.yml
-│          
 └─test
     ├─java
     │  └─com
     │      └─sparta
     │          └─bapzip
-    │              │  BapzipApplicationTests.java
-    │              │  
     │              ├─category
     │              │  ├─application
-    │              │  │      CategoryServiceV1Test.java
-    │              │  │      
     │              │  └─domain
     │              │      └─entity
-    │              │              CategoryEntityTest.java
-    │              │              
     │              ├─kakaolocal
     │              │  └─application
-    │              │          KakaoLocalServiceV1Test.java
-    │              │          
     │              ├─menu
     │              │  ├─application
-    │              │  │      MenuServiceV1Test.java
-    │              │  │      
     │              │  └─domain
     │              │      └─entity
-    │              │              MenuEntityTest.java
-    │              │              
     │              ├─order
     │              │  ├─application
-    │              │  │      OrderServiceV1Test.java
-    │              │  │      
     │              │  └─domain
     │              │      └─entity
-    │              │              OrderEntityTest.java
-    │              │              
     │              ├─review
     │              │  ├─application
-    │              │  │      ReviewServiceV1Test.java
-    │              │  │      
     │              │  └─domain
     │              │      └─entity
-    │              │              ReviewEntityTest.java
-    │              │              
     │              ├─servicearea
     │              │  └─application
-    │              │          ServiceAreaServiceV1Test.java
-    │              │          
+    │              ├─shop
+    │              │  ├─application
+    │              │  └─domain
+    │              │      ├─entity
+    │              │      └─repository
     │              └─user
     │                  ├─application
-    │                  │      UserServiceV1Test.java
-    │                  │      
     │                  ├─domain
     │                  │  └─entity
-    │                  │          UserEntityTest.java
-    │                  │          
     │                  └─presentation
     │                      └─controller
-    │                              UserControllerV1Test.java
-    │                              
     └─resources
-            application-test.yml
 
 ```
 </details>
 
-### 📄 API 명세서
-[API 명세서 자세히 보기](https://teamsparta.notion.site/27a2dc3ef51481e1b791ca087368d2af?v=27a2dc3ef51481498f04000c69f7fb79)
 
+
+### 📄 API 명세서
+
+[API 명세서 자세히 보기](https://teamsparta.notion.site/27a2dc3ef51481e1b791ca087368d2af?v=27a2dc3ef51481498f04000c69f7fb79)
