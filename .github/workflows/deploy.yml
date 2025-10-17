@@ -45,6 +45,12 @@ jobs:
 
       - name: 테스트 진행
         run: ./gradlew test -Dspring.profiles.active=test
+        env:
+          PAYMENT_CLIENT_KEY: ${{ secrets.PAYMENT_CLIENT_KEY }}
+          PAYMENT_SECRET_KEY: ${{ secrets.PAYMENT_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          GOOGLEAI_API_KEY: ${{ secrets.GOOGLEAI_API_KEY }}
 
       - name: 테스트 결과 요약 및 시각화
         uses: EnricoMi/publish-unit-test-result-action@v2
