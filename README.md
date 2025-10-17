@@ -46,14 +46,14 @@
 
 감정보단 논리로 움직이는 6인의 T키타카 조입니다.
 
-| name | role | mbti | 담당 파트  |                                                                       Github                                                                        |
-|:----:|:----:|:----:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 박용재  |  리더  | INTP |        | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |        |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-| 권재원  |  멤버  | ISTP |        |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP | 메뉴 API |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 오상경  |  멤버  | ISTJ |        |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
-| 정인호  |  멤버  | ISTP | 유저 API |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| name | role | mbti |    담당 파트     |                                                                       Github                                                                        |
+|:----:|:----:|:----:|:------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 박용재  |  리더  | INTP |              | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
+| 권용은  |  멤버  | ENTP |              |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권재원  |  멤버  | ISTP |              |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |    메뉴 API    |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 오상경  |  멤버  | ISTJ | 결제, 카테고리 API |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
+| 정인호  |  멤버  | ISTP |    유저 API    |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
 <br>
 
@@ -246,11 +246,50 @@
     * 삭제 시 deletedAt과 deletedBy가 기록됨
     * 이미 삭제된 가게를 삭제하려고 할 경우 예외 발생
     * 진행 중인 주문이 있는 가게는 삭제 불가
-### **✨ 주문**
+
+#### **✨ 주문**
+* 결제
+    * Toss Payments API를 활용한 결제 기능 구현
+    * 결제 요청 시 주문 정보와 결제 정보를 함께 전송
+    * 결제 성공 시 결제 상태를 'SUCCESS'로 업데이트
+    * 결제 실패 시 결제 상태를 'FAILED'로 업데이트하고, 사용자에게 실패 사실 전달.
+    * 결제 내역 저장
+        * 결제 완료 후 결제 내역을 데이터베이스에 업데이트
+        * 저장 정보: 결제 ID, 주문 ID, 결제 금액, 결제 상태, 결제 일시
+* 결제 취소
+    * 사용자가 결제 취소 요청 시, Toss Payments API를 통해 결제 취소 처리
+    * 결제 취소 성공 시 결제 상태를 'CANCELLED'로 업데이트
+    * 결제 취소 내역 저장
+        * 결제 취소 후 취소 내역을 데이터베이스에 업데이트
+        * 저장 정보: 결제 ID, 주문 ID, 취소 금액, 취소 일시
 
 ### **✨ 리뷰**
 
-### **✨ 카테고리**
+#### **✨ 카테고리**
+* 카테고리 등록
+    * MASTER 또는 MANAGER 권한이 있는 사용자는 새 카테고리를 등록할 수 있음
+    * 등록 정보: 카테고리 이름(name), 설명(description), 등록일(createdAt), 등록자(createdBy)
+    * 카테고리 이름과 설명은 필수 입력 항목이며 중복 불가
+
+* 카테고리 목록 조회
+    * 모든 사용자는 삭제되지 않은 카테고리 목록을 조회할 수 있음
+
+* 전체 카테고리 조회(관리자용)
+    * MASTER 또는 MANAGER 권한자는 삭제된 카테고리를 포함한 전체 목록 조회 가능
+
+* 특정 카테고리 상세 조회
+
+    * 카테고리 ID 기준으로 상세 정보 조회 가능
+
+* 카테고리 수정
+    * MASTER 또는 MANAGER 권한자가 수정 가능
+    * 수정 가능한 정보: 이름(name), 설명(description)
+
+* 카테고리 삭제 (Soft Delete)
+    * MASTER 또는 MANAGER 권한자가 삭제 가능
+    * 삭제 시 isDeleted 플래그가 true로 변경되고, 실제 데이터는 DB에서 제거되지 않음
+    * 삭제 시 deletedAt, deletedBy 기록
+    * 이미 삭제된 카테고리를 다시 삭제하려 할 경우 예외 발생
 
 ### **✨ 주소**
 
