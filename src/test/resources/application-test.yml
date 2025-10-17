@@ -25,24 +25,24 @@ spring:
 payment:
   toss:
     client:
-      key: test_ck_dummy_key_for_testing
+      key: ${PAYMENT_CLIENT_KEY}
     secret:
-      key: test_sk_dummy_key_for_testing
+      key: ${PAYMENT_SECRET_KEY}
     success-url: http://localhost:8080/payments/success
     fail-url: http://localhost:8080/payments/fail
 
 jwt:
   secret:
-    key: dGVzdF9qd3Rfc2VjcmV0X2tleV9mb3JfdGVzdGluZ19wdXJwb3Nl
+    key: ${JWT_SECRET_KEY}
 
 kakao:
   rest:
     api:
-      key: test_kakao_rest_api_key_dummy
+      key: ${KAKAO_REST_API_KEY}
 
 google:
   api:
-    key: test_google_api_key_dummy
+    key: ${GOOGLEAI_API_KEY}
 
 # Swagger 비활성화
 springdoc:
