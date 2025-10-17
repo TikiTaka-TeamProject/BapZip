@@ -46,14 +46,14 @@
 
 감정보단 논리로 움직이는 6인의 T키타카 조입니다.
 
-| name | role | mbti | 담당 파트 |                                                                       Github                                                                        |
-|:----:|:----:|:----:|:-----:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 박용재  |  리더  | INTP |       | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |       |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-| 권재원  |  멤버  | ISTP |       |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP |메뉴 API |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 오상경  |  멤버  | ISTJ |결제, 카테고리 API |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
-| 정인호  |  멤버  | ISTP |       |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| name | role | mbti |    담당 파트     |                                                                       Github                                                                        |
+|:----:|:----:|:----:|:------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 박용재  |  리더  | INTP |              | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
+| 권용은  |  멤버  | ENTP |              |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권재원  |  멤버  | ISTP |              |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |    메뉴 API    |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 오상경  |  멤버  | ISTJ | 결제, 카테고리 API |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
+| 정인호  |  멤버  | ISTP |    유저 API    |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
 <br>
 
@@ -87,7 +87,7 @@
     - **전략**
 
       | Branch Type | Description |
-                  |-------------|-------------|
+      |-------------|-------------|
       | `dev`       | 주요 개발 branch, `main`으로 merge 전 거치는 branch |
       | `feature`   | 각자 개발할 branch, 기능 단위로 생성하기, 할 일 issue 등록 후 branch 생성 및 작업 |
 
@@ -171,9 +171,33 @@
 
 ### **✨ 유저**
 - 회원가입
-- 스프링 시큐리티 로그인 인증 / JWT token 을 사용한 인증
-- 유저 권한
-
+  - 회원 정보를 토대로 회원가입을 할 수 있음
+  - MANAGER와 MASTER로 회원가입은 불가
+  - 이메일 중복 해서 가입 불가
+- 로그인
+  - 이메일과 비밀번호를 이용한 로그인 기능
+  - 로그인 성공 시 JWT 토큰 발급
+  - 로그인 실패 시 401 Unauthorized 반환
+- 전체 유저 조회
+  - 회원 전체 목록을 조회할 수 있음
+  - 페이지네이션 적용(page, size, sortBy, isAsc 지원)
+  - MANAGER와 MASTER 권한만 접근 가능
+- 단건 유저 조회
+  - 유저 ID를 기반으로 단일 회원 정보 조회
+  - 자기 자신의 정보는 누구나 확인 가능
+  - 다른 회원 정보를 보려면 MANAGER와 MASTER 권한 필요
+- 회원 정보 수정
+  - 회원 본인만 수정 가능
+  - 이름 및 비밀번호 변경 가능
+  - 기존 비밀번호 확인 필요
+- 회원 삭제
+  - 회원 본인만 삭제 가능
+  - 기존 비밀번호 확인 필요
+  - soft delete 방식으로 처리
+- 유저 권한 변경
+  - MASTER 권한만 실행 가능
+  - 다른 유저의 권한을 CUSTOMER, OWNER, MANAGER로 변경 가능
+  - MASTER로는 변경 불가
 
 ### **✨ 메뉴**
 - 가게의 `OWNER`로 등록된 사용자는 자신의 가게의 메뉴를 관리할 수 있습니다.
@@ -224,6 +248,7 @@
     * 삭제 시 deletedAt과 deletedBy가 기록됨
     * 이미 삭제된 가게를 삭제하려고 할 경우 예외 발생
     * 진행 중인 주문이 있는 가게는 삭제 불가
+
 #### **✨ 주문**
 * 결제
     * Toss Payments API를 활용한 결제 기능 구현

@@ -1,6 +1,7 @@
 package com.sparta.bapzip.user.application;
 
 import com.sparta.bapzip.global.exception.ErrorCode;
+import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserRoleChangeRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserUpdateRequestDto;
@@ -11,7 +12,6 @@ import com.sparta.bapzip.user.application.excpetion.UserNotFoundException;
 import com.sparta.bapzip.user.domain.entity.UserEntity;
 import com.sparta.bapzip.user.domain.enums.UserRoleEnum;
 import com.sparta.bapzip.user.domain.repository.UserRepository;
-import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,8 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
