@@ -49,11 +49,12 @@
 | name | role | mbti |                담당 파트                 |                                                                       Github                                                                        |
 |:----:|:----:|:----:|:------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
 | 박용재  |  리더  | INTP | Ai API, Kakao Local 연동, Google Ai 연동 | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |                                      |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권용은  |  멤버  | ENTP |            가게, 리뷰 API                |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 | 권재원  |  멤버  | ISTP |                                      |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
 | 안소나  |  멤버  | ISTP |                메뉴 API                |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
 | 오상경  |  멤버  | ISTJ |             결제, 카테고리 API             |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
 | 정인호  |  멤버  | ISTP |                유저 API                |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+
 
 <br>
 
@@ -322,6 +323,40 @@
         * 저장 정보: 결제 ID, 주문 ID, 취소 금액, 취소 일시
 
 ### **✨ 리뷰**
+* 리뷰 작성
+  * Customer 권한 사용자는 주문 완료 후 리뷰를 작성할 수 있음
+  * 리뷰 정보: 점수(별점), 내용, 주문 ID, 가게 ID를 포함 
+  * 리뷰 작성 시 다음과 같은 유효성 검증 수행 
+    * 동일한 주문에 대해 중복 리뷰 작성 불가 
+    * 존재하지 않는 주문 또는 가게 ID 전달 시 예외 발생 
+  * 작성 완료 후 생성된 리뷰 ID, 작성 내용, 점수 등의 정보를 반환 
+* 리뷰 조회 (가게 기준)
+  * 특정 가게 ID 기준으로 해당 가게에 작성된 모든 리뷰를 조회 가능 
+  * 반환 정보:
+    * 리뷰 ID 
+    * 작성자 이름 
+    * 점수(별점)
+    * 내용 
+    * 작성일시
+* 리뷰 조회 (내 리뷰)
+  * 인증된 사용자는 자신이 작성한 모든 리뷰를 조회할 수 있음 
+  * 특정 가게에 대해 자신이 작성한 리뷰만 별도로 조회하는 것도 가능 
+  * 반환 정보:
+    * 리뷰 ID 
+    * 가게 이름 
+    * 점수(별점)
+    * 내용 
+    * 작성일시
+* 리뷰 수정 
+  * Customer 권한 사용자는 자신이 작성한 리뷰만 수정 가능 
+  * 부분 수정 가능 (예: 점수만 수정, 내용만 수정 등)
+  * 존재하지 않는 리뷰 ID 또는 권한 없는 사용자가 요청 시 예외 발생 
+  * 수정 후 최신 리뷰 정보 반환
+* 리뷰 삭제 (Soft Delete)
+  * Customer 권한 사용자는 자신이 작성한 리뷰만 삭제 가능 
+  * 삭제 시 isDeleted 플래그가 true로 변경되고, deletedAt, deletedBy가 기록됨 
+  * 실제 DB에서 데이터는 제거되지 않음 
+  * 이미 삭제된 리뷰에 대해 재삭제 시 예외 발생
 
 #### **✨ 카테고리**
 * 카테고리 등록
