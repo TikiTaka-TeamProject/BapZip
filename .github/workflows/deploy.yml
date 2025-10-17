@@ -16,6 +16,16 @@ jobs:
     name: 테스트 실행
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgis/postgis:14-3.4
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
