@@ -249,7 +249,63 @@
     * 이미 삭제된 가게를 삭제하려고 할 경우 예외 발생
     * 진행 중인 주문이 있는 가게는 삭제 불가
 
+
 #### **✨ 주문**
+- 주문 생성
+    * 사용자가 장바구니에 담은 메뉴를 기반으로 주문을 생성할 수 있음
+    * 주문 생성 시 포함되는 정보
+        * 주문 ID
+        * 사용자 정보
+        * 가게 정보
+        * 주문 메뉴 목록
+        * 총 금액
+        * 배달 주소
+    * 주문 생성 시 상태는 기본적으로 `PENDING(주문요청)`으로 설정됨
+
+- 주문 상세 조회
+    * 주문 ID를 기준으로 상세 정보를 조회할 수 있음
+    * 조회 가능한 정보
+        * 주문 ID
+        * 주문자 이름
+        * 가게 이름
+        * 주문 상태 (`PENDING`, `ACCEPTED`, `REJECTED`, `COOKING`, `COOK_COMPLETED`, `DELIVERING`, `DELIVERED`, `CANCELED`)
+        * 총 금액
+        * 배달 주소
+        * 주문 생성/수락/거절/조리/배달/취소 시각
+
+- 사용자 주문 목록 조회
+    * 특정 사용자의 주문 이력을 전체 조회할 수 있음
+    * 최신 주문 순으로 정렬되어 반환됨
+    * 각 주문에는 주문 상태, 가게 정보, 총 금액 등이 포함됨
+
+- 가게 주문 목록 조회
+    * 특정 가게에 들어온 모든 주문을 조회할 수 있음
+    * 점주가 주문을 관리하거나 상태를 변경할 때 활용
+    * 조회 가능한 정보
+        * 주문 ID
+        * 주문자 이름
+        * 총 금액
+        * 주문 상태
+        * 주문 시간
+
+- 주문 상태 변경
+    * 점주(Owner)가 주문의 진행 상태를 변경할 수 있음
+    * 변경 가능한 상태 전이
+        * `PENDING → ACCEPTED` : 주문 수락
+        * `PENDING → REJECTED` : 주문 거절
+        * `ACCEPTED → COOKING` : 조리 시작
+        * `COOKING → COOK_COMPLETED` : 조리 완료
+        * `COOK_COMPLETED → DELIVERING` : 배달 시작
+        * `DELIVERING → DELIVERED` : 배달 완료
+        * `PENDING/ACCEPTED → CANCELED` : 주문 취소
+    * 상태 변경 시각(`acceptedAt`, `rejectedAt`, `cookingAt`, `cookCompletedAt`, `deliveringAt`, `deliveredAt`, `canceledAt`)이 자동 기록됨
+
+- 주문 취소
+    * 배달이 시작되기 전(`PENDING`, `ACCEPTED`) 상태에서만 주문 취소 가능
+    * 취소 시 상태가 `CANCELED(주문 취소)`로 변경되며 `canceledAt` 기록됨
+    * 이미 `DELIVERING` 또는 `DELIVERED` 상태인 주문은 취소 불가
+
+
 * 결제
     * Toss Payments API를 활용한 결제 기능 구현
     * 결제 요청 시 주문 정보와 결제 정보를 함께 전송
