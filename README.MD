@@ -46,14 +46,14 @@
 
 감정보단 논리로 움직이는 6인의 T키타카 조입니다.
 
-| name | role | mbti | 담당 파트 |                                                                       Github                                                                        |
-|:----:|:----:|:----:|:-----:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 박용재  |  리더  | INTP |       | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
-| 권용은  |  멤버  | ENTP |       |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
-| 권재원  |  멤버  | ISTP |       |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 안소나  |  멤버  | ISTP |       |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
-| 오상경  |  멤버  | ISTJ |       |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
-| 정인호  |  멤버  | ISTP |       |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| name | role | mbti |    담당 파트     |                                                                       Github                                                                        |
+|:----:|:----:|:----:|:------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 박용재  |  리더  | INTP |              | <a href="https://github.com/SearchColor"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a> |
+| 권용은  |  멤버  | ENTP | 가게, 카테고리 API |   <a href="https://github.com/rlooko"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
+| 권재원  |  멤버  | ISTP |              |  <a href="https://github.com/ReadAlien"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 안소나  |  멤버  | ISTP |              |  <a href="https://github.com/sonaanweb"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>  |
+| 오상경  |  멤버  | ISTJ |              |   <a href="https://github.com/osk0521"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>   |
+| 정인호  |  멤버  | ISTP |              |    <a href="https://github.com/eNoLJ"><img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"></a>    |
 
 <br>
 
@@ -180,9 +180,10 @@
 
 
 ### **✨ 가게**
-- 가게 정보 관리
+* 가게 등록
     * 사용자가 가게를 등록할 수 있음
-    * 가게 정보: 이름, 주소, 카테고리, 서비스 지역, 위치 정보(Point) 포함
+    * 가게 정보: 이름, 주소, 카테고리, 위치 정보(Point) 포함
+    * 가게 등록 후 관리자의 승인(PENDING → APPROVED)을 통해 실제 서비스에 노출
 * 가게 상세 조회
     * 특정 가게 ID 기준으로 상세 정보 조회 가능
     * 조회 가능한 정보
@@ -192,31 +193,45 @@
         * 현재 상태(PENDING, APPROVED, REJECTED)
         * 가게 소유자 이름
         * 카테고리 이름
-        * 서비스 지역 이름
+        * 평균 평점
 * 가게 정보 수정
-    * Owner 권한이 있는 경우 수정 가능
+    * `Owner` 권한이 있는 경우 수정 가능
     * 수정 가능한 정보
         * 이름
         * 주소
         * 카테고리
-        * 위치(Point)
-        * 서비스 지역은 좌표에 따라 자동으로 계산되며, Owner가 직접 수정 불가
-* 승인(APPROVED) 된 가게 조회
-    * Customer는 상태가 APPROVED인 가게만 조회 가능
-* 상태별 가게 조회
-    * 특정 상태에 따라 가게 목록을 조회할 수 있음
-    * 상태를 지정하지 않으면 전체 가게 목록 조회 가능
-    * 상태별 조회 가능한 값: PENDING, APPROVED, REJECTED
+        * 위치(Point
+* 거게 검색 및 상태별 조회
+  * Customer 사용자 
+    * `Customer` 권한 사용자는 상태가 `APPROVED`인 가게만 조회가능 
+    * 검색 시 사용자의 위치 또는 검색한 서비스 지역을 기준으로 검색기준에 포함되는 가게만 결과로 노출 
+    * 조회 시점에 가게 좌표가 특정 서비스 지역에 포함되는 경우 검색 결과에 포함 
     * 반환 정보:
-        * 가게 ID
-        * 가게 이름
-        * 주소
-        * 현재 상태
-        * 가게 소유자 이름
+      * 가게 ID
+      * 가게 이름
+      * 주소 
+      * 가게 소유자 이름 
+      * 카테고리 이름 
+      * 서비스 지역 이름(해당되는 경우에만)
+      * 평균 평점 
+    * Manager / Master 사용자 
+      * `Manager` 또는 `Master` 권한 사용자는 가게 상태값을 지정하여 조회 가능 
+      * 조회 가능한 상태값:
+        * PENDING — 관리자 승인 대기 상태 
+        * APPROVED — 승인 완료 상태 
+        * REJECTED — 반려 상태 
+      * 상태값을 지정하지 않으면 전체 가게 목록이 조회
+      * 검색 시 서비스 지역을 기준으로 필터링할 수도 있으며, 관리자는 승인 상태에 관계없이 모든 가게 정보를 확인 가능 
+      * 반환 정보:
+        * 가게 ID 
+        * 가게 이름 
+        * 주소 
+        * 현재 상태 
+        * 가게 소유자 이름 
         * 카테고리 이름
-        * 서비스 지역 이름
+        * 평균 평점
 * 가게 삭제 (Soft Delete)
-    * Owner 권한이 있는 경우 삭제 가능
+    * `Owner` 권한이 있는 경우 삭제 가능
     * 삭제 시 isDeleted 플래그가 true로 변경되며, 데이터는 실제로 DB에서 제거되지 않음
     * 삭제 시 deletedAt과 deletedBy가 기록됨
     * 이미 삭제된 가게를 삭제하려고 할 경우 예외 발생
@@ -226,7 +241,32 @@
 ### **✨ 리뷰**
 
 ### **✨ 카테고리**
-
+* 카테고리 등록
+  * `Manager` 또는 `Master` 권한을 가진 사용자가 새로운 카테고리 등록 가능 
+    * 카테고리 정보:
+      * 카테고리 ID (자동 생성)
+      * 카테고리 이름 
+      * 생성 일시 / 수정 일시 
+      * 중복된 이름으로는 등록 불가능
+* 카테고리 조회 
+  * 모든 사용자가 카테고리 목록을 조회 가능 
+  * 조회 시 반환 정보:
+    * 카테고리 ID 
+    * 카테고리 이름
+  * 가게 등록 또는 검색 시 해당 카테고리 목록을 기반으로 선택 가능
+* 카테고리 수정
+  * `Manager` 또는 `Master` 권한 사용자는 기존 카테고리 이름 수정 가능
+  * 수정 시:
+    * 카테고리 ID는 변경되지 않음 
+    * 수정 이력은 기록
+    * 중복되는 이름으로는 수정 불가능
+* 카테고리 삭제 
+  * `Manager` 또는 `Master` 권한 사용자는 카테고리를 삭제 가능
+  * 삭제 방식:
+    * Soft Delete로 구현되어 DB에서 실제로 제거되지 않으며, isDeleted 값이 true로 변경
+    * deletedAt, deletedBy 정보가 기록
+    * 삭제된 카테고리는 가게 등록 시 선택할 수 없음 
+    * 이미 해당 카테고리를 사용하는 가게가 있는 경우 삭제 시 제약 조건 또는 예외가 발생
 ### **✨ 주소**
 
 ### **✨ AI**
@@ -750,7 +790,17 @@
     │              ├─servicearea
     │              │  └─application
     │              │          ServiceAreaServiceV1Test.java
-    │              │          
+    │              │    
+    │              ├─shop
+    │              │  └─application
+    │              │  │       ShopServiceV1Test.java
+    │              │  │      
+    │              │  └─domain
+    │              │      ├─entity
+    │              │      │       ShopEntityTest.java
+    │              │      └─repository
+    │              │              ShopRepositoryTest.java                        
+    │              │    
     │              └─user
     │                  ├─application
     │                  │      UserServiceV1Test.java
