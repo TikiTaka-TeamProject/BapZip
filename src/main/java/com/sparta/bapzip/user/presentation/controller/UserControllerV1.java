@@ -1,6 +1,7 @@
 package com.sparta.bapzip.user.presentation.controller;
 
 import com.sparta.bapzip.global.response.ApiResponse;
+import com.sparta.bapzip.global.response.PageResponseDto;
 import com.sparta.bapzip.user.application.UserServiceV1;
 import com.sparta.bapzip.user.application.dto.request.SignupRequestDto;
 import com.sparta.bapzip.user.application.dto.request.UserDeleteRequestDto;
@@ -33,11 +34,12 @@ public class UserControllerV1 {
 
     @Operation(summary = "전체 회원 조회", description = "전체 회원 조회 메서드 입니다.")
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getUserList(@RequestParam(value = "page", defaultValue = "1") int page,
+    public ResponseEntity<ApiResponse<PageResponseDto<UserResponseDto>>> getUserList(@RequestParam(value = "page", defaultValue = "1") int page,
                                                                           @RequestParam(value = "size", defaultValue = "10") int size,
                                                                           @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
                                                                           @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
-        return ApiResponse.ok(userServiceV1.getUserList(page - 1, size, sortBy, isAsc));
+        Page<UserResponseDto> users = userServiceV1.getUserList(page - 1, size, sortBy, isAsc);
+        return ApiResponse.ok(PageResponseDto.fromPage(users));
     }
 
     @Operation(summary = "단건 회원 조회", description = "단건 회원 조회 메서드 입니다.")
